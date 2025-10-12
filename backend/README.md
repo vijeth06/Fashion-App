@@ -12,6 +12,21 @@ This guide will help you set up the backend server with MongoDB Atlas integratio
 - Git
 
 ## 🔧 MongoDB Atlas Setup
+## 🔐 Firebase Admin Credentials (Optional)
+
+Do NOT commit service account JSON to git. Instead:
+
+1. Save your service account JSON locally outside the repo (or in this folder but ignored).
+2. Set an environment variable pointing to it in `backend/.env`:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_KEY_PATH=./firebase-service-account.json
+```
+
+3. Ensure `.gitignore` contains `backend/firebase-service-account.json` so it never gets committed.
+
+Your code should read the path from `process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH` and load it at runtime.
+
 
 ### 1. Create MongoDB Atlas Account
 1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
