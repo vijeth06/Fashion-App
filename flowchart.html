@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Fashion Try-On System Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        .flowchart-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .flowchart-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .download-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+        }
+        
+        .instructions {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+        
+        .instructions h4 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .download-section { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Virtual Fashion Try-On System</h1>
+        <p class="subtitle">Complete System Architecture & Process Flow</p>
+        
+        <div class="instructions">
+            <h4>📥 How to Download:</h4>
+            <ul>
+                <li><strong>Right-click</strong> on any flowchart → "Save image as..." to download individual charts</li>
+                <li><strong>Print to PDF:</strong> Ctrl+P → "Save as PDF" to get the complete document</li>
+                <li><strong>Screenshot:</strong> Use browser screenshot tools for quick capture</li>
+            </ul>
+        </div>
+        
+        <div class="flowchart-section">
+            <div class="flowchart-title">🔄 Main System Process Flow</div>
+            <div class="mermaid">
+flowchart TD
+    A[User Accesses Virtual Try-On Platform] --> B[System Authenticates User]
+    B --> C[User Selects Try-On Mode]
+    C --> D{Upload Photo or Use Camera?}
+    
+    D -->|Upload| E[Image Processing & Validation]
+    D -->|Camera| F[Webcam Stream Initialization]
+    
+    E --> G[Body Detection & Analysis]
+    F --> H[Real-time Photo Capture]
+    H --> G
+    
+    G --> I[User Browses Clothing Catalog]
+    I --> J[AI Recommends Size & Fit]
+    J --> K[Virtual Garment Overlay]
+    
+    K --> L[Real-time Transform Controls]
+    L --> M{User Satisfied with Fit?}
+    
+    M -->|No| N[Adjust Position/Scale/Rotation]
+    N --> L
+    
+    M -->|Yes| O[Layer Management & Mix-Match]
+    O --> P[Generate Final Composite Image]
+    
+    P --> Q[Secure Data Storage]
+    Q --> R[Social Sharing & Download Options]
+    R --> S[Analytics & User Feedback Collection]
+    
+    S --> T[Display Personalized Recommendations]
+    
+    style A fill:#1abc9c,stroke:#fff,color:#fff
+    style B fill:#2c3e50,stroke:#fff,color:#fff
+    style C fill:#3498db,stroke:#fff,color:#fff
+    style G fill:#e74c3c,stroke:#fff,color:#fff
+    style K fill:#9b59b6,stroke:#fff,color:#fff
+    style P fill:#f39c12,stroke:#fff,color:#fff
+    style R fill:#27ae60,stroke:#fff,color:#fff
+    style T fill:#1abc9c,stroke:#fff,color:#fff
+            </div>
+        </div>
+        
+        <div class="flowchart-section">
+            <div class="flowchart-title">⚙️ Detailed System Workflow</div>
+            <div class="mermaid">
+flowchart TD
+    Start([User Enters VF-TryOn]) --> Auth{Authenticated?}
+    
+    Auth -->|No| Login[Login/Signup Process]
+    Auth -->|Yes| Dashboard[Fashion Dashboard]
+    Login --> Dashboard
+    
+    Dashboard --> Mode{Select Try-On Mode}
+    
+    Mode -->|Photo Upload| Upload[File Upload Handler]
+    Mode -->|Live Camera| Camera[Webcam Integration]
+    Mode -->|AR Mode| AR[AR Camera Stream]
+    
+    Upload --> Process[Image Processing Engine]
+    Camera --> Capture[Photo Capture]
+    AR --> AROverlay[AR Overlay System]
+    
+    Capture --> Process
+    AROverlay --> AIAnalysis[AI Body Analysis]
+    Process --> AIAnalysis
+    
+    AIAnalysis --> Catalog[Browse Clothing Catalog]
+    Catalog --> Filter[Apply Filters & Search]
+    Filter --> Select[Select Clothing Items]
+    
+    Select --> SizeRec[AI Size Recommendation]
+    SizeRec --> Overlay[Virtual Clothing Overlay]
+    
+    Overlay --> Transform[Transform Controls]
+    Transform --> Preview[Real-time Preview]
+    
+    Preview --> Satisfied{Satisfied with Look?}
+    Satisfied -->|No| Adjust[Adjust Fit/Position]
+    Adjust --> Transform
+    
+    Satisfied -->|Yes| LayerMgmt[Layer Management]
+    LayerMgmt --> Composite[Generate Composite]
+    
+    Composite --> Save[Save to Profile]
+    Save --> Share[Social Sharing Options]
+    Share --> Download[Download High-Res Image]
+    
+    Download --> Analytics[Collect Usage Analytics]
+    Analytics --> Feedback[Generate Recommendations]
+    Feedback --> End([Session Complete])
+    
+    style Start fill:#2ecc71,stroke:#fff,color:#fff
+    style Auth fill:#3498db,stroke:#fff,color:#fff
+    style AIAnalysis fill:#e74c3c,stroke:#fff,color:#fff
+    style Overlay fill:#9b59b6,stroke:#fff,color:#fff
+    style Composite fill:#f39c12,stroke:#fff,color:#fff
+    style Analytics fill:#34495e,stroke:#fff,color:#fff
+    style End fill:#2ecc71,stroke:#fff,color:#fff
+            </div>
+        </div>
+        
+        <div class="flowchart-section">
+            <div class="flowchart-title">🏗️ Component Architecture</div>
+            <div class="mermaid">
+flowchart LR
+    User[👤 User] --> Frontend[⚛️ React Frontend]
+    Frontend --> Auth[🔐 Firebase Auth]
+    Frontend --> Camera[📷 Camera API]
+    Frontend --> Canvas[🎨 Canvas Engine]
+    
+    Canvas --> AI[🤖 AI Processing]
+    AI --> Analysis[📊 Body Analysis]
+    Analysis --> Recommendation[💡 Size Recommendation]
+    
+    Frontend --> Backend[⚡ Express Backend]
+    Backend --> MongoDB[🍃 MongoDB]
+    Backend --> Firebase[🔥 Firebase Storage]
+    
+    Canvas --> Composite[🖼️ Image Composite]
+    Composite --> Download[⬇️ Download]
+    Composite --> Social[🌐 Social Share]
+    
+    style User fill:#1abc9c,stroke:#fff,color:#fff
+    style Frontend fill:#3498db,stroke:#fff,color:#fff
+    style AI fill:#e74c3c,stroke:#fff,color:#fff
+    style Backend fill:#2c3e50,stroke:#fff,color:#fff
+    style Composite fill:#f39c12,stroke:#fff,color:#fff
+            </div>
+        </div>
+        
+        <div class="flowchart-section">
+            <div class="flowchart-title">📊 Data Flow Architecture</div>
+            <div class="mermaid">
+flowchart TD
+    Client[📱 Client Application] --> API[🔌 REST API Gateway]
+    API --> Auth[🛡️ Authentication Service]
+    API --> TryOn[👗 Try-On Service]
+    API --> Catalog[📚 Catalog Service]
+    
+    Auth --> FirebaseAuth[🔥 Firebase Auth]
+    TryOn --> ImageProcessor[🖼️ Image Processing]
+    TryOn --> AIEngine[🧠 AI Fitting Engine]
+    Catalog --> ProductDB[📦 Product Database]
+    
+    ImageProcessor --> Storage[☁️ Cloud Storage]
+    AIEngine --> MLModels[🤖 ML Models]
+    ProductDB --> MongoDB[🍃 MongoDB Atlas]
+    
+    Storage --> CDN[🌐 Content Delivery Network]
+    MLModels --> Analytics[📈 Analytics Engine]
+    MongoDB --> Cache[⚡ Redis Cache]
+    
+    Analytics --> Insights[💡 User Insights]
+    Insights --> Recommendations[🎯 Personalized Recommendations]
+    
+    style Client fill:#3498db,stroke:#fff,color:#fff
+    style AIEngine fill:#e74c3c,stroke:#fff,color:#fff
+    style Storage fill:#f39c12,stroke:#fff,color:#fff
+    style Analytics fill:#9b59b6,stroke:#fff,color:#fff
+    style Recommendations fill:#27ae60,stroke:#fff,color:#fff
+            </div>
+        </div>
+        
+        <div class="download-section">
+            <h3>💾 Download Options</h3>
+            <button class="download-btn" onclick="window.print()">📄 Save as PDF</button>
+            <button class="download-btn" onclick="downloadImage()">🖼️ Save as PNG</button>
+            <button class="download-btn" onclick="window.open('data:text/html,' + encodeURIComponent(document.documentElement.outerHTML))">💻 View Source</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Function to download as image
+        function downloadImage() {
+            // Use browser's built-in screenshot or right-click save functionality
+            alert('To save individual flowcharts:\n\n1. Right-click on any flowchart\n2. Select "Save image as..."\n3. Choose your preferred format\n\nFor full document: Use "Save as PDF" button');
+        }
+
+        // Add download functionality for individual charts
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const mermaidDivs = document.querySelectorAll('.mermaid');
+                mermaidDivs.forEach((div, index) => {
+                    div.style.cursor = 'pointer';
+                    div.title = 'Right-click to save this flowchart as image';
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

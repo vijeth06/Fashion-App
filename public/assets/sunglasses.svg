@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)" fill-opacity="0.9">
+    <circle cx="160" cy="150" r="40" fill="#111827"/>
+    <circle cx="240" cy="150" r="40" fill="#111827"/>
+    <rect x="160" y="145" width="80" height="10" fill="#1f2937"/>
+    <path d="M120 140 Q140 120 160 135" stroke="#1f2937" stroke-width="6" fill="none"/>
+    <path d="M280 140 Q260 120 240 135" stroke="#1f2937" stroke-width="6" fill="none"/>
+  </g>
+</svg>

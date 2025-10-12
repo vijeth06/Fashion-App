@@ -1,38 +1,121 @@
-.App {
+/* Modern App Styles - Optimized for Virtual Fashion */
+
+/* Layout Utilities */
+.row { 
+  display: flex; 
+  gap: 12px; 
+  align-items: center;
+}
+
+.row.space-between { 
+  justify-content: space-between; 
+}
+
+.grid.layout { 
+  display: grid; 
+  gap: 16px; 
+}
+
+/* Interactive Elements */
+.toolbar button { 
+  transform: translateZ(0);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbar .btn:hover { 
+  transform: translateY(-2px) translateZ(0);
+}
+
+.toolbar .btn:active { 
+  transform: translateY(0) translateZ(0);
+}
+
+/* Try-On Stage */
+.stage {
+  position: relative;
+  width: 100%;
+  padding-top: 66.66%;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.3) 0%, rgba(76, 29, 149, 0.2) 100%);
+  border-radius: 1rem;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.stage > img,
+.stage > video,
+.stage > canvas,
+.stage > div > video {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+}
+
+.stage-empty { 
+  font-size: 14px; 
+  color: rgba(148, 163, 184, 0.8);
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.center { 
+  display: grid; 
+  place-items: center; 
+  min-height: 200px; 
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Virtual Try-On Overlay */
+.overlay-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  user-select: none;
+  cursor: move;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+}
+
+.overlay-img:hover {
+  box-shadow: 
+    0 0 0 2px rgba(168, 85, 247, 0.4),
+    0 10px 30px rgba(168, 85, 247, 0.2);
+}
+
+.overlay-img.active { 
+  box-shadow: 
+    0 0 0 3px rgba(168, 85, 247, 0.6),
+    0 0 0 6px rgba(168, 85, 247, 0.2),
+    0 15px 40px rgba(168, 85, 247, 0.3);
+  transform: scale(1.02);
+}
+
+/* Modern Loading States */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .7;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Smooth Transitions */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.App-link {
-  color: #61dafb;
+/* Focus Styles */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Custom Properties for Theme */
+:root {
+  --primary-rgb: 168, 85, 247;
+  --secondary-rgb: 236, 72, 153;
+  --accent-rgb: 16, 185, 129;
 }

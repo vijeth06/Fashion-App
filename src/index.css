@@ -1,13 +1,224 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply min-h-screen font-inter bg-slate-950 text-slate-100 antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variant: normal;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-space-grotesk font-bold;
+  }
+  
+  h1 { @apply text-4xl sm:text-5xl lg:text-6xl tracking-tight; }
+  h2 { @apply text-3xl sm:text-4xl lg:text-5xl tracking-tight; }
+  h3 { @apply text-2xl sm:text-3xl lg:text-4xl tracking-tight; }
+  h4 { @apply text-xl sm:text-2xl lg:text-3xl tracking-tight; }
+  h5 { @apply text-lg sm:text-xl tracking-tight; }
+  h6 { @apply text-base sm:text-lg tracking-tight; }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-purple-500 to-pink-500 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply from-purple-400 to-pink-400;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  /* Modern Button Styles */
+  .btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 focus-visible:ring-purple-400;
+  }
+  
+  .btn-secondary {
+    @apply bg-slate-800/50 backdrop-blur-sm text-slate-200 border border-slate-700/50 hover:bg-slate-700/50 hover:border-slate-600/50 focus-visible:ring-slate-400;
+  }
+  
+  .btn-outline {
+    @apply border border-purple-500/50 text-purple-400 hover:bg-purple-500/10 hover:border-purple-400 focus-visible:ring-purple-400;
+  }
+  
+  .btn-ghost {
+    @apply text-slate-300 hover:text-white hover:bg-slate-800/30 focus-visible:ring-slate-400;
+  }
+  
+  .btn-danger {
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-xl hover:shadow-red-500/25 focus-visible:ring-red-400;
+  }
+  
+  .btn-success {
+    @apply bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:from-emerald-600 hover:to-green-600 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 focus-visible:ring-emerald-400;
+  }
+  
+  .btn-sm {
+    @apply px-4 py-2 text-sm;
+  }
+  
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+  
+  .btn-xl {
+    @apply px-10 py-5 text-xl;
+  }
+  
+  /* Modern Card Styles */
+  .card {
+    @apply bg-slate-900/30 backdrop-blur-xl border border-slate-800/50 rounded-2xl shadow-2xl;
+  }
+  
+  .card-body {
+    @apply p-6 lg:p-8;
+  }
+  
+  .card-header {
+    @apply p-6 lg:p-8 pb-0;
+  }
+  
+  .card-footer {
+    @apply p-6 lg:p-8 pt-0;
+  }
+  
+  .card-hover {
+    @apply hover:bg-slate-800/40 hover:border-slate-700/50 hover:shadow-3xl transition-all duration-300;
+  }
+  
+  .card-glow {
+    @apply shadow-2xl shadow-purple-500/10 hover:shadow-purple-500/20;
+  }
+  
+  /* Modern Form Elements */
+  .form-input {
+    @apply w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-gray-900 placeholder-gray-500 backdrop-blur-sm transition-all duration-300 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 focus:bg-white;
+  }
+  
+  .form-textarea {
+    @apply form-input min-h-[120px] resize-none;
+  }
+  
+  .form-select {
+    @apply form-input cursor-pointer;
+  }
+  
+  .form-label {
+    @apply block text-sm font-semibold text-slate-300 mb-2;
+  }
+  
+  .form-error {
+    @apply text-red-400 text-sm mt-1;
+  }
+  
+  .form-success {
+    @apply text-emerald-400 text-sm mt-1;
+  }
+  
+  /* Modern Chip/Badge Styles */
+  .chip {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-300;
+  }
+  
+  .chip-primary {
+    @apply bg-purple-500/20 text-purple-300 border border-purple-500/30;
+  }
+  
+  .chip-secondary {
+    @apply bg-slate-700/50 text-slate-300 border border-slate-600/50;
+  }
+  
+  .chip-success {
+    @apply bg-emerald-500/20 text-emerald-300 border border-emerald-500/30;
+  }
+  
+  .chip-warning {
+    @apply bg-amber-500/20 text-amber-300 border border-amber-500/30;
+  }
+  
+  .chip-danger {
+    @apply bg-red-500/20 text-red-300 border border-red-500/30;
+  }
+  
+  /* Modern Loading States */
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-slate-700 border-t-purple-500;
+  }
+  
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+  
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    90%, 100% { content: ''; }
+  }
+  
+  /* Modern Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-lg hover:shadow-purple-500/20;
+  }
+  
+  .hover-border {
+    @apply transition-colors duration-300 hover:border-purple-500/50;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 bg-clip-text text-transparent;
+  }
+  
+  .gradient-text-cyan {
+    @apply bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent;
+  }
+  
+  /* Modern Container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-sm {
+    @apply max-w-4xl mx-auto px-4 sm:pe-6 lg:px-8;
+  }
+  
+  .container-xs {
+    @apply max-w-2xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-xl border border-white/5;
+  }
 }
