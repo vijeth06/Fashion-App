@@ -20,21 +20,60 @@ export default function Recommendations() {
     outfits: []
   });
 
-  // Mock user profile
-  const userProfile = {
-    preferredCategories: ['shirts', 'pants', 'accessories'],
-    priceRange: { min: 20, max: 100 },
-    sizes: ['M', 'L'],
-    style: 'casual',
-    colors: ['blue', 'white', 'black']
-  };
+  // Real user profile from database
+  const [userProfile, setUserProfile] = useState(null);
+
+  // Fetch user profile and preferences
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/${user.uid}`);
+        const data = await response.json();
+        
+        if (data.success && data.user) {
+          setUserProfile({
+            preferredCategories: data.user.preferences?.categories || ['shirts', 'pants', 'accessories'],
+            priceRange: data.user.preferences?.priceRange || { min: 20, max: 100 },
+            sizes: data.user.measurements?.preferredSizes || ['M', 'L'],
+            style: data.user.preferences?.style || 'casual',
+            colors: data.user.preferences?.colors || ['blue', 'white', 'black']
+          });
+        } else {
+          // Use default profile if user preferences not found
+          setUserProfile({
+            preferredCategories: ['shirts', 'pants', 'accessories'],
+            priceRange: { min: 20, max: 100 },
+            sizes: ['M', 'L'],
+            style: 'casual',
+            colors: ['blue', 'white', 'black']
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+        // Use default profile on error
+        setUserProfile({
+          preferredCategories: ['shirts', 'pants', 'accessories'],
+          priceRange: { min: 20, max: 100 },
+          sizes: ['M', 'L'],
+          style: 'casual',
+          colors: ['blue', 'white', 'black']
+        });
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user]);
 
   useEffect(() => {
     const loadRecommendations = async () => {
+      if (!userProfile) return;
+      
       setLoading(true);
       
-      // Simulate API calls
-      setTimeout(() => {
+      try {
+        // Get real recommendations based on user profile
         const personalized = getPersonalizedRecommendations(userProfile, [], []);
         const occasions = getOccasionRecommendations(selectedOccasion, userProfile);
         const trending = getTrendingItems();
@@ -46,12 +85,15 @@ export default function Recommendations() {
           trending,
           outfits
         });
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+      } finally {
         setLoading(false);
-      }, 1000);
+      }
     };
 
     loadRecommendations();
-  }, [selectedOccasion]);
+  }, [selectedOccasion, userProfile]);
 
   const tabs = [
     { id: 'personalized', name: 'For You', icon: '🎯', description: 'Personalized just for you' },

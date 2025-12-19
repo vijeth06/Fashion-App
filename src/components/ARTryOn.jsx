@@ -17,6 +17,8 @@ import {
   FaPalette,
   FaLayerGroup
 } from 'react-icons/fa';
+import enhancedPoseDetection from '../services/EnhancedPoseDetection';
+import clothSegmentationService from '../services/ClothSegmentationService';
 
 const ARTryOn = ({ 
   productId, 
@@ -81,8 +83,8 @@ const ARTryOn = ({
         setIsCameraActive(true);
       }
 
-      // Initialize pose detection (mock implementation)
-      initializePoseDetection();
+      // Initialize real pose detection with TensorFlow.js
+      await initializePoseDetection();
 
     } catch (error) {
       console.error('Error initializing AR:', error);
@@ -90,10 +92,71 @@ const ARTryOn = ({
     }
   };
 
-  // Mock pose detection initialization
-  const initializePoseDetection = () => {
-    // In a real implementation, you would load ML models like MediaPipe or TensorFlow.js
-    console.log('Pose detection initialized (mock)');
+  // Real pose detection initialization using TensorFlow.js
+  const initializePoseDetection = async () => {
+    try {
+      await enhancedPoseDetection.initialize();
+      console.log('✅ Real pose detection initialized with TensorFlow.js');
+      
+      // Start pose detection loop
+      startPoseDetectionLoop();
+    } catch (error) {
+      console.error('Failed to initialize pose detection:', error);
+    }
+  };
+
+  // Continuous pose detection loop
+  const startPoseDetectionLoop = () => {
+    const detectPose = async () => {
+      if (videoRef.current && videoRef.current.readyState === 4) {
+        try {
+          const poseData = await enhancedPoseDetection.detectPose(videoRef.current);
+          
+          if (poseData.success && canvasRef.current) {
+            // Draw pose keypoints and overlay garments
+            drawPoseAndGarments(poseData);
+          }
+        } catch (error) {
+          console.error('Pose detection error:', error);
+        }
+      }
+      
+      // Continue loop
+      if (isCameraActive) {
+        requestAnimationFrame(detectPose);
+      }
+    };
+    
+    detectPose();
+  };
+
+  // Draw pose keypoints and garments
+  const drawPoseAndGarments = (poseData) => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw video frame
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Draw pose keypoints for debugging
+    if (poseData.keypoints) {
+      ctx.fillStyle = 'red';
+      poseData.keypoints.forEach(kp => {
+        if (kp.visible && kp.score > 0.3) {
+          ctx.beginPath();
+          ctx.arc(kp.x, kp.y, 5, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+      });
+    }
+
+    // Overlay virtual garments based on pose
+    drawVirtualGarmentsWithPose(ctx, poseData);
   };
 
   // Start AR session
@@ -242,11 +305,124 @@ const ARTryOn = ({
     // Stop and save video recording
   };
 
-  // Draw virtual garments on canvas (mock implementation)
+  // Draw virtual garments with real pose-based positioning
+  const drawVirtualGarmentsWithPose = (ctx, poseData) => {
+    if (!poseData.keypoints || !poseData.measurements) return;
+
+    Object.entries(mixAndMatch).forEach(([category, product]) => {
+      if (product && category !== 'accessories') {
+        // Use real body measurements for garment positioning
+        const measurements = poseData.measurements;
+        
+        if (category === 'top' || category === 'shirt') {
+          drawUpperBodyGarment(ctx, product, poseData.keypoints, measurements);
+        } else if (category === 'bottom' || category === 'pants') {
+          drawLowerBodyGarment(ctx, product, poseData.keypoints, measurements);
+        }
+      }
+    });
+
+    // Draw accessories
+    if (mixAndMatch.accessories) {
+      mixAndMatch.accessories.forEach(accessory => {
+        drawAccessory(ctx, accessory, poseData.keypoints);
+      });
+    }
+  };
+
+  // Draw upper body garment based on pose
+  const drawUpperBodyGarment = (ctx, product, keypoints, measurements) => {
+    const leftShoulder = keypoints.find(kp => kp.name === 'left_shoulder');
+    const rightShoulder = keypoints.find(kp => kp.name === 'right_shoulder');
+    const leftHip = keypoints.find(kp => kp.name === 'left_hip');
+    const rightHip = keypoints.find(kp => kp.name === 'right_hip');
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) return;
+
+    const shoulderWidth = measurements.shoulderWidth || Math.abs(rightShoulder.x - leftShoulder.x);
+    const torsoLength = measurements.torsoLength || Math.abs(leftHip.y - leftShoulder.y);
+
+    // Draw garment as a simple overlay (in production, use actual garment image)
+    ctx.fillStyle = product.color || 'rgba(100, 100, 200, 0.5)';
+    ctx.fillRect(
+      leftShoulder.x,
+      leftShoulder.y,
+      shoulderWidth,
+      torsoLength
+    );
+
+    // Add product image if available
+    if (product.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = product.imageUrl;
+      img.onload = () => {
+        ctx.globalAlpha = 0.7;
+        ctx.drawImage(
+          img,
+          leftShoulder.x,
+          leftShoulder.y,
+          shoulderWidth,
+          torsoLength
+        );
+        ctx.globalAlpha = 1.0;
+      };
+    }
+  };
+
+  // Draw lower body garment
+  const drawLowerBodyGarment = (ctx, product, keypoints, measurements) => {
+    const leftHip = keypoints.find(kp => kp.name === 'left_hip');
+    const rightHip = keypoints.find(kp => kp.name === 'right_hip');
+    const leftAnkle = keypoints.find(kp => kp.name === 'left_ankle');
+
+    if (!leftHip || !rightHip || !leftAnkle) return;
+
+    const hipWidth = measurements.hipWidth || Math.abs(rightHip.x - leftHip.x);
+    const legLength = measurements.legLength || Math.abs(leftAnkle.y - leftHip.y);
+
+    ctx.fillStyle = product.color || 'rgba(100, 150, 200, 0.5)';
+    ctx.fillRect(
+      leftHip.x,
+      leftHip.y,
+      hipWidth,
+      legLength
+    );
+
+    if (product.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = product.imageUrl;
+      img.onload = () => {
+        ctx.globalAlpha = 0.7;
+        ctx.drawImage(
+          img,
+          leftHip.x,
+          leftHip.y,
+          hipWidth,
+          legLength
+        );
+        ctx.globalAlpha = 1.0;
+      };
+    }
+  };
+
+  // Draw accessories
+  const drawAccessory = (ctx, accessory, keypoints) => {
+    const nose = keypoints.find(kp => kp.name === 'nose');
+    if (!nose) return;
+
+    // Position accessory based on type
+    if (accessory.category === 'hat' || accessory.category === 'cap') {
+      ctx.fillStyle = accessory.color || 'rgba(200, 100, 100, 0.6)';
+      ctx.fillRect(nose.x - 50, nose.y - 100, 100, 50);
+    }
+  };
+
+  // Original mock implementation (fallback)
   const drawVirtualGarments = (ctx) => {
     Object.entries(mixAndMatch).forEach(([category, product]) => {
       if (product && category !== 'accessories') {
-        // Mock garment overlay
         ctx.fillStyle = product.color || '#ff6b6b';
         ctx.globalAlpha = arSettings.opacity / 100;
         

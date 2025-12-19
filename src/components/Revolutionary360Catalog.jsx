@@ -1,7 +1,7 @@
 // 👗 REVOLUTIONARY 360° DIGITAL CATALOG
 // Features: 360° product views, AI search, advanced filtering, trend analysis
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, ContactShadows } from '@react-three/drei';
@@ -12,7 +12,7 @@ import {
   FaChevronDown, FaChevronUp, FaGrid3x3, FaListUl, FaSlidersH, FaCamera
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts';
 
 // 3D Product Viewer Component
@@ -301,12 +301,10 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
           {is360View ? (
             <div className="w-full h-full bg-gray-100">
               <Canvas camera={{ position: [0, 0, 5] }}>
-                <Suspense fallback={null}>
                   <ambientLight intensity={0.5} />
                   <directionalLight position={[10, 10, 5]} intensity={1} />
                   <Product3DViewer product={product} />
                   <OrbitControls enableZoom={false} autoRotate />
-                </Suspense>
               </Canvas>
             </div>
           ) : (
@@ -395,12 +393,10 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
         {is360View ? (
           <div className="w-full h-full bg-gray-100">
             <Canvas camera={{ position: [0, 0, 5] }}>
-              <Suspense fallback={null}>
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[10, 10, 5]} intensity={1} />
                 <Product3DViewer product={product} />
                 <OrbitControls enableZoom={false} autoRotate />
-              </Suspense>
             </Canvas>
           </div>
         ) : (
@@ -506,10 +502,35 @@ export default function Revolutionary360Catalog() {
 
   // Initialize products
   useEffect(() => {
-    const allProducts = [...clothingItems, ...advancedFashionItems];
-    setProducts(allProducts);
-    setFilteredProducts(allProducts);
-    setLoading(false);
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const apiProducts = (data.products || []).map(product => ({
+          id: product.productId || product._id,
+          name: product.name?.en || product.name,
+          price: product.pricing?.selling || product.price,
+          category: product.category,
+          brand: product.brand,
+          imageUrl: product.images?.main || product.imageUrl,
+          rating: product.reviews?.averageRating || 4.5,
+          description: product.description?.en || product.description,
+          colors: product.inventory?.colors?.map(c => c.name) || [],
+          sizes: product.inventory?.sizes?.map(s => s.size) || [],
+          model3D: product.model3D || '/models/default-garment.glb'
+        }));
+        const allProducts = [...apiProducts, ...advancedFashionItems];
+        setProducts(allProducts);
+        setFilteredProducts(allProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts(advancedFashionItems);
+        setFilteredProducts(advancedFashionItems);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
   }, []);
 
   // Search and filter logic
@@ -518,11 +539,12 @@ export default function Revolutionary360Catalog() {
 
     // Apply search
     if (searchQuery) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.brand && product.brand.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      filtered = filtered.filter(product => {
+        const productName = typeof product.name === 'string' ? product.name : (product.name?.en || '');
+        return productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (product.brand && product.brand.toLowerCase().includes(searchQuery.toLowerCase()));
+      });
     }
 
     // Apply filters

@@ -205,19 +205,23 @@ const WebcamComponent = ({
   // Initialize on mount
   useEffect(() => {
     getDevices();
+    // Auto-start camera on mount
+    startCamera();
     
     // Cleanup on unmount
     return () => {
       stopCamera();
     };
-  }, [getDevices, stopCamera]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   // Re-initialize when settings change
   useEffect(() => {
     if (isActive) {
       initializeCamera();
     }
-  }, [settings.facingMode, selectedDeviceId, initializeCamera, isActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.facingMode, selectedDeviceId, isActive]);
 
   return (
     <div className={`relative ${isFullscreen ? 'fixed inset-0 z-50' : ''} ${className}`}>

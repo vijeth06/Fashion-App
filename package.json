@@ -26,6 +26,7 @@
     "framer-motion": "^12.23.12",
     "html2canvas": "^1.4.1",
     "libphonenumber-js": "^1.12.15",
+    "lucide-react": "^0.556.0",
     "mongoose": "^8.0.0",
     "react": "18.2.0",
     "react-chartjs-2": "^5.3.0",
@@ -42,7 +43,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+  "test": "react-scripts test",
+  "test:unit": "react-scripts test src/services/__tests__/segmentationColorMap.test.js --watchAll=false",
+  "test:node": "node ./scripts/run-mapping-test.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,6 +53,12 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^canvas$": "<rootDir>/src/__mocks__/canvasMock.js"
+    }
+  ,"setupFiles": ["<rootDir>/src/testSetup.js"]
   },
   "browserslist": {
     "production": [

@@ -11,7 +11,7 @@ import {
   FaHome, FaCompass, FaTimes, FaEllipsisV, FaCrown
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 
 // WebRTC Connection Manager
 class WebRTCManager {
@@ -74,10 +74,15 @@ class WebRTCManager {
 
 // Real-time Recommendation Engine
 class RealTimeRecommendationEngine {
-  constructor() {
+  constructor(clothingItems = []) {
     this.recommendations = [];
     this.preferences = {};
     this.isActive = false;
+    this.clothingItems = clothingItems;
+  }
+
+  setClothingItems(items) {
+    this.clothingItems = items;
   }
 
   startRealtimeRecommendations(userContext) {
@@ -91,12 +96,14 @@ class RealTimeRecommendationEngine {
   }
 
   generateRecommendations() {
+    if (this.clothingItems.length === 0) return [];
+    
     // Mock AI recommendations based on current context
     const newRecommendations = [
       {
         id: Date.now(),
         type: 'trending',
-        item: clothingItems[Math.floor(Math.random() * clothingItems.length)],
+        item: this.clothingItems[Math.floor(Math.random() * this.clothingItems.length)],
         reason: 'Trending among users with similar style',
         confidence: 0.89,
         urgency: 'high'
@@ -104,7 +111,7 @@ class RealTimeRecommendationEngine {
       {
         id: Date.now() + 1,
         type: 'personalized',
-        item: clothingItems[Math.floor(Math.random() * clothingItems.length)],
+        item: this.clothingItems[Math.floor(Math.random() * this.clothingItems.length)],
         reason: 'Perfect match for your body type',
         confidence: 0.94,
         urgency: 'medium'
@@ -431,12 +438,35 @@ export default function RealTimeFeatures() {
   const [collaborativeSession, setCollaborativeSession] = useState(null);
   const [realTimeRecs, setRealTimeRecs] = useState([]);
   const [streamingMode, setStreamingMode] = useState('tryOn'); // tryOn, styling, shopping
+  const [clothingItems, setClothingItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   // Managers
   const [webRTC] = useState(() => new WebRTCManager());
   const [recsEngine] = useState(() => new RealTimeRecommendationEngine());
   
   const streamRef = useRef();
+
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formattedProducts = (data.products || []).map(product => 
+          productService.formatForTryOn(product)
+        );
+        setClothingItems(formattedProducts);
+        recsEngine.setClothingItems(formattedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setClothingItems([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   // Mock participants
   const mockParticipants = [

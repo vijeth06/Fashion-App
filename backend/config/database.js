@@ -9,9 +9,15 @@ const config = {
     uri: process.env.MONGODB_URI || 'mongodb+srv://vijeth:2006@wtlab.9b3zqxr.mongodb.net/vf_tryon_db?retryWrites=true&w=majority',
     options: {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      minPoolSize: 2,
+      serverSelectionTimeoutMS: 10000, // Increased to 10 seconds
       socketTimeoutMS: 45000,
-      family: 4
+      connectTimeoutMS: 10000,
+      family: 4,
+      maxIdleTimeMS: 45000,
+      waitQueueTimeoutMS: 10000,
+      retryWrites: true,
+      retryReads: true
     }
   },
 

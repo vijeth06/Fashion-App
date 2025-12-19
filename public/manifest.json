@@ -1,6 +1,40 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "VF-TryOn - Virtual Fashion Platform",
+  "short_name": "VF-TryOn",
+  "description": "Experience fashion with AI-powered virtual try-on technology",
+  "version": "2.0.0",
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["shopping", "fashion", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Home screen on mobile"
+    },
+    {
+      "src": "/assets/screenshots/mobile-tryon.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Virtual try-on on mobile"
+    },
+    {
+      "src": "/assets/screenshots/tablet-home.png",
+      "sizes": "1024x768",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Home screen on tablet"
+    }
+  ],
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +44,66 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "shortcuts": [
+    {
+      "name": "Virtual Try-On",
+      "short_name": "Try-On",
+      "description": "Start virtual try-on experience",
+      "url": "/try-on",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Browse Products",
+      "short_name": "Products",
+      "description": "Browse fashion products",
+      "url": "/products",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "My Wishlist",
+      "short_name": "Wishlist",
+      "description": "View saved items",
+      "url": "/wishlist",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share-outfit",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "outfit",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "prefer_related_applications": false
 }

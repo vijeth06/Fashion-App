@@ -8,7 +8,7 @@ import { ITEMS } from '../data/items';
 import { QuickShareButton } from '../components/SocialSharing';
 import ARTryOn from '../components/ARTryOn';
 import QuantumTryOn from '../components/QuantumTryOn';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts';
 import { FaAtom, FaRocket, FaCamera, FaUpload, FaMagic, FaCog, FaEye, FaRobot } from 'react-icons/fa';
 
@@ -26,6 +26,11 @@ function createLayer(item) {
 export default function TryOn() {
   const { user } = useAuth();
   const { uploadedImage, setUploadedImage, addFavorite, addLook } = useOutfit();
+
+  // Products state
+  const [clothingItems, setClothingItems] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(null);
 
   // Mode Selection
   const [tryOnMode, setTryOnMode] = useState('quantum'); // 'quantum', 'classic', 'ar'
@@ -52,6 +57,29 @@ export default function TryOn() {
 
   const setActiveLayer = (id) => setActiveLayerId(id);
   const activeLayer = layers.find(l => l.id === activeLayerId) || null;
+
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setProductsLoading(true);
+        setProductsError(null);
+        const data = await productService.getAllProducts({ limit: 100 });
+        // Format products for try-on compatibility
+        const formattedProducts = (data.products || []).map(product => 
+          productService.formatForTryOn(product)
+        );
+        setClothingItems(formattedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProductsError(err.message || 'Failed to load products');
+        setClothingItems([]); // Fallback to empty array
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   // Upload handler
   const onUpload = async (e) => {

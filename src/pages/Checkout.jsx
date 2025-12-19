@@ -10,6 +10,9 @@ export default function Checkout() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
 
+  const [cartItems, setCartItems] = useState([]);
+  const [cartLoading, setCartLoading] = useState(false);
+
   // Form data
   const [shippingAddress, setShippingAddress] = useState({
     firstName: '',
@@ -46,29 +49,86 @@ export default function Checkout() {
     name: ''
   });
 
-  // Mock cart data
-  const cartItems = [
-    {
-      id: 1,
-      name: 'Classic White T-Shirt',
-      price: 24.99,
-      quantity: 2,
-      size: 'M',
-      imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      id: 2,
-      name: 'Slim Fit Jeans',
-      price: 59.99,
-      quantity: 1,
-      size: 'L',
-      imageUrl: 'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
+  const [taxBreakdown, setTaxBreakdown] = useState({
+    sgst: 0,
+    cgst: 0,
+    igst: 0,
+    totalGST: 0
+  });
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Calculate proper GST when address/items change
+  useEffect(() => {
+    calculateGST();
+  }, [cartItems, shippingAddress.state]);
+
+  const calculateGST = async () => {
+    if (cartItems.length === 0 || !shippingAddress.state) {
+      return;
     }
-  ];
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/tax/calculate`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: cartItems.map(item => ({
+              productId: item.id,
+              quantity: item.quantity
+            })),
+            shippingState: shippingAddress.state
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        setTaxBreakdown(data.tax);
+      }
+    } catch (error) {
+      console.error('Error calculating GST:', error);
+    }
+  };
+
+  // Fetch cart data from API
+  useEffect(() => {
+    async function fetchCart() {
+      if (!user?.uid) return;
+      
+      try {
+        setCartLoading(true);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/${user.uid}/cart`);
+        const data = await response.json();
+        
+        if (data.success && data.cart) {
+          // Format cart items for checkout display
+          const formattedItems = data.cart.map(item => ({
+            id: item.productId,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            size: item.size || 'N/A',
+            color: item.color,
+            imageUrl: item.imageUrl
+          }));
+          setCartItems(formattedItems);
+        }
+      } catch (error) {
+        console.error('Failed to fetch cart:', error);
+        setCartItems([]);
+      } finally {
+        setCartLoading(false);
+      }
+    }
+    
+    fetchCart();
+  }, [user]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 50 ? 0 : 5.99;
-  const tax = subtotal * 0.08;
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000 in India
+  const tax = taxBreakdown.totalGST || 0;
   const total = subtotal + shipping + tax;
 
   useEffect(() => {
@@ -83,9 +143,106 @@ export default function Checkout() {
     { id: 3, name: 'Review', description: 'Review your order' }
   ];
 
-  const handleShippingSubmit = (e) => {
+  const handleShippingSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate Indian address
+    const errors = validateIndianAddress(shippingAddress);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    // Check delivery serviceability
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/shipping/check-serviceability`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pincode: shippingAddress.zipCode })
+        }
+      );
+
+      const data = await response.json();
+      if (!data.serviceable) {
+        setValidationErrors({
+          zipCode: `Delivery not available to pincode ${shippingAddress.zipCode}`
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Serviceability check error:', error);
+    }
+
+    setValidationErrors({});
     setCurrentStep(2);
+  };
+
+  const validateIndianAddress = (address) => {
+    const errors = {};
+
+    // Validate pincode (6 digits)
+    if (!/^\d{6}$/.test(address.zipCode)) {
+      errors.zipCode = 'Invalid pincode (must be 6 digits)';
+    }
+
+    // Validate state
+    const validStates = [
+      'ANDAMAN AND NICOBAR',
+      'ANDHRA PRADESH',
+      'ARUNACHAL PRADESH',
+      'ASSAM',
+      'BIHAR',
+      'CHANDIGARH',
+      'CHHATTISGARH',
+      'DADRA AND NAGAR HAVELI',
+      'DAMAN AND DIU',
+      'DELHI',
+      'GAJARAT',
+      'GDJARAT',
+      'GOA',
+      'GUJRAT',
+      'HARYANA',
+      'HIMACHAL PRADESH',
+      'JHARKHAND',
+      'KARNATAKA',
+      'KERALA',
+      'LADAKH',
+      'LAKSHADWEEP',
+      'MADHYA PRADESH',
+      'MAHARASHTRA',
+      'MANIPUR',
+      'MEGHALAYA',
+      'MIZORAM',
+      'NAGALAND',
+      'ODISHA',
+      'PUDUCHERRY',
+      'PUNJAB',
+      'RAJASTHAN',
+      'SIKKIM',
+      'TAMIL NADU',
+      'TELANGANA',
+      'TRIPURA',
+      'UTTAR PRADESH',
+      'UTTARAKHAND',
+      'WEST BENGAL'
+    ];
+
+    if (!validStates.includes(address.state?.toUpperCase())) {
+      errors.state = 'Invalid state';
+    }
+
+    // Validate name
+    if (!address.firstName?.trim()) {
+      errors.firstName = 'First name is required';
+    }
+
+    if (!address.phone || !/^[6-9]\d{9}$/.test(address.phone.replace(/\D/g, ''))) {
+      errors.phone = 'Invalid phone number (must be 10 digits starting with 6-9)';
+    }
+
+    return errors;
   };
 
   const handlePaymentSubmit = (e) => {
@@ -96,13 +253,66 @@ export default function Checkout() {
   const handlePlaceOrder = async () => {
     setLoading(true);
     
-    // Simulate order processing
-    setTimeout(() => {
-      const newOrderId = 'ORD' + Date.now();
-      setOrderId(newOrderId);
-      setOrderPlaced(true);
+    try {
+      // Create order with real API call
+      const orderData = {
+        userId: user.uid,
+        items: cartItems.map(item => ({
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          size: item.size,
+          color: item.color
+        })),
+        shippingAddress: billingAddress.sameAsShipping ? shippingAddress : {
+          ...shippingAddress,
+          ...billingAddress
+        },
+        payment: {
+          method: paymentMethod,
+          amount: total,
+          status: 'pending'
+        },
+        summary: {
+          subtotal,
+          shipping,
+          tax,
+          total
+        }
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+      
+      if (result.success && result.order) {
+        setOrderId(result.order._id || result.order.orderId);
+        setOrderPlaced(true);
+        
+        // Clear cart after successful order
+        try {
+          await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/${user.uid}/cart/clear`, {
+            method: 'DELETE'
+          });
+        } catch (clearError) {
+          console.error('Failed to clear cart:', clearError);
+        }
+      } else {
+        alert('Failed to place order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Order placement error:', error);
+      alert('An error occurred while placing your order. Please try again.');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   if (orderPlaced) {
@@ -143,10 +353,32 @@ export default function Checkout() {
     );
   }
 
-  if (!user) {
+  if (!user || cartLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">{!user ? 'Redirecting...' : 'Loading cart...'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty cart message if no items
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🛒</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+          <p className="text-gray-600 mb-6">Add some items to your cart to proceed with checkout</p>
+          <button
+            onClick={() => navigate('/catalog')}
+            className="bg-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+          >
+            Browse Products
+          </button>
+        </div>
       </div>
     );
   }

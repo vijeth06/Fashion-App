@@ -33,8 +33,9 @@ const ModernNavBar = () => {
     { to: '/catalog', label: 'Catalog', icon: FaSearch },
     { to: '/enhanced-tryon', label: 'Virtual Try-On', icon: FaCamera, badge: 'AI' },
     { to: '/recommendations', label: 'AI Style', icon: FaRobot },
+    { to: '/ai/body-analysis', label: 'Body Analysis', icon: FaStar, badge: 'NEW' },
+    { to: '/ai/outfit-recommendations', label: 'Outfit AI', icon: FaRobot, badge: 'NEW' },
     { to: '/community', label: 'Community', icon: FaUsers },
-    { to: '/quantum-tryon', label: 'Quantum', icon: FaStar }
   ];
 
   const userMenuItems = user ? [

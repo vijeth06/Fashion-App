@@ -9,13 +9,15 @@ import {
   FaStar, FaLightbulb, FaArrowUp as FaTrendingUp, FaUser, FaShoppingBag, FaFire
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 import { emotionBasedStylist } from '../ai/emotionBasedStyling';
 
 // AI Style Assistant Component
 export default function SmartStyleAssistant({ isVisible, onClose, userPreferences = {} }) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('mood'); // mood, occasion, weather, trends
+  const [clothingItems, setClothingItems] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [emotionData, setEmotionData] = useState(null);
   const [styleRecommendations, setStyleRecommendations] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -29,6 +31,26 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
 
   const videoRef = useRef();
   const canvasRef = useRef();
+
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setProductsLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formattedProducts = (data.products || []).map(product => 
+          productService.formatForTryOn(product)
+        );
+        setClothingItems(formattedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setClothingItems([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   // Mood options
   const moodOptions = [

@@ -1,7 +1,7 @@
 // 🌐 IMMERSIVE 3D SHOPPING ENVIRONMENT
 // Features: Spatial Navigation, Gesture Controls, Virtual Showrooms, Holographic Product Display
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 import { 
   OrbitControls, 
@@ -24,6 +24,7 @@ import { Physics, useBox, usePlane, useSphere } from '@react-three/cannon';
 import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
 import { FaExpand, FaCompress, FaVrCardboard, FaHandPaper, FaEye, FaMagic, FaCube } from 'react-icons/fa';
 
+import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts.js';
 import { useNeuralInterface } from './AdaptiveNeuralInterface.jsx';
 
@@ -42,10 +43,38 @@ export default function Immersive3DShopping({
   const [selectedItem, setSelectedItem] = useState(null);
   const [cameraPath, setCameraPath] = useState(null);
   const [interactionMode, setInteractionMode] = useState('hover'); // 'hover', 'click', 'gaze'
+  const [fashionItems, setFashionItems] = useState(advancedFashionItems);
+  const [productsLoading, setProductsLoading] = useState(true);
   
   const containerRef = useRef();
   const gestureDetector = useRef(new GestureDetector());
   const { learnFromInteraction } = useNeuralInterface();
+
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setProductsLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formattedProducts = (data.products || []).map(product => ({
+          id: product.productId || product._id,
+          name: product.name?.en || product.name,
+          price: product.pricing?.selling || product.price,
+          imageUrl: product.images?.main || product.imageUrl,
+          category: product.category,
+          brand: product.brand,
+          model3D: product.model3D || '/models/default-garment.glb'
+        }));
+        setFashionItems([...formattedProducts, ...advancedFashionItems]);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setFashionItems(advancedFashionItems);
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   // Initialize gesture controls
   useEffect(() => {
@@ -100,7 +129,6 @@ export default function Immersive3DShopping({
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
         }}
       >
-        <Suspense fallback={<LoadingEnvironment />}>
           
           {/* Lighting Setup */}
           <LightingRig />
@@ -130,7 +158,7 @@ export default function Immersive3DShopping({
             
             {/* Product Display System */}
             <HolographicProductDisplay
-              items={advancedFashionItems}
+              items={fashionItems}
               selectedCategory={selectedCategory}
               onItemSelect={(item) => {
                 setSelectedItem(item);
@@ -173,7 +201,6 @@ export default function Immersive3DShopping({
             <ChromaticAberration offset={[0.001, 0.001]} />
           </EffectComposer>
           
-        </Suspense>
       </Canvas>
 
       {/* Spatial Audio Controls */}

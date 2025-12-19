@@ -10,25 +10,50 @@ const path = require('path');
 const config = require('./config/database');
 const databaseService = require('./services/DatabaseService');
 const databaseInitializer = require('./services/DatabaseInitializer');
+const { getAnalyticsService } = require('./services/AnalyticsService');
 
-// Import routes
+// Import routes - New Indian Products System
 const authRoutes = require('./routes/auth');
-const productsRoutes = require('./routes/products');
-const wishlistRoutes = require('./routes/wishlist');
-const looksRoutes = require('./routes/looks');
+const productsEnhancedRoutes = require('./routes/productsEnhanced');
+const usersEnhancedRoutes = require('./routes/usersEnhanced');
 const uploadRoutes = require('./routes/upload');
 const tryOnRoutes = require('./routes/tryOn');
 const errorRoutes = require('./routes/errors');
+const paymentsRoutes = require('./routes/payments');
+const ordersRoutes = require('./routes/orders');
+const gdprRoutes = require('./routes/gdpr');
+
+// Import new commerce logic routes
+const couponRoutes = require('./routes/coupons');
+const taxRoutes = require('./routes/tax');
+const reservationRoutes = require('./routes/reservations');
+
+// Import security middleware
+const {
+  EncryptionService,
+  gdprCompliance,
+  auditLogger,
+  securityHeaders,
+  createAdvancedRateLimit,
+  validateAndSanitize
+} = require('./middleware/security');
 
 // Create Express app
 const app = express();
 const PORT = config.server.port;
 
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginEmbedderPolicy: false
-}));
+// Security middleware - Enhanced GDPR compliant setup
+app.use(securityHeaders);
+
+// Advanced rate limiting with violation tracking
+const advancedRateLimit = createAdvancedRateLimit();
+app.use('/api', advancedRateLimit);
+
+// Global input validation and sanitization
+app.use(validateAndSanitize);
+
+// Audit logging for all API requests
+app.use('/api', auditLogger({ logRequestBody: false }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -97,6 +122,10 @@ app.get('/api/test-db', async (req, res) => {
 // Error logging routes
 app.use('/api/v1/errors', errorRoutes);
 
+// Enhanced analytics routes
+const analyticsRoutes = require('./routes/analytics');
+app.use('/api/analytics', analyticsRoutes);
+
 // Database initialization endpoint
 app.post('/api/init-db', async (req, res) => {
   try {
@@ -158,13 +187,22 @@ app.post('/api/reset-db', async (req, res) => {
   }
 });
 
-// API Routes
+// API Routes - New Indian Products System
 app.use(`${config.api.prefix}/${config.api.version}/auth`, authRoutes);
-app.use(`${config.api.prefix}/${config.api.version}/products`, productsRoutes);
-app.use(`${config.api.prefix}/${config.api.version}/wishlist`, wishlistRoutes);
-app.use(`${config.api.prefix}/${config.api.version}/looks`, looksRoutes);
+app.use(`${config.api.prefix}/${config.api.version}/products`, productsEnhancedRoutes); // Main products endpoint
+app.use(`${config.api.prefix}/${config.api.version}/users`, usersEnhancedRoutes); // Users with cart/wishlist
 app.use(`${config.api.prefix}/${config.api.version}/upload`, uploadRoutes);
 app.use(`${config.api.prefix}/${config.api.version}/try-on`, tryOnRoutes);
+app.use(`${config.api.prefix}/${config.api.version}/payments`, paymentsRoutes);
+app.use(`${config.api.prefix}/${config.api.version}/orders`, ordersRoutes);
+
+// Commerce Logic Routes - New
+app.use(`${config.api.prefix}/${config.api.version}/coupons`, couponRoutes);
+app.use(`${config.api.prefix}/${config.api.version}/tax`, taxRoutes);
+app.use(`${config.api.prefix}/${config.api.version}/reservations`, reservationRoutes);
+
+// GDPR and Privacy Routes
+app.use(`${config.api.prefix}/gdpr`, gdprRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -208,6 +246,10 @@ async function startServer() {
     
     // Initialize database collections and sample data
     await databaseInitializer.initializeDatabase();
+    
+    // Initialize Analytics Service after DB is ready
+    const analyticsService = getAnalyticsService();
+    await analyticsService.initialize();
     
     // Start HTTP server
     app.listen(PORT, () => {

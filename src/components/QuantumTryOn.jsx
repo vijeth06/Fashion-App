@@ -8,7 +8,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
-export default function QuantumTryOn({ selectedItem, userProfile }) {
+export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, indianProducts = [] }) {
   const [tryOnMode, setTryOnMode] = useState('live'); // 'live', 'photo', 'avatar'
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [quantumSimulation, setQuantumSimulation] = useState(null);

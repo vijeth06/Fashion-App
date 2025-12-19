@@ -1,219 +1,528 @@
-# Virtual Fashion Try-On App
+# Virtual Fashion Try-On (VF-TryOn)
 
-A modern web application that allows users to virtually try on clothing items using their own photos or webcam. Built with React, Tailwind CSS, and the WebRTC API. The enhanced try-on experience uses an AI Pose pipeline (MediaPipe/TensorFlow.js) and a high-performance canvas overlay system.
+A **production-ready full-stack virtual try-on + Indian fashion e-commerce platform** with real products, real checkout logic, and modern AI features.
 
-## Features
+---
 
-- 📸 Upload your photo or use your device's camera
-- 👗 Browse a catalog of clothing items
-- 🎨 Try on items with real-time overlay
-- 🔄 Adjust position, scale, and rotation of clothing items
-- 💾 Save your favorite outfits
-- 📥 Download your virtual try-on looks
-- 📱 Fully responsive design
+## 🎯 Overview
 
-## Live Demo
+**Frontend:** React 18 + React Router + Tailwind CSS + Framer Motion  
+**Backend:** Node.js/Express + MongoDB + Mongoose  
+**Optional Python Service:** Flask scaffold for heavy computer vision models  
+**Auth:** Firebase authentication  
+**Try-On:** Real-time webcam/photo overlay with pose detection  
+**E-commerce:** Full cart, wishlist, orders, payments (Razorpay-ready), GST calculation, coupons  
 
-[Coming Soon] Deploy your own instance or check out the live demo. Navigate to `/enhanced-tryon` for the latest experience.
+---
 
-## Getting Started
+## ✨ Key Features
+
+### 1. Virtual Try-On
+- Upload photo or use webcam in real-time
+- Pose detection (TensorFlow.js + MediaPipe)
+- Canvas overlay with export
+- Multiple try-on pages (basic, enhanced, neural, AR-powered)
+- Fabric physics simulation (quantum try-on)
+
+### 2. E-Commerce (Indian Market Focus)
+- **Products:** 15 real Indian fashion items (kurtas, sarees, sherwanis, jeans, etc.)
+- **Catalog:** Search, filters by category/brand/price, similar products
+- **Cart & Wishlist:** Add/remove items, persistent storage
+- **Orders & Checkout:** Multi-step checkout with shipping address validation
+- **Payments:** Payment integration structure (Razorpay-ready)
+- **Pricing:** INR-based with GST calculation by state
+- **Coupons & Discounts:** Server-side coupon validation
+- **Inventory:** Real-time stock management
+
+### 3. User Management
+- Firebase authentication (signup/login)
+- User profiles with biometric data & style DNA
+- Multiple shipping addresses with Indian pin/state validation
+- Measurement history
+- Order history & tracking
+- Wishlist & lookbooks (saved outfits)
+
+### 4. Advanced Features
+- **AI/ML:** Outfit recommendations, emotion-based styling, trend analysis
+- **Community:** Social platform for fashion sharing
+- **Sustainability:** Carbon footprint tracking, eco-rating for products
+- **Analytics:** Admin dashboard with business intelligence
+- **Real-time:** Live chat, notifications, order updates
+- **Web3:** Basic blockchain/NFT structure (optional)
+
+---
+
+## 📁 Project Structure
+
+```
+root/
+├── src/                          React Frontend
+│   ├── components/               Reusable UI components
+│   ├── pages/                    Route pages (Home, Catalog, Try-On, Community, etc.)
+│   ├── context/                  AuthContext, OutfitContext
+│   ├── services/                 API, product, user, community services
+│   ├── utils/                    Helpers, validators, recommendations
+│   ├── ai/                       AI/ML logic (body analysis, outfit engine, etc.)
+│   ├── hooks/                    Custom React hooks
+│   ├── styles/                   Global CSS
+│   ├── App.js                    Route definitions (lazy-loaded for performance)
+│   └── index.js                  Entry point
+│
+├── backend/                      Node/Express API
+│   ├── server.js                 Express app & MongoDB connection
+│   ├── config/
+│   │   └── database.js           MongoDB connection & models
+│   ├── models/                   Mongoose schemas (User, Product, Order)
+│   ├── routes/                   API endpoints
+│   │   ├── products.js
+│   │   ├── users.js
+│   │   ├── orders.js
+│   │   ├── cart.js
+│   │   ├── wishlist.js
+│   │   ├── payments.js
+│   │   ├── coupons.js
+│   │   ├── tax.js
+│   │   ├── reservations.js
+│   │   └── ...more
+│   ├── middleware/               Security, auth, validation, logging
+│   ├── services/                 Business logic (Database, Email, Payment, etc.)
+│   ├── scripts/
+│   │   └── seedDatabase.js       Populate DB with 15 real Indian products
+│   └── .env                      MongoDB URI, port, secrets
+│
+├── backend/vastra/               Optional Python Flask service
+│   ├── app.py                    Flask app (scaffolded, not required)
+│   └── requirements.txt          Python dependencies (keep this file!)
+│
+├── public/                       Static assets
+├── build/                        Production build (generated by `npm run build`)
+└── package.json, tailwind.config.js, tsconfig.json, etc.
+```
+
+---
+
+## 🚀 Quick Start (5 Minutes)
 
 ### Prerequisites
+- **Node.js 16+** (with npm 8+)
+- **MongoDB** (local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) free tier)
+- **Firebase project** (for frontend authentication)
+- Optional: **Python 3.10+** (for `backend/vastra`)
 
-- Node.js (v14 or later)
-- npm (v6 or later) or Yarn
-- Modern web browser with camera access
-- Firebase account (for authentication and database)
+### Step 1: Setup Backend
 
-### Firebase Setup
-
-1. Create a new project in the [Firebase Console](https://console.firebase.google.com/)
-2. Enable Authentication:
-   - Go to the Authentication section
-   - Click on "Get started"
-   - Enable "Email/Password" and "Google" sign-in methods
-3. Set up Firestore Database:
-   - Go to the Firestore Database section
-   - Click "Create database"
-   - Start in test mode for development
-4. Get your Firebase configuration:
-   - Go to Project Settings (gear icon)
-   - Scroll down to "Your apps"
-   - If you don't have a web app, register one
-   - Copy the Firebase configuration object
-
-### Environment Variables
-
-1. Copy the `.env.example` file to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Update the `.env` file with your Firebase configuration:
-   ```
-   REACT_APP_FIREBASE_API_KEY=your_api_key_here
-   REACT_APP_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
-   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
-   REACT_APP_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
-   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-   REACT_APP_FIREBASE_APP_ID=your_app_id
-   ```
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/virtual-fashion-tryon.git
-   cd virtual-fashion-tryon
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-## Usage
-
-1. **Home Page**:
-   - Get started by clicking "Try It Now"
-   - Learn how the app works with the step-by-step guide
-
-2. **Catalog**:
-   - Browse available clothing items
-   - Filter by category
-   - Click "Try It On" to select an item
-
-3. **Virtual Try-On (Enhanced)**:
-   - Open the Enhanced Try-On page at `/enhanced-tryon`
-   - Choose Live Try-On (webcam) or Upload Photo
-   - Click Start Try-On to begin pose detection
-   - Add clothing items and download your composite image
-
-4. **Favorites**:
-   - View your saved outfits
-   - Remove items you no longer want
-
-## Built With
-
-- [React](https://reactjs.org/) - Frontend library
-- [React Router](https://reactrouter.com/) - Routing
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [React Webcam](https://github.com/mozmorris/react-webcam) - Webcam integration
-- [HTML5 Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) - Image manipulation
-
-## Project Structure
-
-```
-src/
-├── components/               # Reusable UI components
-│   ├── VirtualTryOnComponent.jsx  # Main try-on orchestrator (webcam/upload + overlay + export)
-│   └── ...
-├── services/                 # Pose + overlay + export services
-│   ├── PoseDetectionService.js
-│   ├── ClothingOverlaySystem.js
-│   └── ExportService.js
-├── data/                     # Clothing catalog
-│   └── clothingData.js
-├── pages/                    # Page components
-│   ├── EnhancedTryOn.jsx     # Enhanced try-on page using VirtualTryOnComponent
-│   └── ...
-├── App.js                    # Main application component
-└── index.js                  # Application entry point
+```bash
+cd backend
+npm install
 ```
 
-## Available Scripts
+Create `backend/.env`:
+```env
+MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/vf_tryon?retryWrites=true&w=majority
+PORT=5000
+NODE_ENV=development
+```
 
-In the project directory, you can run:
+### Step 2: Seed Database (15 Indian Fashion Products)
 
-### `npm start`
+```bash
+cd backend
+node scripts/seedDatabase.js
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Expected output:
+```
+✅ Inserted 15 products
+📊 mens-kurtas, womens-sarees, ethnic-sherwanis, ...
+✅ Database seeding completed successfully!
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Step 3: Start Backend Server
 
-### `npm test`
+```bash
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Server runs on: `http://localhost:5000`
 
-### `npm run build`
+Test with: `http://localhost:5000/health`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Step 4: Setup Frontend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+In the **root directory**, create `.env`:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_FIREBASE_API_KEY=your_firebase_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
 
-### `npm run eject`
+### Step 5: Install & Run Frontend
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+npm start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+App runs on: `http://localhost:3000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🔑 Key API Endpoints
 
-## Contributing
+### Products
+- `GET /api/v1/products-enhanced` — All products (filters, pagination)
+- `GET /api/v1/products-enhanced/:id` — Single product
+- `GET /api/v1/products-enhanced/featured` — Featured products
+- `GET /api/v1/products-enhanced/search?q=kurta` — Search
 
-Contributions are welcome! Please follow these steps:
+### Users & Cart
+- `GET /api/v1/users/:uid` — User profile
+- `POST /api/v1/users` — Create profile
+- `GET /api/v1/users/:uid/cart` — Get cart
+- `POST /api/v1/users/:uid/cart` — Add to cart
+- `DELETE /api/v1/users/:uid/cart/:productId` — Remove from cart
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Wishlist
+- `GET /api/v1/users/:uid/wishlist` — Get wishlist
+- `POST /api/v1/users/:uid/wishlist` — Add to wishlist
+- `DELETE /api/v1/users/:uid/wishlist/:productId` — Remove
 
-## License
+### Orders & Checkout
+- `POST /api/v1/orders` — Create order
+- `GET /api/v1/orders/:orderId` — Order details
+- `GET /api/v1/orders/:uid` — User orders
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Commerce Features
+- `POST /api/v1/coupons/validate` — Check coupon code
+- `POST /api/v1/tax/calculate` — Calculate GST (by state)
+- `POST /api/v1/payments/create-intent` — Razorpay payment
 
-## Acknowledgments
+---
 
-- [Create React App](https://create-react-app.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [React Icons](https://react-icons.github.io/react-icons/)
+## 🛠️ Core Features Implementation
 
-## Contact
+### 1. Virtual Try-On
+**Files:** `src/pages/VirtualTryOn.jsx`, `src/components/AdvancedARTryOn.jsx`, `src/ai/`
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - email@example.com
+- Real-time pose detection (MediaPipe Pose)
+- Body segmentation & cloth overlay
+- Export as image/video
+- Multiple filters & effects
 
-Project Link: [https://github.com/vijeth06/Fashion-App](https://github.com/vijeth06/Fashion-App)
+### 2. E-Commerce Logic
+**Backend:** `backend/models/Product.js`, `backend/routes/`, `backend/services/`  
+**Frontend:** `src/services/productService.js`, `src/services/userService.js`
 
-### Code Splitting
+- Product filtering (category, price range, ratings)
+- Cart sync with backend
+- Wishlist persistence
+- Address validation (Indian pincode/state mapping)
+- GST calculation (SGST/CGST by state, IGST for interstate)
+- Coupon validation & discount calculation
+- Order status tracking
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Firebase Authentication
+**File:** `src/context/AuthContext.js`
 
-### Analyzing the Bundle Size
+- Signup/Login with email & password
+- Social login (Google, Apple)
+- Token refresh & session management
+- Profile sync to MongoDB on first login
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 4. Community & Social
+**File:** `src/pages/CommunityFeed.jsx`
 
-### Making a Progressive Web App
+- Browse user profiles & looks
+- Follow/unfollow users
+- Like & comment on looks
+- Search users by style/region
+- Trending profiles
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 5. Admin Dashboard
+**File:** `src/components/AdvancedAdminDashboard.jsx`
 
-### Advanced Configuration
+- Order analytics (total revenue, top products)
+- User insights (new users, retention)
+- Inventory management
+- Payment reconciliation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 📊 Database Schema
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Products Collection
+```javascript
+{
+  productId: String,              // Unique ID
+  name: String,                   // English name
+  localizedName: String,          // Hindi/local name
+  brand: String,
+  category: String,               // kurta, saree, jeans, etc.
+  type: String,
+  
+  price: {
+    mrp: Number,                  // MRP
+    selling: Number,              // Sale price
+    currency: 'INR',
+    discount: Number              // % off
+  },
+  
+  sizes: [{
+    size: String,                 // XS, S, M, L, XL, XXL
+    stock: Number,
+    measurements: { chest, waist, length, shoulder }
+  }],
+  
+  colors: [{ name, hex, images, stock }],
+  images: { main, gallery, overlay, thumbnail },
+  
+  material: String,               // Cotton, Silk, etc.
+  occasion: [String],             // Casual, Formal, Festive
+  region: String,                 // North Indian, South Indian, Western
+  gstRate: Number,                // 5% or 12% (typical)
+  
+  aiMetadata: {
+    styleVector: [Number],
+    colorPalette: [String],
+    trendScore: Number
+  },
+  
+  timestamps
+}
+```
 
-### `npm run build` fails to minify
+### Users Collection
+```javascript
+{
+  uid: String,                    // Firebase UID
+  email: String,
+  
+  profile: {
+    name: String,
+    phone: String,
+    avatar: String,
+    bio: String,
+    region: String                // North Indian, South Indian, etc.
+  },
+  
+  measurements: {
+    height: Number,
+    weight: Number,
+    chest: Number,
+    waist: Number,
+    hip: Number
+  },
+  
+  styleDNA: {
+    preferences: [String],        // Colors, patterns, occasions
+    bodyType: String
+  },
+  
+  addresses: [{
+    label: String,                // Home, Office, etc.
+    name: String,
+    phone: String,
+    address1: String,
+    city: String,
+    state: String,
+    pincode: String,
+    isDefault: Boolean
+  }],
+  
+  timestamps
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Orders Collection
+```javascript
+{
+  orderId: String,                // Unique order number
+  userId: String,
+  
+  items: [{
+    productId: String,
+    name: String,
+    price: Number,
+    quantity: Number,
+    size: String,
+    color: String
+  }],
+  
+  pricing: {
+    subtotal: Number,
+    shipping: Number,
+    discount: Number,             // Coupon/promo discount
+    tax: Number,                  // GST
+    total: Number,
+    verifiedTotal: Number,        // Backend-computed total (strict)
+    verificationTimestamp: Date
+  },
+  
+  shippingAddress: { ... },
+  
+  payment: {
+    method: String,               // razorpay, card, etc.
+    status: String,               // pending, completed, failed
+    intentId: String,
+    transactionId: String
+  },
+  
+  status: String,                 // pending, confirmed, shipped, delivered, cancelled
+  
+  timestamps
+}
+```
+
+---
+
+## 🔐 Security & Best Practices
+
+### Implemented
+- **CORS & Headers:** Middleware in `backend/middleware/security.js`
+- **Rate Limiting:** Prevent brute force / DDoS
+- **JWT Verification:** Firebase tokens validated on backend
+- **Input Validation:** All user inputs sanitized (Joi)
+- **Audit Logging:** Track sensitive operations
+- **GDPR Endpoints:** User data export & deletion routes
+
+### Recommended for Production
+- Enable HTTPS/SSL
+- Use environment secrets (AWS Secrets Manager, HashiCorp Vault)
+- Rotate Firebase service account keys regularly
+- Enable MongoDB IP whitelisting
+- Set up monitoring & alerting (Sentry, DataDog)
+- Implement request signing for payment callbacks
+
+---
+
+## 📈 Performance Optimizations
+
+### Frontend
+- **Lazy-Loading Routes:** `React.lazy()` + `<Suspense>` for heavy pages
+- **Code Splitting:** Automatic per-route chunks
+- **Image Optimization:** Compressed formats, responsive sizes
+- **Caching:** Service Worker for offline support
+
+### Backend
+- **Database Indexing:** Indexes on `productId`, `uid`, `email` (see `backend/config/database.js`)
+- **Pagination:** Products API returns 20 items/page
+- **API Response Caching:** Redis-ready (scaffold in place)
+
+---
+
+## 🧪 Testing
+
+Run tests:
+```bash
+npm test                          # Frontend tests
+cd backend && npm test            # Backend tests (if configured)
+```
+
+---
+
+## 📦 Deployment
+
+### Vercel (Frontend)
+```bash
+npm run build
+vercel deploy --prod
+```
+
+### Heroku/Railway (Backend)
+```bash
+cd backend
+git push heroku main
+```
+
+Ensure `MONGODB_URI` and other secrets are set in deployment env vars.
+
+---
+
+## 🐛 Troubleshooting
+
+### Backend won't start
+```bash
+# Check MongoDB connection
+echo $MONGODB_URI
+
+# Check if port 5000 is in use
+lsof -i :5000          # macOS/Linux
+netstat -ano | findstr :5000  # Windows
+```
+
+### Frontend can't reach backend
+```bash
+# Verify REACT_APP_API_URL in .env
+cat .env | grep REACT_APP_API_URL
+
+# Test from browser console
+fetch('http://localhost:5000/health')
+  .then(r => r.json())
+  .then(console.log)
+```
+
+### Products not showing
+```bash
+# Verify database seeded
+cd backend
+npm list | grep mongoose
+
+# Check MongoDB collections
+# Open MongoDB Atlas → Collections → vf_tryon_db
+```
+
+---
+
+## 📝 Recent Improvements
+
+### Performance (Latest)
+- Implemented route-level code splitting with `React.lazy()` and `<Suspense>`
+- Removed eager imports of heavy pages (QuantumTryOn, Metaverse, etc.) from main bundle
+- Extracted framer-motion-heavy QuantumTryOnPage into lazy-loaded module
+- Fixed Checkout page cart state initialization
+
+### E-Commerce Logic
+- Confirmed all routes wired: coupons, tax, reservations
+- Tightened payment validation with server-side total recomputation (±₹0.001 tolerance)
+- GST calculation by state (SGST/CGST for intra-state, IGST for inter-state)
+- Cart sync & wishlist sync with idempotent operations
+- Address validation for Indian pins/states
+
+### UI/UX
+- Fixed Community search input text visibility (white text on white background → gray-900)
+- Styled search placeholder with proper contrast
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add new feature'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Open a pull request
+
+---
+
+## 📄 License
+
+This project is **private**. Do not share without permission.
+
+---
+
+## 📞 Support & Contact
+
+For questions or issues:
+1. Check [Troubleshooting](#troubleshooting) above
+2. Review backend logs: `backend/logs/` (if configured)
+3. Check MongoDB Atlas logs for database errors
+
+---
+
+**Last Updated:** December 2025  
+**Version:** 1.0.0  
+**Status:** Production-Ready ✅

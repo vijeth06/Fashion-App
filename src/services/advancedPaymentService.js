@@ -677,32 +677,173 @@ class AdvancedPaymentService {
     return 'high';
   }
 
-  // Mock implementations for demo
-  async getDeviceFingerprint() { return 'device_' + Math.random().toString(36); }
-  async getUserIP() { return '127.0.0.1'; }
-  getSessionId() { return 'session_' + Date.now(); }
-  getUtmParameters() { return {}; }
-  getDeviceType() { return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop'; }
-  getTimeOnSite() { return Math.floor(Date.now() / 1000); }
-  async verifyPaymentSignature(paymentData) { return true; } // Always true for demo
-  async triggerPostPaymentProcesses(orderId) { console.log('Post-payment processes triggered for:', orderId); }
+  // Real implementations for production
+  async getDeviceFingerprint() {
+    // Generate real device fingerprint using FingerprintJS or similar
+    const components = [
+      navigator.userAgent,
+      navigator.language,
+      new Date().getTimezoneOffset(),
+      screen.width + 'x' + screen.height,
+      navigator.hardwareConcurrency
+    ];
+    const fingerprint = await this.hashString(components.join('|'));
+    return fingerprint;
+  }
+
+  async getUserIP() {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Failed to get IP:', error);
+      return 'unknown';
+    }
+  }
+
+  getSessionId() {
+    let sessionId = sessionStorage.getItem('payment_session_id');
+    if (!sessionId) {
+      sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      sessionStorage.setItem('payment_session_id', sessionId);
+    }
+    return sessionId;
+  }
+
+  getUtmParameters() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      utm_source: params.get('utm_source'),
+      utm_medium: params.get('utm_medium'),
+      utm_campaign: params.get('utm_campaign'),
+      utm_term: params.get('utm_term'),
+      utm_content: params.get('utm_content')
+    };
+  }
+
+  getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+      return 'tablet';
+    }
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+      return 'mobile';
+    }
+    return 'desktop';
+  }
+
+  getTimeOnSite() {
+    const startTime = parseInt(sessionStorage.getItem('site_start_time') || Date.now());
+    sessionStorage.setItem('site_start_time', startTime.toString());
+    return Math.floor((Date.now() - startTime) / 1000);
+  }
+
+  async verifyPaymentSignature(paymentData) {
+    try {
+      // Send to backend for server-side verification
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paymentData)
+      });
+      const result = await response.json();
+      return result.verified === true;
+    } catch (error) {
+      console.error('Payment verification failed:', error);
+      return false;
+    }
+  }
+
+  async triggerPostPaymentProcesses(orderId) {
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/orders/${orderId}/post-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('✅ Post-payment processes triggered for:', orderId);
+    } catch (error) {
+      console.error('Failed to trigger post-payment processes:', error);
+    }
+  }
+
+  async hashString(str) {
+    const buffer = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
   async updateOrderStatus(orderId, updates) {
     const orderRef = doc(this.db, 'orders', orderId);
     await updateDoc(orderRef, updates);
   }
   async createStripePaymentIntent(orderData, orderId) {
-    // Mock PaymentIntent creation
-    return {
-      success: true,
-      clientSecret: 'pi_demo_client_secret'
-    };
+    try {
+      // Call backend to create real Stripe PaymentIntent
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/create-stripe-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: orderData.amount,
+          currency: orderData.currency || 'inr',
+          orderId,
+          metadata: orderData.metadata
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success && result.clientSecret) {
+        return {
+          success: true,
+          clientSecret: result.clientSecret,
+          paymentIntentId: result.paymentIntentId
+        };
+      }
+      
+      throw new Error(result.message || 'Failed to create payment intent');
+    } catch (error) {
+      console.error('Stripe PaymentIntent creation failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
   }
   getSecurityRecommendations(riskFactors) {
-    return [
-      'Verify billing address',
-      'Request additional authentication',
-      'Monitor for suspicious activity'
-    ];
+    const recommendations = [];
+    
+    if (riskFactors.includes('high_amount')) {
+      recommendations.push('Require 3D Secure authentication for high-value transaction');
+      recommendations.push('Verify customer phone number');
+    }
+    
+    if (riskFactors.includes('high_velocity')) {
+      recommendations.push('Flag account for velocity abuse');
+      recommendations.push('Implement rate limiting');
+      recommendations.push('Contact customer for verification');
+    }
+    
+    if (riskFactors.includes('high_risk_location')) {
+      recommendations.push('Require address verification');
+      recommendations.push('Request additional identity documents');
+    }
+    
+    if (riskFactors.includes('new_user')) {
+      recommendations.push('Limit first purchase amount');
+      recommendations.push('Enable fraud monitoring');
+    }
+    
+    if (riskFactors.includes('mismatched_address')) {
+      recommendations.push('Verify billing and shipping addresses match');
+      recommendations.push('Contact customer for clarification');
+    }
+    
+    if (recommendations.length === 0) {
+      recommendations.push('Transaction appears normal - proceed with standard verification');
+    }
+    
+    return recommendations;
   }
 }
 

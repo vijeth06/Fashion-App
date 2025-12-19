@@ -1,40 +1,56 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { OutfitProvider } from './context/OutfitContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import UltraModernLayout from './components/UltraModernLayout';
+
+// Core pages (keep minimal for fast initial render)
 import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import Favorites from './pages/Favorites';
-import Looks from './pages/Looks';
-import ProductDetails from './pages/ProductDetails';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Recommendations from './pages/Recommendations';
-import AdminDashboard from './pages/AdminDashboard';
-import Wishlist from './pages/Wishlist';
-import OrderTracking from './pages/OrderTracking';
+import FeatureShowcase from './components/FeatureShowcase';
+
 // Import auth debug utilities for development
 import './utils/authDebug';
-import CommunityFeed from './pages/CommunityFeed';
-import NotFound from './pages/NotFound';
 
-// Import Advanced Components as Page Wrappers
-import QuantumTryOn from './components/QuantumTryOn';
-import MetaverseIntegration from './components/MetaverseIntegration';
-import BiometricSustainability from './components/BiometricSustainability';
-import PremiumFeatures from './components/PremiumFeatures';
-import AdaptiveNeuralInterface from './components/AdaptiveNeuralInterface';
-import SocialFashionPlatform from './components/SocialFashionPlatform';
-import RealTimeFeatures from './components/RealTimeFeatures';
-import AdvancedAdminDashboard from './components/AdvancedAdminDashboard';
-import FeatureShowcase from './components/FeatureShowcase';
-import Immersive3DShopping from './components/Immersive3DShopping';
-import DatabaseManager from './components/DatabaseManager';
-import EnhancedTryOn from './pages/EnhancedTryOn';
+// Lazy-loaded routes & feature bundles
+const Catalog = lazy(() => import('./pages/Catalog'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+const Favorites = lazy(() => import('./pages/Favorites'));
+const Looks = lazy(() => import('./pages/Looks'));
+const ProductDetails = lazy(() => import('./pages/ProductDetails'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Recommendations = lazy(() => import('./pages/Recommendations'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const OrderTracking = lazy(() => import('./pages/OrderTracking'));
+const CommunityFeed = lazy(() => import('./pages/CommunityFeed'));
+const EnhancedTryOn = lazy(() => import('./pages/EnhancedTryOn'));
+const TryOnWithItem = lazy(() => import('./pages/TryOnWithItem'));
+const NeuralInterface = lazy(() => import('./pages/NeuralInterface'));
+const BiometricAnalysis = lazy(() => import('./pages/BiometricAnalysis'));
+const VirtualTryOn = lazy(() => import('./pages/VirtualTryOn'));
+
+const QuantumTryOnPage = lazy(() => import('./pages/QuantumTryOnPage'));
+
+const MetaverseIntegration = lazy(() => import('./components/MetaverseIntegration'));
+const BiometricSustainability = lazy(() => import('./components/BiometricSustainability'));
+const PremiumFeatures = lazy(() => import('./components/PremiumFeatures'));
+const SocialFashionPlatform = lazy(() => import('./components/SocialFashionPlatform'));
+const RealTimeFeatures = lazy(() => import('./components/RealTimeFeatures'));
+const AdvancedAdminDashboard = lazy(() => import('./components/AdvancedAdminDashboard'));
+const DatabaseManager = lazy(() => import('./components/DatabaseManager'));
+const SegmentationUpload = lazy(() => import('./components/SegmentationUpload'));
+
+const BodyAnalysisPage = lazy(() =>
+  import('./pages/AIFeatures').then((module) => ({ default: module.BodyAnalysisPage }))
+);
+const OutfitRecommendationsPage = lazy(() =>
+  import('./pages/AIFeatures').then((module) => ({ default: module.OutfitRecommendationsPage }))
+);
+const APIStatus = lazy(() => import('./pages/APIStatus'));
 
 // Database Service (mock for frontend)
 const apiService = {
@@ -54,20 +70,6 @@ const apiService = {
   }
 };
 
-// Page Wrapper Components for Advanced Features
-const QuantumTryOnPage = () => {
-  const { user } = useAuth();
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 py-8">
-      <QuantumTryOn 
-        selectedItem={null} 
-        userProfile={user}
-        onItemSelect={() => {}}
-      />
-    </div>
-  );
-};
-
 const MetaversePage = () => {
   const { user } = useAuth();
   return (
@@ -76,19 +78,6 @@ const MetaversePage = () => {
         isVisible={true}
         userProfile={user}
         onExperience={() => {}}
-        onClose={() => {}}
-      />
-    </div>
-  );
-};
-
-const BiometricPage = () => {
-  const { user } = useAuth();
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 py-8">
-      <BiometricSustainability 
-        userProfile={user}
-        isVisible={true}
         onClose={() => {}}
       />
     </div>
@@ -108,32 +97,14 @@ const PremiumPage = () => {
   );
 };
 
-const NeuralInterfacePage = () => {
-  const { user } = useAuth();
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 py-8">
-      <div className="container mx-auto px-6">
-        <div className="text-center py-20">
-          <h1 className="text-5xl font-black text-white mb-6">
-            NEURAL
-            <span className="block text-transparent bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text">
-              AI INTERFACE
-            </span>
-          </h1>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Experience adaptive learning interface that evolves with your fashion preferences
-          </p>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-4xl mx-auto">
-            <p className="text-gray-300">
-              The Neural AI Interface is actively learning from your interactions across the platform.
-              It adapts the UI, recommendations, and features based on your behavior patterns.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Add route for segmentation demo
+const SegmentationDemoPage = () => (
+  <div className="container mx-auto py-8">
+    <SegmentationUpload />
+  </div>
+);
+
+// Neural Interface Page Component will be imported from dedicated file
 
 const SustainabilityPage = () => {
   const { user } = useAuth();
@@ -173,7 +144,6 @@ const AdminDashboardPage = () => {
 };
 
 const DatabaseManagerPage = () => {
-  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 py-8">
       <DatabaseManager />
@@ -309,17 +279,23 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Loading fallback for lazy components
+const PageLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-indigo-50">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600 mx-auto mb-4"></div>
+      <p className="text-xl text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
+
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <PageLoadingFallback />;
   }
 
   if (!user) {
@@ -336,102 +312,112 @@ function App() {
         <AuthProvider>
           <OutfitProvider>
             <ScrollToTop />
-            <Routes>
-              <Route element={<UltraModernLayout />}>
-                {/* Public Routes */}
-                <Route path="/" element={<FeatureShowcase />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/catalog/:id" element={<ProductDetails />} />
-                <Route path="/try-on" element={<Navigate to="/enhanced-tryon" replace />} />
-                <Route path="/enhanced-tryon" element={<EnhancedTryOn />} />
-                <Route path="/recommendations" element={<Recommendations />} />
-                <Route path="/community" element={<CommunityFeed />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                
-                {/* Advanced Quantum Features */}
-                <Route path="/quantum-tryon" element={<QuantumTryOnPage />} />
-                <Route path="/metaverse" element={<MetaversePage />} />
-                <Route path="/biometric" element={<BiometricPage />} />
-                <Route path="/premium" element={<PremiumPage />} />
-                <Route path="/neural-interface" element={<NeuralInterfacePage />} />
-                <Route path="/sustainability" element={<SustainabilityPage />} />
-                
-                {/* Advanced Platform Features */}
-                <Route path="/social-platform" element={<SocialPlatformPage />} />
-                <Route path="/real-time" element={<RealTimeFeaturesPage />} />
-                <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-                
-                {/* Database Management Routes */}
-                <Route path="/database-manager" element={<DatabaseManagerPage />} />
-                <Route path="/database-test" element={<DatabaseTestPage />} />
-                
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                
-                {/* Protected Routes */}
-                <Route
-                  path="/favorites"
-                  element={
-                    <ProtectedRoute>
-                      <Favorites />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/wishlist"
-                  element={
-                    <ProtectedRoute>
-                      <Wishlist />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/looks"
-                  element={
-                    <ProtectedRoute>
-                      <Looks />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/cart"
-                  element={
-                    <ProtectedRoute>
-                      <Cart />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/checkout"
-                  element={
-                    <ProtectedRoute>
-                      <Checkout />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/order-tracking/:orderId"
-                  element={
-                    <ProtectedRoute>
-                      <OrderTracking />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
+            <Suspense fallback={<PageLoadingFallback />}>
+              <Routes>
+                <Route element={<UltraModernLayout />}>
+                  {/* Public Routes */}
+                  <Route path="/" element={<FeatureShowcase />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/catalog" element={<Catalog />} />
+                  <Route path="/catalog/:id" element={<ProductDetails />} />
+                  <Route path="/try-on" element={<VirtualTryOn />} />
+                  <Route path="/try" element={<TryOnWithItem />} />
+                  <Route path="/enhanced-tryon" element={<EnhancedTryOn />} />
+                  <Route path="/recommendations" element={<Recommendations />} />
+                  <Route path="/community" element={<CommunityFeed />} />
+                  
+                  {/* AI-Powered Features */}
+                  <Route path="/ai/body-analysis" element={<BodyAnalysisPage />} />
+                  <Route path="/ai/outfit-recommendations" element={<OutfitRecommendationsPage />} />
+                  
+                  {/* API Status Dashboard */}
+                  <Route path="/api-status" element={<APIStatus />} />
+                  
+                  {/* Advanced Quantum Features */}
+                  <Route path="/quantum-tryon" element={<QuantumTryOnPage />} />
+                  <Route path="/metaverse" element={<MetaversePage />} />
+                  <Route path="/biometric" element={<BiometricAnalysis />} />
+                  <Route path="/premium" element={<PremiumPage />} />
+                  <Route path="/neural-interface" element={<NeuralInterface />} />
+                  <Route path="/sustainability" element={<SustainabilityPage />} />
+                  
+                  {/* Advanced Platform Features */}
+                  <Route path="/social-platform" element={<SocialPlatformPage />} />
+                  <Route path="/real-time" element={<RealTimeFeaturesPage />} />
+                  <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+                  
+                  {/* Database Management Routes */}
+                  <Route path="/database-manager" element={<DatabaseManagerPage />} />
+                  <Route path="/database-test" element={<DatabaseTestPage />} />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  
+                  {/* Protected Routes */}
+                  <Route
+                    path="/favorites"
+                    element={
+                      <ProtectedRoute>
+                        <Favorites />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wishlist"
+                    element={
+                      <ProtectedRoute>
+                        <Wishlist />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/looks"
+                    element={
+                      <ProtectedRoute>
+                        <Looks />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/cart"
+                    element={
+                      <ProtectedRoute>
+                        <Cart />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <ProtectedRoute>
+                        <Checkout />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/order-tracking/:orderId"
+                    element={
+                      <ProtectedRoute>
+                        <OrderTracking />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/segmentation-demo" element={<SegmentationDemoPage />} />
+                  
+                  {/* 404 Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Suspense>
           </OutfitProvider>
         </AuthProvider>
       </BrowserRouter>

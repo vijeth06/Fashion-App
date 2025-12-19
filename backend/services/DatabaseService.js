@@ -1,5 +1,6 @@
 // MongoDB Connection Service
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongoose = require('mongoose');
 const config = require('../config/database');
 
 class DatabaseService {
@@ -7,6 +8,7 @@ class DatabaseService {
     this.client = null;
     this.db = null;
     this.isConnected = false;
+    this.mongooseConnected = false;
   }
 
   // Connect to MongoDB Atlas
@@ -14,6 +16,7 @@ class DatabaseService {
     try {
       console.log('🔗 Connecting to MongoDB Atlas...');
       
+      // Connect native MongoDB driver
       this.client = new MongoClient(config.mongodb.uri, {
         ...config.mongodb.options,
         serverApi: {
@@ -33,12 +36,23 @@ class DatabaseService {
       await this.db.admin().ping();
       
       this.isConnected = true;
-      console.log('✅ Successfully connected to MongoDB Atlas!');
+      console.log('✅ Native MongoDB driver connected!');
+      
+      // Also connect Mongoose for models (used by AnalyticsService)
+      if (mongoose.connection.readyState === 0) {
+        await mongoose.connect(config.mongodb.uri, {
+          ...config.mongodb.options,
+          dbName: dbName
+        });
+        this.mongooseConnected = true;
+        console.log('✅ Mongoose connected!');
+      }
       
       return this.db;
     } catch (error) {
       console.error('❌ MongoDB connection error:', error);
       this.isConnected = false;
+      this.mongooseConnected = false;
       throw error;
     }
   }
@@ -69,10 +83,19 @@ class DatabaseService {
   // Close connection
   async disconnect() {
     try {
+      // Close Mongoose connection
+      if (this.mongooseConnected && mongoose.connection.readyState === 1) {
+        await mongoose.connection.close();
+        this.mongooseConnected = false;
+        console.log('📴 Mongoose disconnected');
+      }
+      
+      // Close native MongoDB driver connection
       if (this.client) {
         await this.client.close();
-        console.log('📴 Disconnected from MongoDB Atlas');
+        console.log('📴 MongoDB native driver disconnected');
       }
+      
       this.isConnected = false;
     } catch (error) {
       console.error('Error disconnecting from MongoDB:', error);

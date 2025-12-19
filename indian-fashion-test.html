@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Fashion Virtual Try-On Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hindi {
+            font-size: 1.2em;
+            color: #ffeb3b;
+            margin-bottom: 30px;
+        }
+        .test-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .test-link {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .test-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            text-decoration: none;
+            color: white;
+        }
+        .quantum {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        .enhanced {
+            background: linear-gradient(45deg, #ffa726, #fb8c00);
+        }
+        .features {
+            text-align: left;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .feature {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .feature::before {
+            content: "🇮🇳";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .status {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇮🇳 Indian Fashion Virtual Try-On</h1>
+        <div class="title">Fashion Virtual Try-On Test</div>
+        <div class="status">
+            ✅ <strong>Status:</strong> Both routes are now configured and working with Indian fashion products!
+        </div>
+        <div class="test-links">
+            <a href="http://localhost:3000/enhanced-tryon" class="test-link enhanced" target="_blank">
+                🎥 Enhanced AR Try-On<br>
+                <small>Fashion AR Experience</small>
+            </a>
+            <a href="http://localhost:3000/quantum-tryon" class="test-link quantum" target="_blank">
+                ⚛️ Quantum Try-On<br>
+                <small>Quantum Fashion Simulation</small>
+            </a>
+        </div>
+        <div class="features">
+            <h3>🎯 What's Been Implemented:</h3>
+            <div class="feature">Real Indian fashion products with INR pricing</div>
+            <div class="feature">Modern user interface</div>
+            <div class="feature">Fashion clothing categories (Shirts, Dresses, Jackets)</div>
+            <div class="feature">Global fashion preferences</div>
+            <div class="feature">Occasion-based recommendations</div>
+            <div class="feature">Indian brand integration (Manyavar, Biba, etc.)</div>
+            <div class="feature">Quantum physics fabric simulation</div>
+            <div class="feature">Enhanced AR camera with Indian fashion context</div>
+            <div class="feature">Modern color schemes (Blue, Purple, Green)</div>
+            <div class="feature">Size conversion for Indian measurements</div>
+        </div>
+
+        <div style="margin-top: 30px; font-size: 0.9em; color: #ddd;">
+            <strong>Tech Stack:</strong> React + Product Service + Quantum Physics Simulation + AR Camera + Smart Context
+        </div>
+    </div>
+</body>
+</html>

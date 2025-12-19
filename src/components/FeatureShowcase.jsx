@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  FaVrCardboard, FaRobot, FaCreditCard, FaUsers, FaStream, FaChartLine,
+  FaVrCardboard, FaRobot, FaCreditCard, FaUsers, FaStream, FaHeartbeat,
   FaPalette, FaHeart, FaShoppingBag, FaCamera, FaMagic, FaBolt,
   FaArrowRight, FaCheckCircle, FaStar, FaFire, FaHome, FaCompass
 } from 'react-icons/fa';
@@ -60,14 +60,14 @@ const features = [
     highlights: ['Live Streaming', 'Collaborative Styling', 'Real-time AI', 'WebRTC']
   },
   {
-    id: 'admin-dashboard',
-    title: 'Advanced Analytics',
-    description: 'Comprehensive admin dashboard with insights, inventory management, and reporting',
-    icon: FaChartLine,
-    path: '/admin-dashboard',
-    color: 'from-indigo-500 to-purple-600',
+    id: 'biometric-analysis',
+    title: 'Biometric Analysis',
+    description: 'Real-time health monitoring and fit prediction with advanced biometric analysis',
+    icon: FaHeartbeat,
+    path: '/biometric',
+    color: 'from-red-500 to-pink-600',
     status: 'complete',
-    highlights: ['Real-time Analytics', 'User Insights', 'Inventory Management', 'Trend Tracking']
+    highlights: ['Health Monitoring', 'Fit Prediction', 'Body Composition', 'Real-time Analysis']
   },
   {
     id: 'catalog',
@@ -80,14 +80,14 @@ const features = [
     highlights: ['360° Views', 'AI Search', 'Smart Filters', '3D Visualization']
   },
   {
-    id: 'biometric',
-    title: 'Biometric Analysis',
-    description: 'Advanced body measurement and size recommendation with quantum fit algorithms',
-    icon: FaMagic,
-    path: '/biometric',
+    id: 'try-on-items',
+    title: 'Item Try-On',
+    description: 'Try specific fashion items with advanced AR fitting and real-time customization',
+    icon: FaCamera,
+    path: '/try?item=1',
     color: 'from-violet-500 to-purple-600',
     status: 'complete',
-    highlights: ['Body Analysis', 'Size Prediction', 'Fit Recommendation', 'Quantum Algorithms']
+    highlights: ['Item-specific AR', 'Real-time Fitting', 'Color Customization', 'Size Adjustment']
   }
 ];
 

@@ -8,6 +8,12 @@ class DatabaseInitializer {
 
   // Initialize all collections with proper schema and indexes
   async initializeDatabase() {
+    // Skip if already initialized to avoid redundant work
+    if (this.initialized) {
+      console.log('ℹ️ Database already initialized, skipping initialization');
+      return;
+    }
+
     try {
       console.log('🔧 Initializing VF-TryOn Database...');
       const db = databaseService.getDb();
@@ -21,7 +27,7 @@ class DatabaseInitializer {
       await this.createCategoriesCollection(db);
       await this.createReviewsCollection(db);
 
-      // Insert sample data
+      // Insert sample data (only on first initialization)
       await this.insertSampleData(db);
 
       this.initialized = true;
@@ -37,14 +43,32 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('users');
       
-      // Create indexes
-      await collection.createIndex({ firebaseUid: 1 }, { unique: true });
-      await collection.createIndex({ email: 1 }, { unique: true });
-      await collection.createIndex({ createdAt: -1 });
+      // Create indexes (will silently fail if they already exist)
+      try {
+        await collection.createIndex({ firebaseUid: 1 }, { unique: true, sparse: true });
+      } catch (err) {
+        // Index already exists, ignore error
+      }
+      
+      try {
+        await collection.createIndex({ email: 1 }, { unique: true, sparse: true });
+      } catch (err) {
+        // Index already exists, ignore error
+      }
+      
+      try {
+        await collection.createIndex({ createdAt: -1 });
+      } catch (err) {
+        // Index already exists, ignore error
+      }
       
       console.log('✅ Users collection created');
     } catch (error) {
-      console.log('ℹ️ Users collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Users collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -53,16 +77,30 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('products');
       
-      // Create indexes
-      await collection.createIndex({ category: 1 });
-      await collection.createIndex({ name: 'text', description: 'text' });
-      await collection.createIndex({ price: 1 });
-      await collection.createIndex({ featured: -1 });
-      await collection.createIndex({ createdAt: -1 });
+      // Create indexes (silently handle if they already exist)
+      const indexCreationMethods = [
+        () => collection.createIndex({ category: 1 }),
+        () => collection.createIndex({ name: 'text', description: 'text' }),
+        () => collection.createIndex({ price: 1 }),
+        () => collection.createIndex({ featured: -1 }),
+        () => collection.createIndex({ createdAt: -1 })
+      ];
+      
+      for (const createIndexFn of indexCreationMethods) {
+        try {
+          await createIndexFn();
+        } catch (err) {
+          // Index already exists, continue to next
+        }
+      }
       
       console.log('✅ Products collection created');
     } catch (error) {
-      console.log('ℹ️ Products collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Products collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -71,14 +109,26 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('wishlist');
       
-      // Create indexes
-      await collection.createIndex({ userId: 1 });
-      await collection.createIndex({ userId: 1, productId: 1 }, { unique: true });
-      await collection.createIndex({ createdAt: -1 });
+      // Create indexes (silently handle if they already exist)
+      try {
+        await collection.createIndex({ userId: 1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ userId: 1, productId: 1 }, { unique: true, sparse: true });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ createdAt: -1 });
+      } catch (err) { }
       
       console.log('✅ Wishlist collection created');
     } catch (error) {
-      console.log('ℹ️ Wishlist collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Wishlist collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -87,14 +137,26 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('looks');
       
-      // Create indexes
-      await collection.createIndex({ userId: 1 });
-      await collection.createIndex({ createdAt: -1 });
-      await collection.createIndex({ isPublic: 1 });
+      // Create indexes (silently handle if they already exist)
+      try {
+        await collection.createIndex({ userId: 1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ createdAt: -1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ isPublic: 1 });
+      } catch (err) { }
       
       console.log('✅ Looks collection created');
     } catch (error) {
-      console.log('ℹ️ Looks collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Looks collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -103,14 +165,26 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('tryOnSessions');
       
-      // Create indexes
-      await collection.createIndex({ userId: 1 });
-      await collection.createIndex({ createdAt: -1 });
-      await collection.createIndex({ sessionId: 1 }, { unique: true });
+      // Create indexes (silently handle if they already exist)
+      try {
+        await collection.createIndex({ userId: 1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ createdAt: -1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ sessionId: 1 }, { unique: true, sparse: true });
+      } catch (err) { }
       
       console.log('✅ TryOn Sessions collection created');
     } catch (error) {
-      console.log('ℹ️ TryOn Sessions collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ TryOn Sessions collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -119,13 +193,22 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('categories');
       
-      // Create indexes
-      await collection.createIndex({ name: 1 }, { unique: true });
-      await collection.createIndex({ order: 1 });
+      // Create indexes (silently handle if they already exist)
+      try {
+        await collection.createIndex({ name: 1 }, { unique: true, sparse: true });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ order: 1 });
+      } catch (err) { }
       
       console.log('✅ Categories collection created');
     } catch (error) {
-      console.log('ℹ️ Categories collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Categories collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -134,31 +217,41 @@ class DatabaseInitializer {
     try {
       const collection = db.collection('reviews');
       
-      // Create indexes
-      await collection.createIndex({ productId: 1 });
-      await collection.createIndex({ userId: 1 });
-      await collection.createIndex({ rating: -1 });
-      await collection.createIndex({ createdAt: -1 });
+      // Create indexes (silently handle if they already exist)
+      try {
+        await collection.createIndex({ productId: 1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ userId: 1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ rating: -1 });
+      } catch (err) { }
+      
+      try {
+        await collection.createIndex({ createdAt: -1 });
+      } catch (err) { }
       
       console.log('✅ Reviews collection created');
     } catch (error) {
-      console.log('ℹ️ Reviews collection already exists');
+      if (error.codeName === 'NamespaceExists' || error.message.includes('already exists')) {
+        console.log('ℹ️ Reviews collection already exists');
+      } else {
+        throw error;
+      }
     }
   }
 
-  // Insert sample data for development
+  // Production: No sample data insertion
+  // Data should be added through admin panel or migration scripts
   async insertSampleData(db) {
-    try {
-      // Insert sample categories
-      await this.insertSampleCategories(db);
-      
-      // Insert sample products
-      await this.insertSampleProducts(db);
-      
-      console.log('✅ Sample data inserted');
-    } catch (error) {
-      console.log('ℹ️ Sample data already exists or error occurred:', error.message);
-    }
+    // PRODUCTION MODE: Sample data insertion is disabled
+    // Use admin dashboard or data migration tools to add products
+    console.log('ℹ️ Sample data insertion is disabled in production mode');
+    console.log('💡 Use admin dashboard to add products and categories');
+    return;
   }
 
   // Sample categories

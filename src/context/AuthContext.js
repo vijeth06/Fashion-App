@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     error: authError,
+    userProfile,
     signUp,
     signIn,
     signInWithGoogle,
@@ -28,6 +29,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     user,
+    userProfile,
     loading,
     authError,
     signUp,

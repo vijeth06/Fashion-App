@@ -336,22 +336,85 @@ export const BiometricValidator = {
     const ranges = {
       height: { min: 140, max: 220 },
       weight: { min: 40, max: 200 },
-      chest: { min: 60, max: 150 },
-      waist: { min: 55, max: 120 },
-      hips: { min: 60, max: 150 }
+      chest: { min: 70, max: 130 },
+      waist: { min: 60, max: 120 },
+      hips: { min: 75, max: 140 }
     };
     
     const range = ranges[type];
     if (!range) return { valid: false, reason: 'Unknown measurement type' };
     
+    // Check for obviously incorrect values (like the 104497 cm issue)
+    if (measurement > 1000) {
+      return {
+        valid: false,
+        reason: `${type} measurement ${measurement} cm appears to be in wrong units or corrupted`
+      };
+    }
+    
     if (measurement < range.min || measurement > range.max) {
       return { 
         valid: false, 
-        reason: `${type} should be between ${range.min} and ${range.max}` 
+        reason: `${type} should be between ${range.min} and ${range.max} cm` 
       };
     }
     
     return { valid: true };
+  },
+
+  // Real body measurements extraction from image/video using TensorFlow.js
+  extractRealMeasurementsFromImage: async (imageElement) => {
+    try {
+      // Import pose detection service
+      const enhancedPoseDetection = (await import('../services/EnhancedPoseDetection')).default;
+      
+      // Initialize if not already done
+      await enhancedPoseDetection.initialize();
+      
+      // Detect pose and extract measurements
+      const poseData = await enhancedPoseDetection.detectPose(imageElement);
+      
+      if (!poseData.success || !poseData.measurements) {
+        throw new Error('Failed to detect body measurements');
+      }
+      
+      // Convert pixel measurements to real-world measurements (requires calibration)
+      // For accurate measurements, user should provide at least one known dimension (e.g., height)
+      const pixelToRealRatio = 170 / (poseData.measurements.torsoLength * 2.5); // Assuming average height
+      
+      return {
+        height: Math.round((poseData.measurements.torsoLength + poseData.measurements.legLength) * pixelToRealRatio),
+        shoulderWidth: Math.round(poseData.measurements.shoulderWidth * pixelToRealRatio),
+        chest: Math.round(poseData.measurements.shoulderWidth * pixelToRealRatio * 2.1), // Approximation
+        waist: Math.round(poseData.measurements.hipWidth * pixelToRealRatio * 1.8), // Approximation
+        hips: Math.round(poseData.measurements.hipWidth * pixelToRealRatio * 2),
+        armLength: Math.round(poseData.measurements.armLength * pixelToRealRatio),
+        legLength: Math.round(poseData.measurements.legLength * pixelToRealRatio),
+        confidence: poseData.confidence,
+        bodyOrientation: poseData.orientation,
+        needsCalibration: true // User should provide actual height for accurate results
+      };
+    } catch (error) {
+      console.error('Failed to extract real measurements:', error);
+      throw new Error('Unable to extract body measurements. Please ensure good lighting and full body visibility.');
+    }
+  },
+
+  // Calibrate measurements with user-provided actual height
+  calibrateMeasurements: (extractedMeasurements, actualHeight) => {
+    const ratio = actualHeight / extractedMeasurements.height;
+    
+    return {
+      height: actualHeight,
+      shoulderWidth: Math.round(extractedMeasurements.shoulderWidth * ratio),
+      chest: Math.round(extractedMeasurements.chest * ratio),
+      waist: Math.round(extractedMeasurements.waist * ratio),
+      hips: Math.round(extractedMeasurements.hips * ratio),
+      armLength: Math.round(extractedMeasurements.armLength * ratio),
+      legLength: Math.round(extractedMeasurements.legLength * ratio),
+      confidence: extractedMeasurements.confidence,
+      calibrated: true
+    };
   },
 
   calculateBMI: (height, weight) => {

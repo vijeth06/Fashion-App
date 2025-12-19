@@ -34,18 +34,31 @@ const Wishlist = () => {
   const loadWishlist = async () => {
     setLoading(true);
     try {
-      const result = await wishlistService.getWishlist(currentUser.uid);
-      if (result.success) {
-        setWishlistItems(result.data.items || []);
+      if (currentUser && currentUser.uid) {
+        // Authenticated user: fetch from backend
+        const result = await wishlistService.getWishlist(currentUser.uid);
+        if (result.success) {
+          setWishlistItems(result.data.items || []);
+          // Sync to local storage for offline capability
+          localStorage.setItem(`wishlist_${currentUser.uid}`, JSON.stringify(result.data.items));
+        } else {
+          throw new Error('Failed to load wishlist from server');
+        }
       } else {
-        // Try local wishlist for guests
+        // Guest user: use local storage
         const localItems = wishlistService.getLocalWishlist();
         setWishlistItems(localItems);
       }
     } catch (error) {
       console.error('Error loading wishlist:', error);
-      const localItems = wishlistService.getLocalWishlist();
-      setWishlistItems(localItems);
+      // Fallback to cached wishlist
+      if (currentUser && currentUser.uid) {
+        const cachedItems = JSON.parse(localStorage.getItem(`wishlist_${currentUser.uid}`) || '[]');
+        setWishlistItems(cachedItems);
+      } else {
+        const localItems = wishlistService.getLocalWishlist();
+        setWishlistItems(localItems);
+      }
     } finally {
       setLoading(false);
     }
@@ -62,26 +75,83 @@ const Wishlist = () => {
     }
   };
 
-  const addToCart = (item) => {
-    const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cartItems.find(cartItem => cartItem.id === item.productId);
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cartItems.push({
-        id: item.productId,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        quantity: 1,
-        size: item.selectedSize || 'M',
-        color: item.selectedColor || 'Default'
-      });
+  const addToCart = async (item) => {
+    try {
+      if (currentUser && currentUser.uid) {
+        // Authenticated user: add to backend cart
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/v1/users/${currentUser.uid}/cart`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              productId: item.productId,
+              quantity: 1,
+              size: item.selectedSize || 'M',
+              color: item.selectedColor || 'Default'
+            })
+          }
+        );
+
+        const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to add to cart');
+        }
+
+        // Also update local cart for consistency
+        const cartItems = JSON.parse(localStorage.getItem(`cart_${currentUser.uid}`) || '[]');
+        const existingItem = cartItems.find(
+          ci => ci.productId === item.productId &&
+                ci.size === (item.selectedSize || 'M') &&
+                ci.color === (item.selectedColor || 'Default')
+        );
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cartItems.push({
+            productId: item.productId,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            size: item.selectedSize || 'M',
+            color: item.selectedColor || 'Default'
+          });
+        }
+
+        localStorage.setItem(`cart_${currentUser.uid}`, JSON.stringify(cartItems));
+        alert('Added to cart!');
+
+      } else {
+        // Guest user: add to local cart
+        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItem = cartItems.find(
+          ci => ci.id === item.productId &&
+                ci.size === (item.selectedSize || 'M')
+        );
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cartItems.push({
+            id: item.productId,
+            productId: item.productId,
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            size: item.selectedSize || 'M',
+            color: item.selectedColor || 'Default',
+            image: item.image
+          });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+        alert('Added to cart!');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert(`Failed to add to cart: ${error.message}`);
     }
-    
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-    // Show success message or toast
   };
 
   const toggleItemSelection = (productId) => {
@@ -334,7 +404,7 @@ const Wishlist = () => {
                       placeholder="Search items..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     />
                   </div>
 
@@ -342,7 +412,7 @@ const Wishlist = () => {
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
                   >
                     <option value="all">All Categories</option>
                     {categories.map(category => (
@@ -354,7 +424,7 @@ const Wishlist = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>

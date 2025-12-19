@@ -11,7 +11,7 @@ import {
   FaHome, FaCompass
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 
 // Mock social data
 const mockInfluencers = [
@@ -41,7 +41,7 @@ const mockPosts = [
     user: mockInfluencers[0],
     content: 'Loving this sustainable wool blend sweater! Perfect for fall weather 🍂',
     image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400',
-    items: [clothingItems[0], clothingItems[1]],
+    items: [], // Will be populated with real products
     likes: 2843,
     comments: 156,
     shares: 89,
@@ -53,7 +53,7 @@ const mockPosts = [
     user: mockInfluencers[1],
     content: 'Street style transformation using just 3 pieces! 🔥',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400',
-    items: [clothingItems[2], clothingItems[3]],
+    items: [], // Will be populated with real products
     likes: 5621,
     comments: 298,
     shares: 187,
@@ -76,10 +76,12 @@ function SocialPost({ post, onLike, onComment, onShare }) {
       {/* Post Header */}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3">
-          <img 
+            <img 
             src={post.user.avatar} 
             alt={post.user.name}
-            className="w-12 h-12 rounded-full object-cover"
+              className="w-12 h-12 rounded-full object-cover"
+              loading="lazy"
+              decoding="async"
           />
           <div>
             <div className="flex items-center gap-2">
@@ -103,7 +105,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
 
       {/* Post Image */}
       <div className="relative">
-        <img src={post.image} alt="Post content" className="w-full h-96 object-cover" />
+        <img src={post.image} alt="Post content" className="w-full h-96 object-cover" loading="lazy" decoding="async" />
         <button
           onClick={() => setShowShoppable(!showShoppable)}
           className="absolute top-4 right-4 bg-black/70 text-white px-3 py-2 rounded-full flex items-center gap-2"
@@ -172,10 +174,12 @@ function InfluencerCard({ influencer, onFollow }) {
       className="bg-white rounded-2xl shadow-lg overflow-hidden"
     >
       <div className="relative h-32 bg-gradient-to-r from-purple-400 to-pink-400">
-        <img 
+          <img 
           src={influencer.avatar} 
           alt={influencer.name}
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 rounded-full border-4 border-white object-cover"
+           className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 rounded-full border-4 border-white object-cover"
+           loading="lazy"
+           decoding="async"
         />
       </div>
       
@@ -209,7 +213,7 @@ function InfluencerCard({ influencer, onFollow }) {
 }
 
 // Create Look Modal
-function CreateLookModal({ isVisible, onClose, onCreateLook }) {
+function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [lookTitle, setLookTitle] = useState('');
   const [lookDescription, setLookDescription] = useState('');
@@ -288,7 +292,7 @@ function CreateLookModal({ isVisible, onClose, onCreateLook }) {
                         ? 'border-purple-600' : 'border-gray-200'
                     }`}
                   >
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     {selectedItems.find(i => i.id === item.id) && (
                       <div className="absolute inset-0 bg-purple-600/20 flex items-center justify-center">
                         <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs">✓</div>
@@ -325,6 +329,41 @@ export default function SocialFashionPlatform() {
   const [posts, setPosts] = useState(mockPosts);
   const [influencers, setInfluencers] = useState(mockInfluencers);
   const [showCreateLook, setShowCreateLook] = useState(false);
+  const [clothingItems, setClothingItems] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setProductsLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formattedProducts = (data.products || []).map(product => ({
+          id: product.productId || product._id,
+          name: product.name?.en || product.name,
+          price: product.pricing?.selling || product.price,
+          imageUrl: product.images?.main || product.imageUrl,
+          category: product.category
+        }));
+        setClothingItems(formattedProducts);
+        
+        // Update mock posts with real products
+        if (formattedProducts.length > 0) {
+          const updatedPosts = mockPosts.map((post, index) => ({
+            ...post,
+            items: formattedProducts.slice(index * 2, index * 2 + 2)
+          }));
+          setPosts(updatedPosts);
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setClothingItems([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const handleCreateLook = (lookData) => {
     console.log('Create look:', lookData);
@@ -398,11 +437,14 @@ export default function SocialFashionPlatform() {
         )}
 
         {/* Create Look Modal */}
-        <CreateLookModal
-          isVisible={showCreateLook}
-          onClose={() => setShowCreateLook(false)}
-          onCreateLook={handleCreateLook}
-        />
+        {showCreateLook && (
+          <CreateLookModal
+            isVisible={showCreateLook}
+            onClose={() => setShowCreateLook(false)}
+            onCreateLook={handleCreateLook}
+            clothingItems={clothingItems}
+          />
+        )}
       </div>
     </div>
   );

@@ -223,6 +223,15 @@ export const getUserProfile = async (uid) => {
       return { success: false, error: 'User profile not found' };
     }
   } catch (error) {
+    // Handle offline errors gracefully - don't spam console
+    if (error.code === 'unavailable' || error.message?.includes('offline')) {
+      // Return a default profile when offline
+      return { 
+        success: false, 
+        error: 'offline',
+        offline: true
+      };
+    }
     console.error('Error getting user profile:', error);
     return { success: false, error: error.message };
   }

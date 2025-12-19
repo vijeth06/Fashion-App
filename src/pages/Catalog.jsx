@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
+import userService from '../services/userService';
 import { useOutfit } from '../context/OutfitContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +27,11 @@ export default function Catalog() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   
+  // State for products
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   // State for filters and sorting
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
@@ -37,19 +43,53 @@ export default function Catalog() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [filterOpen, setFilterOpen] = useState({ category: false, price: false, sort: false });
 
-  // Get unique categories
-  const categories = useMemo(() => {
-    const cats = ['all', ...new Set(clothingItems.map(item => item.category))];
-    return cats;
+  // Fetch products on mount
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        setProducts(data.products || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
   }, []);
 
-  // Price range options
+  // Fetch wishlist if user is logged in
+  useEffect(() => {
+    async function fetchWishlist() {
+      if (user?.uid) {
+        try {
+          const wishlist = await userService.getWishlist(user.uid);
+          const wishlistIds = new Set(wishlist.wishlist?.map(item => item.productId) || []);
+          setFavorites(wishlistIds);
+        } catch (err) {
+          console.error('Error fetching wishlist:', err);
+        }
+      }
+    }
+    fetchWishlist();
+  }, [user]);
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = ['all', ...new Set(products.map(item => item.category))];
+    return cats;
+  }, [products]);
+
+  // Price range options (Indian Rupees)
   const priceRanges = [
     { value: 'all', label: 'ALL PRICES' },
-    { value: '0-25', label: 'UNDER $25' },
-    { value: '25-50', label: '$25 - $50' },
-    { value: '50-100', label: '$50 - $100' },
-    { value: '100+', label: '$100+' }
+    { value: '0-1000', label: 'UNDER ₹1,000' },
+    { value: '1000-2500', label: '₹1,000 - ₹2,500' },
+    { value: '2500-5000', label: '₹2,500 - ₹5,000' },
+    { value: '5000+', label: '₹5,000+' }
   ];
 
   // Sort options
@@ -63,22 +103,25 @@ export default function Catalog() {
 
   // Filter and sort items
   const filteredAndSortedItems = useMemo(() => {
-    let filtered = clothingItems.filter(item => {
+    let filtered = products.filter(item => {
       // Search query filter
+      const itemName = item.name?.en || item.name || '';
       const matchesQuery = !query.trim() || 
-        item.name.toLowerCase().includes(query.toLowerCase()) ||
-        item.category.toLowerCase().includes(query.toLowerCase());
+        itemName.toLowerCase().includes(query.toLowerCase()) ||
+        item.category?.toLowerCase().includes(query.toLowerCase()) ||
+        item.brand?.toLowerCase().includes(query.toLowerCase());
       
       // Category filter
       const matchesCategory = category === 'all' || item.category === category;
       
-      // Price range filter
+      // Price range filter (using Indian pricing)
       let matchesPrice = true;
+      const price = item.pricing?.selling || item.price || 0;
       if (priceRange !== 'all') {
-        if (priceRange === '0-25') matchesPrice = item.price <= 25;
-        else if (priceRange === '25-50') matchesPrice = item.price > 25 && item.price <= 50;
-        else if (priceRange === '50-100') matchesPrice = item.price > 50 && item.price <= 100;
-        else if (priceRange === '100+') matchesPrice = item.price > 100;
+        if (priceRange === '0-1000') matchesPrice = price <= 1000;
+        else if (priceRange === '1000-2500') matchesPrice = price > 1000 && price <= 2500;
+        else if (priceRange === '2500-5000') matchesPrice = price > 2500 && price <= 5000;
+        else if (priceRange === '5000+') matchesPrice = price > 5000;
       }
       
       return matchesQuery && matchesCategory && matchesPrice;
@@ -87,41 +130,53 @@ export default function Catalog() {
     // Sort items
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => (a.pricing?.selling || a.price || 0) - (b.pricing?.selling || b.price || 0));
         break;
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => (b.pricing?.selling || b.price || 0) - (a.pricing?.selling || a.price || 0));
         break;
       case 'name-az':
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        filtered.sort((a, b) => {
+          const nameA = a.name?.en || a.name || '';
+          const nameB = b.name?.en || b.name || '';
+          return nameA.localeCompare(nameB);
+        });
         break;
       case 'name-za':
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        filtered.sort((a, b) => {
+          const nameA = a.name?.en || a.name || '';
+          const nameB = b.name?.en || b.name || '';
+          return nameB.localeCompare(nameA);
+        });
         break;
       default: // featured
         break;
     }
 
     return filtered;
-  }, [query, category, priceRange, sortBy]);
+  }, [products, query, category, priceRange, sortBy]);
 
   const toggleFavorite = async (item) => {
+    const itemId = item.productId || item._id || item.id;
     const newFavorites = new Set(favorites);
-    if (favorites.has(item.id)) {
-      newFavorites.delete(item.id);
-      if (user) {
-        await wishlistService.removeFromWishlist(user.uid, item.id);
+    if (favorites.has(itemId)) {
+      newFavorites.delete(itemId);
+      if (user?.uid) {
+        try {
+          await userService.removeFromWishlist(user.uid, itemId);
+        } catch (err) {
+          console.error('Error removing from wishlist:', err);
+        }
       }
     } else {
-      newFavorites.add(item.id);
-      if (user) {
-        await wishlistService.addToWishlist(user.uid, {
-          productId: item.id,
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          category: item.category
-        });
+      newFavorites.add(itemId);
+      if (user?.uid) {
+        try {
+          await userService.addToWishlist(user.uid, itemId);
+        } catch (err) {
+          console.error('Error adding to wishlist:', err);
+        }
+      }
         addFavorite(item);
       }
     }
@@ -417,7 +472,41 @@ export default function Catalog() {
           </div>
         </motion.div>
         {/* Product Showcase */}
-        {filteredAndSortedItems.length === 0 ? (
+        {loading ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-24"
+          >
+            <div className="w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse">
+              <FaSearch className="w-16 h-16 text-purple-400 animate-spin" />
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">LOADING PRODUCTS...</h3>
+            <p className="text-gray-400 max-w-md mx-auto">
+              Fetching the latest fashion trends for you
+            </p>
+          </motion.div>
+        ) : error ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-24"
+          >
+            <div className="w-32 h-32 bg-gradient-to-br from-red-400/20 to-orange-400/20 rounded-full flex items-center justify-center mx-auto mb-8">
+              <FaSearch className="w-16 h-16 text-red-400" />
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">ERROR LOADING PRODUCTS</h3>
+            <p className="text-gray-400 mb-8 max-w-md mx-auto">
+              {error}
+            </p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-gradient-to-r from-red-400 to-orange-400 text-black font-bold rounded-xl hover:shadow-lg transition-all duration-300"
+            >
+              RETRY
+            </button>
+          </motion.div>
+        ) : filteredAndSortedItems.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -449,10 +538,17 @@ export default function Catalog() {
           }>
             <AnimatePresence>
               {filteredAndSortedItems.map((item, index) => {
+                const itemId = item.productId || item._id || item.id;
+                const itemName = item.name?.en || item.name || 'Product';
+                const itemPrice = item.pricing?.selling || item.price || 0;
+                const itemMRP = item.pricing?.mrp || item.originalPrice || null;
+                const itemImage = item.images?.main || item.imageUrl || item.image || '/placeholder.jpg';
+                const itemBrand = item.brand || '';
+                
                 if (viewMode === 'grid') {
                   return (
                     <motion.div
-                      key={item.id}
+                      key={itemId}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.9 }}
@@ -462,8 +558,8 @@ export default function Catalog() {
                       {/* Product Image */}
                       <div className="relative aspect-square overflow-hidden">
                         <img 
-                          src={item.imageUrl} 
-                          alt={item.name} 
+                          src={itemImage} 
+                          alt={itemName} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -472,7 +568,7 @@ export default function Catalog() {
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                           <div className="flex space-x-3">
                             <Link
-                              to={`/catalog/${item.id}`}
+                              to={`/catalog/${itemId}`}
                               className="w-12 h-12 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-emerald-500 hover:text-black transition-all duration-300 transform hover:scale-110"
                             >
                               <FaEye className="w-5 h-5" />
@@ -490,12 +586,12 @@ export default function Catalog() {
                         <button
                           onClick={() => toggleFavorite(item)}
                           className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                            favorites.has(item.id) 
+                            favorites.has(itemId) 
                               ? 'bg-red-500 text-white scale-110' 
                               : 'bg-white/20 backdrop-blur-xl text-white hover:bg-red-500 hover:text-white hover:scale-110'
                           }`}
                         >
-                          <FaHeart className={`w-4 h-4 ${favorites.has(item.id) ? 'fill-current' : ''}`} />
+                          <FaHeart className={`w-4 h-4 ${favorites.has(itemId) ? 'fill-current' : ''}`} />
                         </button>
                         
                         {/* Category Badge */}
@@ -509,18 +605,21 @@ export default function Catalog() {
                       {/* Product Info */}
                       <div className="p-6">
                         <div className="space-y-3">
+                          {itemBrand && (
+                            <p className="text-xs text-gray-400 uppercase tracking-wider">{itemBrand}</p>
+                          )}
                           <h3 className="text-xl font-bold text-white group-hover:text-rose-300 transition-colors duration-300 line-clamp-2">
-                            {item.name}
+                            {itemName}
                           </h3>
                           
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <span className="text-2xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                ${item.price}
+                                ₹{itemPrice.toLocaleString('en-IN')}
                               </span>
-                              {item.originalPrice && (
+                              {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  ${item.originalPrice}
+                                  ₹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                             </div>
@@ -535,7 +634,7 @@ export default function Catalog() {
                           
                           <div className="flex space-x-2 pt-3">
                             <Link
-                              to={`/catalog/${item.id}`}
+                              to={`/catalog/${itemId}`}
                               className="flex-1 py-3 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-medium rounded-xl hover:bg-white/20 transition-all duration-300 text-center"
                             >
                               DETAILS
@@ -554,7 +653,7 @@ export default function Catalog() {
                 } else {
                   return (
                     <motion.div
-                      key={item.id}
+                      key={itemId}
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 30 }}
@@ -564,8 +663,8 @@ export default function Catalog() {
                       {/* Image */}
                       <div className="relative w-48 h-48 flex-shrink-0 overflow-hidden">
                         <img 
-                          src={item.imageUrl} 
-                          alt={item.name} 
+                          src={itemImage} 
+                          alt={itemName} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
                         <div className="absolute top-3 left-3">
@@ -579,16 +678,19 @@ export default function Catalog() {
                       <div className="flex-1 p-6 flex justify-between">
                         <div className="flex-1 space-y-4">
                           <div>
+                            {itemBrand && (
+                              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{itemBrand}</p>
+                            )}
                             <h3 className="text-2xl font-bold text-white group-hover:text-rose-300 transition-colors duration-300 mb-2">
-                              {item.name}
+                              {itemName}
                             </h3>
                             <div className="flex items-center space-x-4">
                               <span className="text-3xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                ${item.price}
+                                ₹{itemPrice.toLocaleString('en-IN')}
                               </span>
-                              {item.originalPrice && (
+                              {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-lg text-gray-500 line-through">
-                                  ${item.originalPrice}
+                                  ₹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                               <div className="flex items-center space-x-1">
@@ -610,17 +712,17 @@ export default function Catalog() {
                           <button
                             onClick={() => toggleFavorite(item)}
                             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 mb-4 ${
-                              favorites.has(item.id) 
+                              favorites.has(itemId) 
                                 ? 'bg-red-500 text-white scale-110' 
                                 : 'bg-white/20 backdrop-blur-xl text-white hover:bg-red-500 hover:text-white hover:scale-110'
                             }`}
                           >
-                            <FaHeart className={`w-5 h-5 ${favorites.has(item.id) ? 'fill-current' : ''}`} />
+                            <FaHeart className={`w-5 h-5 ${favorites.has(itemId) ? 'fill-current' : ''}`} />
                           </button>
                           
                           <div className="space-y-3">
                             <Link
-                              to={`/catalog/${item.id}`}
+                              to={`/catalog/${itemId}`}
                               className="block px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-medium rounded-xl hover:bg-white/20 transition-all duration-300 text-center"
                             >
                               VIEW DETAILS

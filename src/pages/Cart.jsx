@@ -1,89 +1,194 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { clothingItems } from '../data/clothingItems';
+import userService from '../services/userService';
+import productService from '../services/productService';
 
 export default function Cart() {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [showPromoInput, setShowPromoInput] = useState(false);
 
-  // Mock cart data for demo
+  // Fetch cart data from backend
   useEffect(() => {
-    if (user) {
-      // Mock cart items with try-on previews
-      const mockCartItems = [
-        {
-          id: '1',
-          productId: 1,
-          name: 'Classic White T-Shirt',
-          price: 24.99,
-          quantity: 2,
-          size: 'M',
-          imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-          category: 'shirts',
-          tryOnPreview: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
-        },
-        {
-          id: '2',
-          productId: 4,
-          name: 'Slim Fit Jeans',
-          price: 59.99,
-          quantity: 1,
-          size: 'L',
-          imageUrl: 'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-          category: 'pants',
-          tryOnPreview: 'https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80'
-        }
-      ];
-      setCartItems(mockCartItems);
+    async function fetchCart() {
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        setError(null);
+        const cartData = await userService.getCart(user.uid);
+        // Fetch product details for each cart item
+        const itemsWithDetails = await Promise.all(
+          (cartData.cart || []).map(async (item) => {
+            try {
+              const productData = await productService.getProductById(item.productId);
+              const product = productData.product;
+              return {
+                id: item._id || item.productId,
+                productId: item.productId,
+                name: product.name?.en || product.name,
+                price: product.pricing?.selling || product.price,
+                mrp: product.pricing?.mrp,
+                quantity: item.quantity,
+                size: item.size,
+                imageUrl: product.images?.main || product.imageUrl,
+                category: product.category,
+                tryOnPreview: product.images?.overlay || product.images?.main
+              };
+            } catch (err) {
+              console.error(`Error fetching product ${item.productId}:`, err);
+              return null;
+            }
+          })
+        );
+        setCartItems(itemsWithDetails.filter(item => item !== null));
+      } catch (err) {
+        console.error('Error fetching cart:', err);
+        setError(err.message || 'Failed to load cart');
+      } finally {
+        setLoading(false);
+      }
     }
+    fetchCart();
   }, [user]);
 
-  const updateQuantity = (itemId, newQuantity) => {
+  const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity <= 0) {
       removeItem(itemId);
       return;
     }
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === itemId 
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    );
-  };
 
-  const removeItem = (itemId) => {
-    setCartItems(prev => prev.filter(item => item.id !== itemId));
-  };
+    try {
+      const item = cartItems.find(i => i.id === itemId);
 
-  const applyCoupon = () => {
-    setLoading(true);
-    // Simulate coupon validation
-    setTimeout(() => {
-      if (promoCode.toUpperCase() === 'SAVE10') {
-        setDiscount(0.1); // 10% discount
-        alert('Coupon applied! 10% discount');
-      } else if (promoCode.toUpperCase() === 'WELCOME20') {
-        setDiscount(0.2); // 20% discount
-        alert('Welcome coupon applied! 20% discount');
-      } else {
-        alert('Invalid coupon code');
+      // Check inventory before updating
+      const inventoryResponse = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/products/${item.productId}/inventory?size=${item.size}`
+      );
+      const inventoryData = await inventoryResponse.json();
+
+      if (inventoryData.available < newQuantity) {
+        alert(`Only ${inventoryData.available} items available in stock`);
+        return;
       }
-      setLoading(false);
+
+      // Save old state for rollback
+      const oldCartItems = [...cartItems];
+
+      // Optimistically update UI
+      setCartItems(prev =>
+        prev.map(i =>
+          i.id === itemId
+            ? { ...i, quantity: newQuantity }
+            : i
+        )
+      );
+
+      // Sync with backend
+      const response = await userService.updateCartItem(
+        user.uid,
+        item.productId,
+        { quantity: newQuantity, size: item.size }
+      );
+
+      if (!response.success) {
+        // Rollback if backend fails
+        setCartItems(oldCartItems);
+        alert('Failed to update cart. Reverted to previous state.');
+        return;
+      }
+
+      // Verify backend state
+      const cartResponse = await userService.getCart(user.uid);
+      setCartItems(cartResponse.cart.map(cartItem => ({
+        ...cartItem,
+        id: cartItem._id || cartItem.productId
+      })));
+
+    } catch (err) {
+      console.error('Error updating quantity:', err);
+      alert('Failed to update quantity. Please try again.');
+      // Fetch fresh cart to ensure consistency
+      try {
+        const freshCart = await userService.getCart(user.uid);
+        setCartItems(freshCart.cart.map(cartItem => ({
+          ...cartItem,
+          id: cartItem._id || cartItem.productId
+        })));
+      } catch (fetchError) {
+        console.error('Error fetching fresh cart:', fetchError);
+      }
+    }
+  };
+
+  const removeItem = async (itemId) => {
+    try {
+      const item = cartItems.find(i => i.id === itemId);
+      await userService.removeFromCart(user.uid, item.productId);
+      setCartItems(prev => prev.filter(item => item.id !== itemId));
+    } catch (err) {
+      console.error('Error removing item:', err);
+      alert('Failed to remove item. Please try again.');
+    }
+  };
+
+  const applyCoupon = async () => {
+    if (!promoCode.trim()) {
+      alert('Please enter a coupon code');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Validate coupon with backend
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/v1/coupons/validate`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: promoCode.trim(),
+            cartValue: subtotal,
+            userId: user.uid
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert(data.message || 'Invalid coupon code');
+        return;
+      }
+
+      // Coupon valid - set discount
+      setDiscount(data.coupon.discountAmount / subtotal);
+      alert(
+        `Coupon applied! ₹${data.coupon.discountAmount} discount`
+      );
       setShowPromoInput(false);
-    }, 1000);
+
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      alert('Failed to apply coupon. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const discountAmount = subtotal * discount;
-  const shipping = subtotal > 50 ? 0 : 5.99;
-  const tax = (subtotal - discountAmount) * 0.08; // 8% tax
-  const total = subtotal - discountAmount + shipping + tax;
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000
+  const gst = (subtotal - discountAmount) * 0.18; // 18% GST
+  const total = subtotal - discountAmount + shipping + gst;
 
   if (!user) {
     return (
@@ -95,6 +200,34 @@ export default function Cart() {
           <Link to="/login" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
             Sign In
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-700 text-lg">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Cart</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -201,11 +334,16 @@ export default function Cart() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-semibold text-gray-900">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                           </div>
                           <div className="text-sm text-gray-500">
-                            ${item.price} each
+                            ₹{item.price.toLocaleString('en-IN')} each
                           </div>
+                          {item.mrp && item.mrp > item.price && (
+                            <div className="text-xs text-green-600">
+                              Save ₹{((item.mrp - item.price) * item.quantity).toLocaleString('en-IN')}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -251,30 +389,30 @@ export default function Cart() {
                 <div className="space-y-4">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Discount ({(discount * 100).toFixed(0)}%)</span>
-                      <span>-${discountAmount.toFixed(2)}</span>
+                      <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                    <span>{shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`}</span>
                   </div>
                   
                   <div className="flex justify-between text-gray-600">
-                    <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>GST (18%)</span>
+                    <span>₹{gst.toLocaleString('en-IN')}</span>
                   </div>
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
                       <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>₹{Math.round(total).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
@@ -312,10 +450,10 @@ export default function Cart() {
                 </div>
 
                 {/* Free Shipping Notice */}
-                {subtotal < 50 && (
+                {subtotal < 2000 && subtotal > 0 && (
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      💡 Add ${(50 - subtotal).toFixed(2)} more for free shipping!
+                      💡 Add ₹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping!
                     </p>
                   </div>
                 )}
@@ -340,24 +478,7 @@ export default function Cart() {
               {/* Recommendations */}
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete Your Look</h3>
-                <div className="space-y-3">
-                  {clothingItems.slice(10, 13).map((item) => (
-                    <div key={item.id} className="flex gap-3">
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.name}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-                        <p className="text-sm text-gray-600">${item.price}</p>
-                      </div>
-                      <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
-                        Add
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-sm text-gray-500">Product recommendations will appear here</p>
               </div>
             </div>
           </div>

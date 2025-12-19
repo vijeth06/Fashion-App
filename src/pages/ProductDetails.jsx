@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
+import userService from '../services/userService';
 import { useAuth } from '../context/AuthContext';
 import { useOutfit } from '../context/OutfitContext';
 
@@ -11,6 +12,8 @@ export default function ProductDetails() {
   const { addFavorite } = useOutfit();
   
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
@@ -18,101 +21,115 @@ export default function ProductDetails() {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Mock additional product data
-  const productDetails = {
-    description: "This premium piece combines comfort and style for the modern wardrobe. Crafted with high-quality materials and attention to detail, it's perfect for both casual and semi-formal occasions.",
-    features: [
-      "Premium quality fabric",
-      "Comfortable fit",
-      "Easy care instructions",
-      "Available in multiple sizes",
-      "Sustainable materials"
-    ],
-    specifications: {
-      "Material": "100% Cotton",
-      "Care": "Machine wash cold",
-      "Origin": "Made in USA",
-      "Fit": "Regular"
-    },
-    sizeGuide: {
-      "XS": { chest: "32-34", waist: "24-26", length: "24" },
-      "S": { chest: "34-36", waist: "26-28", length: "25" },
-      "M": { chest: "36-38", waist: "28-30", length: "26" },
-      "L": { chest: "38-40", waist: "30-32", length: "27" },
-      "XL": { chest: "40-42", waist: "32-34", length: "28" },
-      "XXL": { chest: "42-44", waist: "34-36", length: "29" }
-    },
-    reviews: [
-      {
-        id: 1,
-        user: "Sarah M.",
-        rating: 5,
-        comment: "Love this piece! Perfect fit and great quality. The virtual try-on helped me choose the right size.",
-        date: "2024-01-15"
-      },
-      {
-        id: 2,
-        user: "Mike R.",
-        rating: 4,
-        comment: "Good quality and fast shipping. Exactly as shown in the virtual try-on.",
-        date: "2024-01-10"
-      },
-      {
-        id: 3,
-        user: "Emma K.",
-        rating: 5,
-        comment: "Amazing! The virtual fitting was so accurate. Highly recommend!",
-        date: "2024-01-08"
-      }
-    ]
-  };
-
   useEffect(() => {
-    const foundProduct = clothingItems.find(item => item.id === parseInt(id));
-    if (foundProduct) {
-      setProduct(foundProduct);
-    } else {
-      navigate('/catalog');
+    async function fetchProduct() {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await productService.getProductById(id);
+        if (data && data.product) {
+          setProduct(data.product);
+          // Check if user has this in wishlist
+          if (user?.uid) {
+            const wishlist = await userService.getWishlist(user.uid);
+            const isInWishlist = wishlist.wishlist?.some(item => 
+              item.productId === data.product.productId
+            );
+            setIsFavorite(isInWishlist);
+          }
+        } else {
+          setError('Product not found');
+          setTimeout(() => navigate('/catalog'), 2000);
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError(err.message || 'Failed to load product');
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [id, navigate]);
+    fetchProduct();
+  }, [id, navigate, user]);
 
-  if (!product) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading product details...</p>
+        </div>
       </div>
     );
   }
 
-  // Mock multiple images (using same image for demo)
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Error Loading Product</h2>
+          <p className="text-gray-400 mb-6">{error || 'Product not found'}</p>
+          <Link to="/catalog" className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+            Back to Catalog
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Product images from real data
   const productImages = [
-    product.imageUrl,
-    product.imageUrl,
-    product.imageUrl,
-    product.imageUrl
+    product.images?.main || product.imageUrl || '/placeholder.jpg',
+    product.images?.overlay || product.images?.main || '/placeholder.jpg',
+    product.images?.main || '/placeholder.jpg',
+    product.images?.overlay || '/placeholder.jpg'
   ];
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const sizes = product.inventory?.sizes?.filter(s => s.stock > 0).map(s => s.size) || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', '4XL'];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // Add to cart logic here
-    alert(`Added ${quantity} x ${product.name} (Size: ${selectedSize}) to cart!`);
+    try {
+      const productId = product.productId || product._id;
+      await userService.addToCart(user.uid, {
+        productId,
+        quantity,
+        size: selectedSize
+      });
+      alert(`Added ${quantity} x ${product.name?.en || product.name} (Size: ${selectedSize}) to cart!`);
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      alert('Failed to add to cart. Please try again.');
+    }
   };
 
-  const handleAddToFavorites = () => {
+  const handleAddToFavorites = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    addFavorite(product);
-    setIsFavorite(!isFavorite);
+    try {
+      const productId = product.productId || product._id;
+      if (isFavorite) {
+        await userService.removeFromWishlist(user.uid, productId);
+      } else {
+        await userService.addToWishlist(user.uid, productId);
+      }
+      addFavorite(product);
+      setIsFavorite(!isFavorite);
+    } catch (err) {
+      console.error('Error updating favorites:', err);
+      alert('Failed to update favorites. Please try again.');
+    }
   };
 
-  const averageRating = productDetails.reviews.reduce((acc, review) => acc + review.rating, 0) / productDetails.reviews.length;
+  // Calculate average rating from real product data
+  const averageRating = product?.reviews?.averageRating || 
+    (product?.reviews?.items?.length > 0 
+      ? product.reviews.items.reduce((acc, review) => acc + review.rating, 0) / product.reviews.items.length 
+      : 0);
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -126,7 +143,7 @@ export default function ProductDetails() {
             <span className="text-gray-500">/</span>
             <span className="text-white/90 capitalize">{product.category}</span>
             <span className="text-gray-500">/</span>
-            <span className="text-white">{product.name}</span>
+            <span className="text-white">{product.name?.en || product.name}</span>
           </div>
         </nav>
 
@@ -170,8 +187,13 @@ export default function ProductDetails() {
                 <span className="text-xs tracking-wide text-black font-bold capitalize bg-gradient-to-r from-emerald-400 to-cyan-400 px-3 py-1 rounded-full">
                   {product.category}
                 </span>
+                {product.brand && (
+                  <span className="text-xs tracking-wide text-white/80 uppercase">
+                    {product.brand}
+                  </span>
+                )}
               </div>
-              <h1 className="text-4xl font-bold text-white mb-4">{product.name}</h1>
+              <h1 className="text-4xl font-bold text-white mb-4">{product.name?.en || product.name}</h1>
               
               {/* Rating */}
               <div className="flex items-center gap-2 mb-4">
@@ -189,10 +211,24 @@ export default function ProductDetails() {
                     </svg>
                   ))}
                 </div>
-                <span className="text-gray-400">({productDetails.reviews.length} reviews)</span>
+                <span className="text-gray-400">({product.reviews?.count || product.reviews?.items?.length || 0} reviews)</span>
               </div>
               
-              <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-6">${product.price}</div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                  ₹{(product.pricing?.selling || product.price || 0).toLocaleString('en-IN')}
+                </div>
+                {product.pricing?.mrp && product.pricing.mrp > product.pricing.selling && (
+                  <div className="text-xl text-gray-500 line-through">
+                    ₹{product.pricing.mrp.toLocaleString('en-IN')}
+                  </div>
+                )}
+                {product.pricing?.discount && (
+                  <span className="px-2 py-1 bg-red-500 text-white text-sm font-bold rounded">
+                    {product.pricing.discount}% OFF
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Size Selection */}
@@ -253,7 +289,7 @@ export default function ProductDetails() {
                 onClick={handleAddToCart}
                 className="w-full btn-primary py-4 px-6 text-lg"
               >
-                Add to Cart - ${(product.price * quantity).toFixed(2)}
+                Add to Cart - ₹{((product.pricing?.selling || product.price || 0) * quantity).toLocaleString('en-IN')}
               </button>
               
               <div className="grid grid-cols-2 gap-3">
@@ -310,14 +346,22 @@ export default function ProductDetails() {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(productDetails.sizeGuide).map(([size, measurements]) => (
-                        <tr key={size} className="border-b border-white/5 hover:bg-white/5">
-                          <td className="py-3 px-4 font-medium text-white">{size}</td>
-                          <td className="py-3 px-4 text-gray-200">{measurements.chest}</td>
-                          <td className="py-3 px-4 text-gray-200">{measurements.waist}</td>
-                          <td className="py-3 px-4 text-gray-200">{measurements.length}</td>
+                      {product.sizeGuide && Object.keys(product.sizeGuide).length > 0 ? (
+                        Object.entries(product.sizeGuide).map(([size, measurements]) => (
+                          <tr key={size} className="border-b border-white/5 hover:bg-white/5">
+                            <td className="py-3 px-4 font-medium text-white">{size}</td>
+                            <td className="py-3 px-4 text-gray-200">{measurements.chest || 'N/A'}</td>
+                            <td className="py-3 px-4 text-gray-200">{measurements.waist || 'N/A'}</td>
+                            <td className="py-3 px-4 text-gray-200">{measurements.length || 'N/A'}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4" className="py-6 px-4 text-center text-gray-400">
+                            Size guide not available for this product
+                          </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>

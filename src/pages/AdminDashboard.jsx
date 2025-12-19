@@ -28,48 +28,98 @@ import {
   FaTimes,
   FaCheck
 } from 'react-icons/fa';
-import { clothingItems } from '../data/clothingItems';
+import productService from '../services/productService';
 import orderTrackingService from '../services/orderTrackingService';
 
 export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('overview');
-  const [products, setProducts] = useState(clothingItems);
+  const [products, setProducts] = useState([]);
   const [dateRange, setDateRange] = useState('7d');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [notifications, setNotifications] = useState([]); 
   const [contentReports, setContentReports] = useState([]);
+  const [analytics, setAnalytics] = useState({
+    totalUsers: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    totalProducts: 0,
+    conversionRate: 0,
+    bounceRate: 0,
+    avgSessionDuration: '0m 0s',
+    newUsersToday: 0,
+    activeUsers: 0,
+    pendingOrders: 0,
+    lowStockItems: 0,
+    contentReports: 0,
+    popularCategories: [],
+    topProducts: []
+  });
   
-  // Enhanced analytics data with trending
-  const analytics = {
-    totalUsers: 1250,
-    totalOrders: 89,
-    totalRevenue: 15420.50,
-    totalProducts: products.length,
-    conversionRate: 3.2,
-    bounceRate: 35.2,
-    avgSessionDuration: '4m 32s',
-    newUsersToday: 24,
-    activeUsers: 156,
-    pendingOrders: 12,
-    lowStockItems: 8,
-    contentReports: 3,
-    popularCategories: [
-      { name: 'Shirts', count: 45, trend: '+12%' },
-      { name: 'Pants', count: 32, trend: '+8%' },
-      { name: 'Dresses', count: 28, trend: '-3%' },
-      { name: 'Shoes', count: 24, trend: '+15%' },
-      { name: 'Accessories', count: 18, trend: '+5%' }
-    ],
-    topProducts: [
-      { id: 1, name: 'Summer Dress', sales: 89, revenue: 2670 },
-      { id: 2, name: 'Casual Shirt', sales: 76, revenue: 2280 },
-      { id: 3, name: 'Denim Jeans', sales: 65, revenue: 3250 },
-      { id: 4, name: 'Sport Sneakers', sales: 54, revenue: 4320 },
-      { id: 5, name: 'Leather Jacket', sales: 32, revenue: 6400 }
-    ]
-  };
+  // Fetch products from API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formattedProducts = (data.products || []).map(product => ({
+          id: product.productId || product._id,
+          name: product.name?.en || product.name,
+          price: product.pricing?.selling || product.price,
+          category: product.category,
+          brand: product.brand,
+          imageUrl: product.images?.main || product.imageUrl,
+          stock: product.inventory?.totalStock || 0,
+          sales: product.sales || 0
+        }));
+        setProducts(formattedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // Fetch real analytics from MongoDB
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/analytics/dashboard?range=${dateRange}`);
+        const data = await response.json();
+        
+        if (data.success && data.analytics) {
+          setAnalytics({
+            totalUsers: data.analytics.totalUsers || 0,
+            totalOrders: data.analytics.totalOrders || 0,
+            totalRevenue: data.analytics.totalRevenue || 0,
+            totalProducts: products.length,
+            conversionRate: data.analytics.conversionRate || 0,
+            bounceRate: data.analytics.bounceRate || 0,
+            avgSessionDuration: data.analytics.avgSessionDuration || '0m 0s',
+            newUsersToday: data.analytics.newUsersToday || 0,
+            activeUsers: data.analytics.activeUsers || 0,
+            pendingOrders: data.analytics.pendingOrders || 0,
+            lowStockItems: data.analytics.lowStockItems || 0,
+            contentReports: data.analytics.contentReports || 0,
+            popularCategories: data.analytics.popularCategories || [],
+            topProducts: data.analytics.topProducts || []
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error);
+      }
+    }
+    
+    fetchAnalytics();
+    
+    // Refresh analytics every 30 seconds
+    const interval = setInterval(fetchAnalytics, 30000);
+    return () => clearInterval(interval);
+  }, [dateRange, products.length]);
 
   const recentOrders = [
     { id: 'ORD-001', customer: 'John Doe', amount: 89.99, status: 'Shipped', date: '2024-01-15', items: 2 },
