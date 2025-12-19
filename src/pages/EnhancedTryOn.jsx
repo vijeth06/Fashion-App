@@ -44,10 +44,14 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
   const lastTimeRef = useRef(Date.now());
 
   useEffect(() => {
-    initializeCamera();
-    startProcessingLoop();
+    // Defer camera and processing loop initialization
+    const timeoutId = setTimeout(() => {
+      initializeCamera();
+      startProcessingLoop();
+    }, 100);
     
     return () => {
+      clearTimeout(timeoutId);
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
@@ -693,71 +697,10 @@ const EnhancedTryOnPage = () => {
     }
   });
 
-  // Initialize with fashion products
+  // Initialize with fashion products (deferred loading)
   useEffect(() => {
-    async function fetchFashionProducts() {
-      try {
-        setLoading(true);
-        
-        // Import product service
-        const { default: indianProductService } = await import('../services/indianProductService');
-        
-        // Fetch fashion products
-        const result = await indianProductService.getAllProducts();
-        
-        let transformedProducts = [];
-        if (result.success) {
-          // Transform products for component use
-          transformedProducts = result.products.map(product => ({
-            id: product.productId,
-            name: product.name,
-            brand: product.brand,
-            category: product.type,
-            price: indianProductService.formatPrice(product.price),
-            originalPrice: `₹${product.price.mrp.toLocaleString('en-IN')}`,
-            discount: indianProductService.getDiscountPercentage(product.price),
-            image: product.image,
-            colors: product.colors,
-            sizes: product.sizes,
-            material: product.material,
-            occasion: product.occasion,
-            region: product.region,
-            tryOnData: product.tryOnData,
-            trending: product.trending,
-            featured: product.featured
-          }));
-          
-          setClothingItems(transformedProducts);
-        } else {
-          throw new Error(result.error || 'Failed to fetch Indian products');
-        }
-        
-        // Try to fetch additional data from API if available
-        try {
-          const data = await productService.getAllProducts({ limit: 100 });
-          if (data.products && data.products.length > 0) {
-            const formattedProducts = data.products.map(product => ({
-              ...productService.formatForTryOn(product),
-              // Add garment preprocessing data
-              garmentData: {
-                backgroundRemoved: true,
-                landmarksDetected: true,
-                contourExtracted: true,
-                clothKeypoints: product.clothKeypoints || null
-              }
-            }));
-            // Merge with fashion products instead of replacing
-            const mergedProducts = [...transformedProducts, ...formattedProducts];
-            setClothingItems(mergedProducts);
-          }
-        } catch (apiError) {
-          console.warn('Could not fetch additional products from API:', apiError);
-          // Continue with just fashion products
-        }
-      } catch (err) {
-        console.error('Failed to fetch fashion products:', err);
-        // Fallback to basic fashion items if service fails
-        const fallbackProducts = [
+    // Show UI immediately with fallback products
+    const fallbackProducts = [
           {
             id: 'PROD-KUR-001',
             name: "Classic Cotton Kurta",
@@ -801,14 +744,47 @@ const EnhancedTryOnPage = () => {
             region: 'Pan-India'
           }
         ];
+        
+        // Set fallback products immediately for faster UI
         setClothingItems(fallbackProducts);
-      } finally {
         setLoading(false);
-      }
-    }
-    
-    fetchFashionProducts();
-  }, []);
+        
+        // Fetch enhanced products in background (non-blocking)
+        setTimeout(async () => {
+          try {
+            const { default: indianProductService } = await import('../services/indianProductService');
+            const result = await indianProductService.getAllProducts();
+            
+            if (result.success && result.products.length > 0) {
+              const transformedProducts = result.products.map(product => ({
+                id: product.productId,
+                name: product.name,
+                brand: product.brand,
+                category: product.type,
+                price: indianProductService.formatPrice(product.price),
+                originalPrice: `₹${product.price.mrp.toLocaleString('en-IN')}`,
+                discount: indianProductService.getDiscountPercentage(product.price),
+                image: product.image,
+                colors: product.colors,
+                sizes: product.sizes,
+                material: product.material,
+                occasion: product.occasion,
+                region: product.region,
+                tryOnData: product.tryOnData,
+                trending: product.trending,
+                featured: product.featured
+              }));
+              
+              // Merge with fallback and update
+              const mergedProducts = [...transformedProducts, ...fallbackProducts.filter(f => !transformedProducts.find(t => t.id === f.id))];
+              setClothingItems(mergedProducts);
+            }
+          } catch (error) {
+            console.warn('Could not fetch additional products, using fallbacks:', error);
+          }
+        }, 500); // Delay to avoid blocking initial render
+      
+    }, []);
 
   const handleCapture = (imageData) => {
     setCapturedImage(imageData);
@@ -936,15 +912,8 @@ const EnhancedTryOnPage = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 pb-12">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading AR engine...</p>
-            </div>
-          </div>
-        ) : (
-          <div className={`grid ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'} gap-8`}>
+        {/* Show UI immediately, loading happens in background */}
+        <div className={`grid ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'} gap-8`}>
             {/* Main AR Camera View */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -1035,7 +1004,6 @@ const EnhancedTryOnPage = () => {
               </motion.div>
             )}
           </div>
-        )}
 
         {/* Saved Looks Gallery */}
         {savedLooks.length > 0 && !isFullscreen && (
