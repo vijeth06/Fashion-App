@@ -1,15 +1,13 @@
 // 🔧 ADVANCED ADMIN DASHBOARD
 // Features: Analytics, inventory management, user insights, trend tracking, sales reporting
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   FaChartLine, FaUsers, FaShoppingBag, FaDollarSign, FaArrowUp as FaTrendingUp,
-  FaEye, FaHeart, FaComment, FaShare, FaBox, FaWarehouse, FaTag,
-  FaCog, FaDownload, FaFilter, FaSearch, FaBell, FaCalendarAlt,
-  FaGlobe, FaMobile, FaDesktop, FaTabletAlt, FaStar, FaArrowUp,
-  FaArrowDown, FaEquals, FaExclamationTriangle, FaCheckCircle,
-  FaEllipsisV, FaFire
+  FaEye, FaHeart, FaShare, FaBox, FaWarehouse,
+  FaDownload, FaStar, FaArrowUp,
+  FaArrowDown, FaEquals, FaExclamationTriangle
 } from 'react-icons/fa';
 import { Line, Bar, Doughnut, Pie } from 'react-chartjs-2';
 import {
@@ -388,7 +386,7 @@ function UserInsights({ data }) {
 export default function AdvancedAdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('7days');
-  const [data, setData] = useState(mockAnalytics);
+  const [data] = useState(mockAnalytics);
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: FaChartLine },

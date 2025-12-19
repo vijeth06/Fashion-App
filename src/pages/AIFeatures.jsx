@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, 
   FaInfoCircle, 
-  FaPlus, 
   FaCheckCircle, 
   FaLightbulb, 
   FaStar,
