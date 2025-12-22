@@ -1,5 +1,5 @@
-// 🥽 ADVANCED AR TRY-ON SYSTEM
-// Features: WebXR, Hand tracking, Gesture controls, Real-time physics, Body detection
+﻿
+
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +11,6 @@ import {
   FaHandPaper, FaRetweet, FaDownload, FaShare, FaTimes, FaAdjust, FaBullseye
 } from 'react-icons/fa';
 
-// WebXR Hand Tracking Integration
 class HandTrackingManager {
   constructor() {
     this.hands = new Map();
@@ -30,19 +29,18 @@ class HandTrackingManager {
         return true;
       }
     }
-    
-    // Fallback to MediaPipe or TensorFlow.js
+
     return this.initializeFallbackTracking();
   }
 
   async initializeFallbackTracking() {
-    // Mock hand tracking for demo
+
     console.log('Using fallback hand tracking');
     return true;
   }
 
   detectGesture(handLandmarks) {
-    // Mock gesture detection
+
     const gestures = ['pinch', 'grab', 'point', 'open_palm', 'thumbs_up'];
     return gestures[Math.floor(Math.random() * gestures.length)];
   }
@@ -62,7 +60,6 @@ class HandTrackingManager {
   }
 }
 
-// Advanced Body Detection & Pose Estimation
 class BodyDetectionEngine {
   constructor() {
     this.bodyLandmarks = null;
@@ -72,13 +69,13 @@ class BodyDetectionEngine {
   }
 
   async initialize() {
-    // Initialize ML models (MediaPipe, TensorFlow.js, etc.)
+
     console.log('Initializing body detection models...');
     return true;
   }
 
   async detectBody(videoElement) {
-    // Mock body detection
+
     return {
       pose: this.generateMockPose(),
       bodyDimensions: this.estimateBodyDimensions(),
@@ -120,7 +117,6 @@ class BodyDetectionEngine {
   }
 }
 
-// 3D Garment Physics Engine
 class GarmentPhysicsEngine {
   constructor() {
     this.clothSimulation = null;
@@ -129,15 +125,15 @@ class GarmentPhysicsEngine {
   }
 
   initialize(scene) {
-    // Initialize cloth physics simulation
+
     console.log('Initializing garment physics...');
     this.scene = scene;
   }
 
   simulateClothPhysics(garment, bodyPose, deltaTime) {
-    // Mock cloth simulation
+
     if (garment.mesh) {
-      // Simulate fabric movement
+
       const time = Date.now() * 0.001;
       const vertices = garment.mesh.geometry.attributes.position.array;
       
@@ -154,14 +150,13 @@ class GarmentPhysicsEngine {
   }
 }
 
-// Virtual Garment Component
 function VirtualGarment({ item, bodyPose, physics, visible = true }) {
   const meshRef = useRef();
   const { scene } = useThree();
   
   useEffect(() => {
     if (item && item.model3D) {
-      // Load 3D garment model
+
       const loader = new THREE.GLTFLoader();
       loader.load(item.model3D, (gltf) => {
         const garment = gltf.scene;
@@ -177,7 +172,7 @@ function VirtualGarment({ item, bodyPose, physics, visible = true }) {
 
   useFrame((state, delta) => {
     if (meshRef.current && physics && bodyPose) {
-      // Apply physics simulation
+
       physics.simulateClothPhysics(
         { mesh: meshRef.current },
         bodyPose,
@@ -190,7 +185,7 @@ function VirtualGarment({ item, bodyPose, physics, visible = true }) {
 
   return (
     <group ref={meshRef}>
-      {/* Fallback geometry if 3D model isn't available */}
+      {}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.5, 0.8, 0.1]} />
         <meshStandardMaterial 
@@ -203,7 +198,6 @@ function VirtualGarment({ item, bodyPose, physics, visible = true }) {
   );
 }
 
-// Gesture Control Handler
 function GestureControls({ onGesture, handTracking }) {
   const [currentGesture, setCurrentGesture] = useState(null);
   const [gestureConfidence, setGestureConfidence] = useState(0);
@@ -241,22 +235,21 @@ function GestureControls({ onGesture, handTracking }) {
       )}
       
       <div className="mt-2 text-xs text-gray-300">
-        ✋ Open Palm - Reset<br/>
-        👌 Pinch - Select<br/>
-        👍 Thumbs Up - Confirm
+        âœ‹ Open Palm - Reset<br/>
+        ðŸ‘Œ Pinch - Select<br/>
+        ðŸ‘ Thumbs Up - Confirm
       </div>
     </div>
   );
 }
 
-// Main Advanced AR Try-On Component
 export default function AdvancedARTryOn({
   selectedItems = [],
   onItemSelect,
   onClose,
   isVisible = true
 }) {
-  // State management
+
   const [arMode, setArMode] = useState('camera'); // 'camera', 'webxr', '3d'
   const [isARActive, setIsARActive] = useState(false);
   const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
@@ -273,17 +266,14 @@ export default function AdvancedARTryOn({
     gestureControls: false
   });
 
-  // Refs
   const videoRef = useRef();
   const canvasRef = useRef();
   const streamRef = useRef();
 
-  // Managers
   const [handTracking] = useState(() => new HandTrackingManager());
   const [bodyDetection] = useState(() => new BodyDetectionEngine());
   const [physicsEngine] = useState(() => new GarmentPhysicsEngine());
 
-  // Initialize AR systems
   useEffect(() => {
     if (isVisible) {
       initializeAR();
@@ -296,7 +286,7 @@ export default function AdvancedARTryOn({
 
   const initializeAR = async () => {
     try {
-      // Initialize camera
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -311,7 +301,6 @@ export default function AdvancedARTryOn({
         streamRef.current = stream;
       }
 
-      // Initialize detection systems
       await bodyDetection.initialize();
       
       if (arSettings.handTracking) {
@@ -331,29 +320,27 @@ export default function AdvancedARTryOn({
     }
   };
 
-  // Gesture handling
   const handleGesture = useCallback((gesture) => {
     switch (gesture) {
       case 'pinch':
-        // Select/deselect item
+
         console.log('Pinch gesture detected');
         break;
       case 'open_palm':
-        // Reset view
+
         console.log('Reset gesture detected');
         break;
       case 'thumbs_up':
-        // Confirm selection
+
         console.log('Confirm gesture detected');
         break;
       case 'grab':
-        // Move item
+
         console.log('Grab gesture detected');
         break;
     }
   }, []);
 
-  // Body pose detection loop
   useEffect(() => {
     if (!isARActive || !videoRef.current) return;
 
@@ -370,7 +357,6 @@ export default function AdvancedARTryOn({
     return () => clearInterval(interval);
   }, [isARActive, bodyDetection]);
 
-  // AR Mode switching
   const switchARMode = (mode) => {
     setArMode(mode);
     if (mode === 'webxr') {
@@ -391,7 +377,7 @@ export default function AdvancedARTryOn({
       });
       
       console.log('WebXR session started');
-      // Handle WebXR session
+
     } catch (error) {
       console.error('WebXR session failed:', error);
     }
@@ -407,15 +393,12 @@ export default function AdvancedARTryOn({
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Draw video frame
     ctx.drawImage(video, 0, 0);
 
-    // Draw virtual garments overlay
     selectedItems.forEach((item, index) => {
       ctx.globalAlpha = arSettings.transparency / 100;
       ctx.fillStyle = item.color || '#ff6b6b';
-      
-      // Mock garment overlay based on body pose
+
       if (bodyPose) {
         const { boundingBox } = bodyPose;
         ctx.fillRect(
@@ -429,7 +412,6 @@ export default function AdvancedARTryOn({
 
     ctx.globalAlpha = 1;
 
-    // Download image
     const link = document.createElement('a');
     link.download = `ar-tryon-${Date.now()}.png`;
     link.href = canvas.toDataURL();
@@ -445,9 +427,9 @@ export default function AdvancedARTryOn({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-black"
     >
-      {/* Main AR View */}
+      {}
       <div className="relative w-full h-full">
-        {/* Camera Feed */}
+        {}
         <video
           ref={videoRef}
           autoPlay
@@ -459,10 +441,10 @@ export default function AdvancedARTryOn({
           }}
         />
 
-        {/* Hidden canvas for photo capture */}
+        {}
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* 3D Overlay for garments */}
+        {}
         {arMode === '3d' && (
           <div className="absolute inset-0 pointer-events-none">
             <Canvas
@@ -486,7 +468,7 @@ export default function AdvancedARTryOn({
           </div>
         )}
 
-        {/* Gesture Controls */}
+        {}
         {gestureControlsEnabled && (
           <GestureControls
             onGesture={handleGesture}
@@ -494,7 +476,7 @@ export default function AdvancedARTryOn({
           />
         )}
 
-        {/* Body Pose Visualization */}
+        {}
         {bodyPose && (
           <div className="absolute inset-0 pointer-events-none">
             {Object.entries(bodyPose.pose).map(([joint, position]) => (
@@ -511,7 +493,7 @@ export default function AdvancedARTryOn({
           </div>
         )}
 
-        {/* AR Controls UI */}
+        {}
         <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
           <div className="flex items-center gap-4 bg-black/80 backdrop-blur-sm rounded-full px-6 py-3">
             <button
@@ -546,7 +528,7 @@ export default function AdvancedARTryOn({
           </div>
         </div>
 
-        {/* AR Mode Indicator */}
+        {}
         <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -556,7 +538,7 @@ export default function AdvancedARTryOn({
           </div>
         </div>
 
-        {/* Settings Panel */}
+        {}
         <div className="absolute top-4 right-4 space-y-2">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white max-w-xs">
             <h3 className="font-medium mb-3">AR Settings</h3>

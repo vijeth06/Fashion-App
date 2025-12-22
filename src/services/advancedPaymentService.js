@@ -1,5 +1,5 @@
-// 💳 ADVANCED PAYMENT SERVICE
-// Features: Multi-gateway integration, Smart routing, Fraud detection, Analytics
+﻿
+
 
 import { doc, setDoc, updateDoc, getDoc, serverTimestamp, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
@@ -9,8 +9,7 @@ class AdvancedPaymentService {
     this.db = db;
     this.loadedSDKs = new Set();
     this.paymentInstances = new Map();
-    
-    // Advanced payment configuration
+
     this.config = {
       razorpay: {
         keyId: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_demo',
@@ -43,13 +42,12 @@ class AdvancedPaymentService {
       }
     };
 
-    // Payment method configurations
     this.paymentMethods = {
       india: [
         { 
           id: 'razorpay_upi', 
           name: 'UPI', 
-          icon: '💰', 
+          icon: 'ðŸ’°', 
           provider: 'razorpay',
           fee: 0,
           processingTime: 'Instant',
@@ -59,7 +57,7 @@ class AdvancedPaymentService {
         { 
           id: 'razorpay_card', 
           name: 'Credit/Debit Card', 
-          icon: '💳', 
+          icon: 'ðŸ’³', 
           provider: 'razorpay',
           fee: 0.02,
           processingTime: 'Instant',
@@ -69,7 +67,7 @@ class AdvancedPaymentService {
         { 
           id: 'razorpay_netbanking', 
           name: 'Net Banking', 
-          icon: '🏦', 
+          icon: 'ðŸ¦', 
           provider: 'razorpay',
           fee: 0.015,
           processingTime: 'Instant',
@@ -79,7 +77,7 @@ class AdvancedPaymentService {
         { 
           id: 'razorpay_wallet', 
           name: 'Wallet', 
-          icon: '📱', 
+          icon: 'ðŸ“±', 
           provider: 'razorpay',
           fee: 0.01,
           processingTime: 'Instant',
@@ -89,7 +87,7 @@ class AdvancedPaymentService {
         { 
           id: 'cod', 
           name: 'Cash on Delivery', 
-          icon: '💵', 
+          icon: 'ðŸ’µ', 
           provider: 'manual',
           fee: 50,
           processingTime: 'On Delivery',
@@ -101,7 +99,7 @@ class AdvancedPaymentService {
         { 
           id: 'stripe_card', 
           name: 'Credit/Debit Card', 
-          icon: '💳', 
+          icon: 'ðŸ’³', 
           provider: 'stripe',
           fee: 0.029,
           processingTime: 'Instant',
@@ -111,7 +109,7 @@ class AdvancedPaymentService {
         { 
           id: 'paypal', 
           name: 'PayPal', 
-          icon: '🅿️', 
+          icon: 'ðŸ…¿ï¸', 
           provider: 'paypal',
           fee: 0.034,
           processingTime: 'Instant',
@@ -121,7 +119,7 @@ class AdvancedPaymentService {
         { 
           id: 'apple_pay', 
           name: 'Apple Pay', 
-          icon: '🍎', 
+          icon: 'ðŸŽ', 
           provider: 'stripe',
           fee: 0.029,
           processingTime: 'Instant',
@@ -131,7 +129,7 @@ class AdvancedPaymentService {
         { 
           id: 'google_pay', 
           name: 'Google Pay', 
-          icon: '📱', 
+          icon: 'ðŸ“±', 
           provider: 'stripe',
           fee: 0.029,
           processingTime: 'Instant',
@@ -141,14 +139,11 @@ class AdvancedPaymentService {
       ]
     };
 
-    // Initialize fraud detection
     this.fraudDetection = new FraudDetectionSystem();
-    
-    // Initialize payment analytics
+
     this.analytics = new PaymentAnalytics();
   }
 
-  // 🚀 SMART PAYMENT GATEWAY ROUTER
   async smartRoutePayment(orderData, preferences = {}) {
     const userLocation = await this.detectUserLocation();
     const recommendedMethods = this.getRecommendedPaymentMethods(userLocation, orderData, preferences);
@@ -162,7 +157,6 @@ class AdvancedPaymentService {
     };
   }
 
-  // 🔍 FRAUD DETECTION & RISK ASSESSMENT
   async assessPaymentRisk(orderData, userProfile) {
     const riskFactors = await this.fraudDetection.analyzeTransaction({
       amount: orderData.totalAmount,
@@ -183,10 +177,9 @@ class AdvancedPaymentService {
     };
   }
 
-  // 💰 PROCESS PAYMENT WITH SMART ROUTING
   async processPayment(paymentMethod, orderData, options = {}) {
     try {
-      // Risk assessment
+
       const riskAssessment = await this.assessPaymentRisk(orderData, options.userProfile);
       
       if (riskAssessment.requiresVerification) {
@@ -197,7 +190,6 @@ class AdvancedPaymentService {
         };
       }
 
-      // Create order record
       const orderResult = await this.createAdvancedOrder({
         ...orderData,
         riskAssessment,
@@ -208,7 +200,6 @@ class AdvancedPaymentService {
         return orderResult;
       }
 
-      // Route to appropriate payment processor
       let paymentResult;
       
       switch (paymentMethod.provider) {
@@ -228,7 +219,6 @@ class AdvancedPaymentService {
           throw new Error(`Unsupported payment provider: ${paymentMethod.provider}`);
       }
 
-      // Log analytics
       await this.analytics.trackPaymentAttempt({
         orderId: orderResult.orderId,
         method: paymentMethod,
@@ -247,7 +237,6 @@ class AdvancedPaymentService {
     }
   }
 
-  // 🏦 ENHANCED RAZORPAY INTEGRATION
   async processRazorpayPayment(orderData, paymentMethod, orderId) {
     await this.loadSDK('razorpay');
     
@@ -260,8 +249,7 @@ class AdvancedPaymentService {
         description: this.config.razorpay.description,
         image: this.config.razorpay.image,
         order_id: orderId,
-        
-        // Enhanced configuration
+
         method: {
           upi: paymentMethod.id.includes('upi'),
           card: paymentMethod.id.includes('card'),
@@ -309,7 +297,6 @@ class AdvancedPaymentService {
     });
   }
 
-  // 💳 ENHANCED STRIPE INTEGRATION
   async processStripePayment(orderData, paymentMethod, orderId) {
     await this.loadSDK('stripe');
     
@@ -318,8 +305,7 @@ class AdvancedPaymentService {
     if (paymentMethod.id === 'apple_pay' || paymentMethod.id === 'google_pay') {
       return this.processDigitalWalletPayment(stripe, orderData, paymentMethod, orderId);
     }
-    
-    // Create payment intent on backend (mock for demo)
+
     const paymentIntent = await this.createStripePaymentIntent(orderData, orderId);
     
     if (!paymentIntent.success) {
@@ -331,7 +317,7 @@ class AdvancedPaymentService {
       {
         payment_method: {
           card: {
-            // Card details would be collected via Stripe Elements
+
           },
           billing_details: {
             name: orderData.customerInfo?.name,
@@ -356,7 +342,6 @@ class AdvancedPaymentService {
     };
   }
 
-  // 🍎 DIGITAL WALLET PROCESSING
   async processDigitalWalletPayment(stripe, orderData, paymentMethod, orderId) {
     const paymentRequest = stripe.paymentRequest({
       country: 'US',
@@ -369,7 +354,6 @@ class AdvancedPaymentService {
       requestPayerEmail: true
     });
 
-    // Check if digital wallet is available
     const canMakePayment = await paymentRequest.canMakePayment();
     
     if (!canMakePayment) {
@@ -408,7 +392,6 @@ class AdvancedPaymentService {
     });
   }
 
-  // 🌍 PAYPAL INTEGRATION
   async processPayPalPayment(orderData, paymentMethod, orderId) {
     await this.loadSDK('paypal');
     
@@ -454,10 +437,9 @@ class AdvancedPaymentService {
     });
   }
 
-  // 💵 MANUAL PAYMENT PROCESSING (COD)
   async processManualPayment(orderData, paymentMethod, orderId) {
     if (paymentMethod.id === 'cod') {
-      // Update order status to pending with COD
+
       await this.updateOrderStatus(orderId, {
         status: 'confirmed',
         paymentStatus: 'pending_cod',
@@ -479,7 +461,6 @@ class AdvancedPaymentService {
     };
   }
 
-  // 🔒 ENHANCED ORDER CREATION
   async createAdvancedOrder(orderData) {
     try {
       const orderId = `VFO_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -490,8 +471,7 @@ class AdvancedPaymentService {
         ...orderData,
         status: 'pending',
         paymentStatus: 'pending',
-        
-        // Enhanced tracking
+
         trackingInfo: {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
@@ -499,16 +479,14 @@ class AdvancedPaymentService {
           userAgent: navigator.userAgent,
           sessionId: this.getSessionId()
         },
-        
-        // Analytics data
+
         analytics: {
           source: document.referrer,
           campaign: this.getUtmParameters(),
           deviceType: this.getDeviceType(),
           timeOnSite: this.getTimeOnSite()
         },
-        
-        // Security data
+
         security: {
           riskScore: orderData.riskAssessment?.riskScore || 0,
           verificationStatus: 'pending',
@@ -531,7 +509,6 @@ class AdvancedPaymentService {
     }
   }
 
-  // ✅ ENHANCED PAYMENT VERIFICATION
   async verifyPayment(paymentData) {
     try {
       const orderRef = doc(this.db, 'orders', paymentData.orderId);
@@ -544,7 +521,6 @@ class AdvancedPaymentService {
         };
       }
 
-      // In production, verify payment signature with backend
       const isVerified = await this.verifyPaymentSignature(paymentData);
       
       if (!isVerified) {
@@ -554,7 +530,6 @@ class AdvancedPaymentService {
         };
       }
 
-      // Update order with payment details
       const updateData = {
         paymentStatus: 'completed',
         status: 'confirmed',
@@ -568,7 +543,6 @@ class AdvancedPaymentService {
 
       await updateDoc(orderRef, updateData);
 
-      // Trigger post-payment processes
       await this.triggerPostPaymentProcesses(paymentData.orderId);
 
       return {
@@ -585,7 +559,6 @@ class AdvancedPaymentService {
     }
   }
 
-  // 🔧 UTILITY METHODS
   
   async loadSDK(provider) {
     if (this.loadedSDKs.has(provider)) return;
@@ -630,7 +603,7 @@ class AdvancedPaymentService {
     return methods
       .filter(method => method.supported)
       .sort((a, b) => {
-        // Sort by popularity and fees
+
         const scoreA = a.popularity - (a.fee * orderData.totalAmount);
         const scoreB = b.popularity - (b.fee * orderData.totalAmount);
         return scoreB - scoreA;
@@ -638,7 +611,7 @@ class AdvancedPaymentService {
   }
 
   async detectUserLocation() {
-    // Mock implementation - in production, use IP geolocation
+
     return {
       country: 'India',
       region: 'India',
@@ -677,9 +650,8 @@ class AdvancedPaymentService {
     return 'high';
   }
 
-  // Real implementations for production
   async getDeviceFingerprint() {
-    // Generate real device fingerprint using FingerprintJS or similar
+
     const components = [
       navigator.userAgent,
       navigator.language,
@@ -741,7 +713,7 @@ class AdvancedPaymentService {
 
   async verifyPaymentSignature(paymentData) {
     try {
-      // Send to backend for server-side verification
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -761,7 +733,7 @@ class AdvancedPaymentService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log('✅ Post-payment processes triggered for:', orderId);
+      console.log('âœ… Post-payment processes triggered for:', orderId);
     } catch (error) {
       console.error('Failed to trigger post-payment processes:', error);
     }
@@ -779,7 +751,7 @@ class AdvancedPaymentService {
   }
   async createStripePaymentIntent(orderData, orderId) {
     try {
-      // Call backend to create real Stripe PaymentIntent
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/create-stripe-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -847,27 +819,23 @@ class AdvancedPaymentService {
   }
 }
 
-// 🔍 FRAUD DETECTION SYSTEM
 class FraudDetectionSystem {
   async analyzeTransaction(transactionData) {
-    // Mock fraud detection - in production, use ML models
+
     const riskFactors = [];
     let score = 0;
 
-    // Amount-based risk
     if (transactionData.amount > 10000) {
       riskFactors.push('high_amount');
       score += 0.3;
     }
 
-    // Velocity checks
     const recentOrders = await this.getRecentOrders(transactionData.userProfile?.uid);
     if (recentOrders.length > 5) {
       riskFactors.push('high_velocity');
       score += 0.4;
     }
 
-    // Geographic risk
     if (this.isHighRiskLocation(transactionData.shippingAddress)) {
       riskFactors.push('high_risk_location');
       score += 0.2;
@@ -898,12 +866,11 @@ class FraudDetectionSystem {
   }
 
   isHighRiskLocation(address) {
-    // Mock implementation
+
     return false;
   }
 }
 
-// 📊 PAYMENT ANALYTICS
 class PaymentAnalytics {
   async trackPaymentAttempt(data) {
     try {
@@ -918,6 +885,5 @@ class PaymentAnalytics {
   }
 }
 
-// Export singleton instance
 const advancedPaymentService = new AdvancedPaymentService();
 export default advancedPaymentService;

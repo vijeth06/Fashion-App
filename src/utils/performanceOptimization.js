@@ -1,21 +1,9 @@
-/**
- * Performance Optimization Configuration
- * 
- * Implements:
- * - Lazy loading for heavy components
- * - Code splitting
- * - Image optimization
- * - Bundle size optimization
- * 
- * @version 1.0.0
- */
+﻿
 
 import React, { lazy, Suspense } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 
-/**
- * Loading fallback component
- */
+
 const LoadingFallback = ({ message = 'Loading...' }) => (
   <Box
     display="flex"
@@ -30,20 +18,14 @@ const LoadingFallback = ({ message = 'Loading...' }) => (
   </Box>
 );
 
-/**
- * Lazy-loaded components
- * 
- * Heavy components are loaded only when needed to reduce initial bundle size
- */
 
-// Main try-on component (v2)
+
 export const VirtualTryOnComponent = lazy(() => 
   import('./components/VirtualTryOnComponent.v2').then(module => ({
     default: module.default
   }))
 );
 
-// AR Features
 export const AdvancedARTryOn = lazy(() => 
   import('./components/AdvancedARTryOn')
 );
@@ -52,49 +34,39 @@ export const ARTryOn = lazy(() =>
   import('./components/ARTryOn')
 );
 
-// Quantum/Advanced Features (likely fake - lazy load to defer bundle impact)
 export const QuantumTryOn = lazy(() => 
   import('./components/QuantumTryOn')
 );
 
-// 3D/Immersive Features
 export const Immersive3DShopping = lazy(() => 
   import('./components/Immersive3DShopping')
 );
 
-// Metaverse Integration
 export const MetaverseIntegration = lazy(() => 
   import('./components/MetaverseIntegration')
 );
 
-// Premium Features
 export const PremiumFeatures = lazy(() => 
   import('./components/PremiumFeatures')
 );
 
-// Admin Dashboard
 export const AdvancedAdminDashboard = lazy(() => 
   import('./components/AdvancedAdminDashboard')
 );
 
-// Sustainability Features
 export const BiometricSustainability = lazy(() => 
   import('./components/BiometricSustainability')
 );
 
-// Real-time Features
 export const RealTimeFeatures = lazy(() => 
   import('./components/RealTimeFeatures')
 );
 
-// Analytics
 export const AdvancedAnalytics = lazy(() => 
   import('./analytics/advancedAnalytics')
 );
 
-/**
- * Wrapper component for lazy-loaded components
- */
+
 export const LazyComponent = ({ 
   component: Component, 
   fallback = null,
@@ -116,9 +88,7 @@ export const LazyComponent = ({
   );
 };
 
-/**
- * Simple error boundary
- */
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -152,13 +122,9 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-/**
- * Image optimization helpers
- */
+
 export const ImageOptimization = {
-  /**
-   * Lazy load images when they enter viewport
-   */
+  
   lazyLoadImage: (src, options = {}) => {
     const {
       placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3C/svg%3E',
@@ -168,8 +134,7 @@ export const ImageOptimization = {
 
     return new Promise((resolve, reject) => {
       const img = new Image();
-      
-      // Use Intersection Observer for lazy loading
+
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach(entry => {
@@ -188,9 +153,7 @@ export const ImageOptimization = {
     });
   },
 
-  /**
-   * Preload critical images
-   */
+  
   preloadImages: (srcs) => {
     return Promise.all(
       srcs.map(src => {
@@ -204,11 +167,9 @@ export const ImageOptimization = {
     );
   },
 
-  /**
-   * Progressive image loading
-   */
+  
   progressiveLoad: async (lowResSrc, highResSrc) => {
-    // Load low-res first
+
     const lowRes = new Image();
     lowRes.src = lowResSrc;
     
@@ -217,7 +178,6 @@ export const ImageOptimization = {
       lowRes.onerror = reject;
     });
 
-    // Then load high-res
     const highRes = new Image();
     highRes.src = highResSrc;
     
@@ -228,13 +188,9 @@ export const ImageOptimization = {
   }
 };
 
-/**
- * Bundle optimization helpers
- */
+
 export const BundleOptimization = {
-  /**
-   * Dynamically import modules only when needed
-   */
+  
   importModule: async (modulePath) => {
     try {
       const module = await import(modulePath);
@@ -245,13 +201,11 @@ export const BundleOptimization = {
     }
   },
 
-  /**
-   * Chunk loading with retry
-   */
+  
   loadChunk: async (chunkName, maxRetries = 3) => {
     for (let i = 0; i < maxRetries; i++) {
       try {
-        const module = await import(/* webpackChunkName: "[request]" */ chunkName);
+        const module = await import( chunkName);
         return module;
       } catch (error) {
         if (i === maxRetries - 1) throw error;
@@ -261,13 +215,9 @@ export const BundleOptimization = {
   }
 };
 
-/**
- * Performance monitoring
- */
+
 export const PerformanceMonitor = {
-  /**
-   * Measure component render time
-   */
+  
   measureRender: (componentName, callback) => {
     const start = performance.now();
     const result = callback();
@@ -278,9 +228,7 @@ export const PerformanceMonitor = {
     return result;
   },
 
-  /**
-   * Track lazy component load time
-   */
+  
   trackLazyLoad: (componentName) => {
     const start = performance.now();
     
@@ -290,9 +238,7 @@ export const PerformanceMonitor = {
     };
   },
 
-  /**
-   * Get performance metrics
-   */
+  
   getMetrics: () => {
     if (!window.performance) return null;
 
@@ -300,18 +246,15 @@ export const PerformanceMonitor = {
     const paint = performance.getEntriesByType('paint');
 
     return {
-      // Page load metrics
+
       domContentLoaded: navigation?.domContentLoadedEventEnd - navigation?.domContentLoadedEventStart,
       loadComplete: navigation?.loadEventEnd - navigation?.loadEventStart,
-      
-      // Paint metrics
+
       firstPaint: paint.find(p => p.name === 'first-paint')?.startTime,
       firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime,
-      
-      // Resource timing
+
       totalResources: performance.getEntriesByType('resource').length,
-      
-      // Memory (if available)
+
       memory: performance.memory ? {
         used: performance.memory.usedJSHeapSize,
         total: performance.memory.totalJSHeapSize,
@@ -321,13 +264,9 @@ export const PerformanceMonitor = {
   }
 };
 
-/**
- * Cache management
- */
+
 export const CacheManager = {
-  /**
-   * Cache with expiration
-   */
+  
   cache: new Map(),
 
   set: (key, value, ttl = 5 * 60 * 1000) => {
@@ -354,9 +293,7 @@ export const CacheManager = {
     CacheManager.cache.clear();
   },
 
-  /**
-   * Clean expired entries
-   */
+  
   cleanup: () => {
     const now = Date.now();
     
@@ -368,7 +305,6 @@ export const CacheManager = {
   }
 };
 
-// Auto cleanup every 5 minutes
 setInterval(() => CacheManager.cleanup(), 5 * 60 * 1000);
 
 export default {

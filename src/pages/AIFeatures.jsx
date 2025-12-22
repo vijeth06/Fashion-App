@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, 
@@ -18,10 +18,7 @@ import OutfitRecommendationService from '../services/OutfitRecommendationService
 import { getAnalytics } from '../services/AnalyticsService';
 import { sampleClothingItems } from '../data/clothingData';
 
-/**
- * AI-Powered Body Analysis Page
- * Real body measurements from pose detection
- */
+
 export const BodyAnalysisPage = () => {
   const { user } = useAuth();
   const [analysis, setAnalysis] = useState(null);
@@ -35,12 +32,10 @@ export const BodyAnalysisPage = () => {
   const bodyAnalysisServiceRef = useRef(null);
   const analytics = getAnalytics();
 
-  // Initialize services
   useEffect(() => {
     cameraServiceRef.current = new CameraService();
     bodyAnalysisServiceRef.current = new BodyAnalysisService();
 
-    // Track page view
     analytics.trackPageView('Body Analysis');
 
     return () => {
@@ -51,18 +46,16 @@ export const BodyAnalysisPage = () => {
         bodyAnalysisServiceRef.current.dispose();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
-  // Initialize analytics with user
   useEffect(() => {
     if (user?.uid) {
       analytics.setUserId(user.uid);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [user]);
 
-  // Start camera
   const handleStartCamera = async () => {
     setError(null);
     setLoading(true);
@@ -91,7 +84,6 @@ export const BodyAnalysisPage = () => {
     }
   };
 
-  // Stop camera
   const handleStopCamera = () => {
     if (cameraServiceRef.current) {
       cameraServiceRef.current.stopCamera();
@@ -99,7 +91,6 @@ export const BodyAnalysisPage = () => {
     }
   };
 
-  // Capture and analyze
   const handleCaptureAnalyze = async () => {
     if (!cameraActive) {
       setError('Please start the camera first');
@@ -111,10 +102,9 @@ export const BodyAnalysisPage = () => {
     const startTime = Date.now();
 
     try {
-      // Capture frame
+
       const frame = cameraServiceRef.current.captureFrame();
-      
-      // Create image element from captured frame
+
       const img = new Image();
       img.src = frame.dataUrl;
       
@@ -123,7 +113,6 @@ export const BodyAnalysisPage = () => {
         img.onerror = reject;
       });
 
-      // Analyze body
       const result = await bodyAnalysisServiceRef.current.analyzeFromImage(img);
       
       const endTime = Date.now();
@@ -133,8 +122,7 @@ export const BodyAnalysisPage = () => {
       if (result.success) {
         setAnalysis(result);
         setError(null);
-        
-        // Track successful analysis
+
         analytics.trackBodyAnalysis({
           success: true,
           bodyType: result.bodyType?.type,
@@ -155,7 +143,6 @@ export const BodyAnalysisPage = () => {
     }
   };
 
-  // Upload and analyze image
   const handleUploadAnalyze = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -228,11 +215,11 @@ export const BodyAnalysisPage = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Camera/Upload Section */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Capture Your Photo</h2>
             
-            {/* Error Display */}
+            {}
             <AnimatePresence>
               {error && (
                 <motion.div
@@ -246,7 +233,7 @@ export const BodyAnalysisPage = () => {
               )}
             </AnimatePresence>
 
-            {/* Video Preview */}
+            {}
             <div className="mb-6">
               <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
                 <video
@@ -264,7 +251,7 @@ export const BodyAnalysisPage = () => {
               </div>
             </div>
 
-            {/* Camera Controls */}
+            {}
             <div className="space-y-3">
               {!cameraActive ? (
                 <button
@@ -314,37 +301,16 @@ export const BodyAnalysisPage = () => {
                 </>
               )}
 
-              {/* Upload Option */}
+              {}
               <div className="relative">
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={handleUploadAnalyze}
-                  disabled={loading}
-                  className="hidden"
-                  id="upload-image"
-                />
-                <label
-                  htmlFor="upload-image"
-                  className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-4 rounded-xl font-medium hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                  <FaUpload />
-                  Upload Photo
-                </label>
-              </div>
-            </div>
-
-            <p className="text-sm text-gray-500 mt-4 text-center">
-              💡 Stand straight with arms slightly away from body for best results
-            </p>
-          </div>
-
-          {/* Results Section */}
+                  accept="image}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Your Measurements</h2>
             {analysis ? (
               <div className="space-y-4">
-                {/* Confidence */}
+                {}
                 <div className="p-4 bg-blue-50 rounded-xl">
                   <p className="text-sm text-gray-600">Analysis Confidence</p>
                   <div className="flex items-center gap-2 mt-2">
@@ -360,14 +326,14 @@ export const BodyAnalysisPage = () => {
                   </div>
                 </div>
 
-                {/* Body Type */}
+                {}
                 <div className="p-4 bg-purple-50 rounded-xl">
                   <p className="text-sm text-gray-600">Body Type</p>
                   <p className="text-2xl font-bold text-purple-700">{analysis.bodyType?.type}</p>
                   <p className="text-sm text-gray-600 mt-1">{analysis.bodyType?.description}</p>
                 </div>
 
-                {/* Measurements */}
+                {}
                 <div className="p-4 bg-pink-50 rounded-xl">
                   <p className="text-sm text-gray-600 mb-2">Measurements</p>
                   <div className="grid grid-cols-2 gap-2 text-sm">
@@ -386,7 +352,7 @@ export const BodyAnalysisPage = () => {
                   </div>
                 </div>
 
-                {/* Size Recommendations */}
+                {}
                 <div className="p-4 bg-green-50 rounded-xl">
                   <p className="text-sm text-gray-600 mb-2">Recommended Sizes</p>
                   <div className="grid grid-cols-3 gap-2 text-center">
@@ -408,10 +374,10 @@ export const BodyAnalysisPage = () => {
                   </p>
                 </div>
 
-                {/* Processing Time */}
+                {}
                 {processingTime > 0 && (
                   <div className="text-center text-sm text-gray-500">
-                    ⚡ Processed in {(processingTime / 1000).toFixed(2)}s
+                    âš¡ Processed in {(processingTime / 1000).toFixed(2)}s
                   </div>
                 )}
               </div>
@@ -424,20 +390,20 @@ export const BodyAnalysisPage = () => {
           </div>
         </div>
 
-        {/* Features */}
+        {}
         <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">📏</div>
+            <div className="text-4xl mb-4">ðŸ“</div>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Precise Measurements</h3>
             <p className="text-gray-600 text-sm">AI-powered body analysis from pose detection</p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">👕</div>
+            <div className="text-4xl mb-4">ðŸ‘•</div>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Size Recommendations</h3>
             <p className="text-gray-600 text-sm">Get accurate size suggestions for every item</p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">✨</div>
+            <div className="text-4xl mb-4">âœ¨</div>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Style Advice</h3>
             <p className="text-gray-600 text-sm">Personalized fitting recommendations</p>
           </div>
@@ -447,10 +413,7 @@ export const BodyAnalysisPage = () => {
   );
 };
 
-/**
- * AI Outfit Recommendations Page
- * Score and recommend outfits based on style rules
- */
+
 export const OutfitRecommendationsPage = () => {
   const { user } = useAuth();
   const [selectedItems, setSelectedItems] = useState([]);
@@ -468,46 +431,40 @@ export const OutfitRecommendationsPage = () => {
   useEffect(() => {
     outfitServiceRef.current = new OutfitRecommendationService();
     analytics.trackPageView('Outfit Recommendations');
-    
-    // Load available clothing items
+
     setAvailableItems(sampleClothingItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   useEffect(() => {
     if (user?.uid) {
       analytics.setUserId(user.uid);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [user]);
 
-  // Update preferences
   const handlePreferenceChange = (key, value) => {
     const newPreferences = { ...preferences, [key]: value };
     setPreferences(newPreferences);
     outfitServiceRef.current.setUserPreferences(newPreferences);
 
-    // Re-score if items selected
     if (selectedItems.length > 0) {
       handleScoreOutfit();
     }
   };
 
-  // Add item to outfit
   const handleAddItem = (item) => {
     if (!selectedItems.find(i => i.id === item.id)) {
       setSelectedItems([...selectedItems, item]);
-      // Auto-score when item is added
+
       setTimeout(() => handleScoreOutfit(), 100);
     }
   };
 
-  // Remove item
   const handleRemoveItem = (id) => {
     setSelectedItems(selectedItems.filter(item => item.id !== id));
   };
 
-  // Score outfit
   const handleScoreOutfit = () => {
     if (selectedItems.length === 0) {
       setScore(null);
@@ -542,11 +499,11 @@ export const OutfitRecommendationsPage = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Outfit Builder */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Build Your Outfit</h2>
 
-            {/* Preferences */}
+            {}
             <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
@@ -579,7 +536,7 @@ export const OutfitRecommendationsPage = () => {
               </div>
             </div>
 
-            {/* Selected Items */}
+            {}
             <div className="mb-6">
               <h3 className="font-bold mb-3 text-gray-900">Selected Items ({selectedItems.length})</h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -609,7 +566,7 @@ export const OutfitRecommendationsPage = () => {
               </div>
             </div>
 
-            {/* Available Items Browser */}
+            {}
             <div className="mb-6">
               <h3 className="font-bold mb-3 text-gray-900">Available Items</h3>
               <div className="grid grid-cols-3 gap-2 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded-lg">
@@ -636,7 +593,7 @@ export const OutfitRecommendationsPage = () => {
               </div>
             </div>
 
-            {/* Actions */}
+            {}
             <div className="space-y-3">
               <button
                 onClick={handleScoreOutfit}
@@ -649,13 +606,13 @@ export const OutfitRecommendationsPage = () => {
             </div>
           </div>
 
-          {/* Score Results */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Outfit Score</h2>
             
             {score ? (
               <div className="space-y-6">
-                {/* Overall Score */}
+                {}
                 <div className="text-center">
                   <div className={`text-6xl font-black mb-2 ${
                     score.overallScore >= 80 ? 'text-green-600' :
@@ -667,7 +624,7 @@ export const OutfitRecommendationsPage = () => {
                   <p className="text-gray-600">Out of 100</p>
                 </div>
 
-                {/* Breakdown */}
+                {}
                 <div className="space-y-3">
                   <h3 className="font-bold text-gray-900">Score Breakdown</h3>
                   {Object.entries(score.breakdown).map(([key, value]) => (
@@ -692,7 +649,7 @@ export const OutfitRecommendationsPage = () => {
                   ))}
                 </div>
 
-                {/* Suggestions */}
+                {}
                 {score.suggestions && score.suggestions.length > 0 && (
                   <div>
                     <h3 className="font-bold mb-3 text-gray-900">Suggestions</h3>
@@ -707,7 +664,7 @@ export const OutfitRecommendationsPage = () => {
                   </div>
                 )}
 
-                {/* Strengths */}
+                {}
                 {score.strengths && score.strengths.length > 0 && (
                   <div>
                     <h3 className="font-bold mb-3 text-gray-900">Strengths</h3>
@@ -734,7 +691,7 @@ export const OutfitRecommendationsPage = () => {
           </div>
         </div>
 
-        {/* Info Section */}
+        {}
         <div className="mt-12 max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h3 className="text-2xl font-bold mb-4 text-gray-900">How It Works</h3>

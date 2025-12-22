@@ -1,5 +1,5 @@
-// 🔮 QUANTUM VIRTUAL TRY-ON WITH FABRIC SIMULATION
-// Features: Quantum Physics Modeling, Neural Pose Estimation, Real-time Rendering
+﻿
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +19,6 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Initialize quantum try-on system
   useEffect(() => {
     initializeQuantumTryOn();
   }, [selectedItem, userProfile]);
@@ -28,15 +27,13 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
     setIsAnalyzing(true);
     
     try {
-      // Initialize quantum fabric simulation
+
       const fabricSim = await initializeFabricPhysics(selectedItem);
       setFabricPhysics(fabricSim);
 
-      // Generate user body mesh
       const mesh = await generateUserBodyMesh(userProfile);
       setBodyMesh(mesh);
 
-      // Start quantum simulation
       const quantumSim = await startQuantumSimulation(fabricSim, mesh);
       setQuantumSimulation(quantumSim);
       
@@ -50,19 +47,19 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20">
       
-      {/* Quantum Background Effects */}
+      {}
       <QuantumBackground />
       
-      {/* Main Try-On Interface */}
+      {}
       <div className="relative z-10 container mx-auto px-6 py-8">
         
-        {/* Header Controls */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col lg:flex-row gap-6 mb-8"
         >
-          {/* Mode Selection */}
+          {}
           <div className="bg-black/40 backdrop-blur-xl border border-cyan-400/30 rounded-2xl p-6">
             <h3 className="text-cyan-400 font-mono text-lg mb-4 flex items-center">
               <FaAtom className="mr-2" />
@@ -93,7 +90,7 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
             </div>
           </div>
 
-          {/* Simulation Controls */}
+          {}
           <div className="bg-black/40 backdrop-blur-xl border border-purple-400/30 rounded-2xl p-6 flex-1">
             <h3 className="text-purple-400 font-mono text-lg mb-4 flex items-center">
               <FaDna className="mr-2" />
@@ -105,7 +102,7 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
                 value={fabricPhysics?.gravity || 9.81}
                 min={0}
                 max={20}
-                unit="m/s²"
+                unit="m/sÂ²"
               />
               <QuantumControl
                 label="WIND"
@@ -132,20 +129,20 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
           </div>
         </motion.div>
 
-        {/* Main Try-On Display */}
+        {}
         <div className="grid lg:grid-cols-3 gap-8">
           
-          {/* Live Try-On Viewport */}
+          {}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="relative bg-black/60 backdrop-blur-xl border border-cyan-400/30 rounded-3xl overflow-hidden"
             >
-              {/* Quantum Scanning Overlay */}
+              {}
               {isAnalyzing && <QuantumScanningOverlay />}
               
-              {/* 3D Viewport */}
+              {}
               <div className="aspect-[4/3] relative">
                 <Canvas
                   ref={canvasRef}
@@ -155,18 +152,18 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
                   <PerspectiveCamera makeDefault position={[0, 0, 5]} />
                   <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
                   
-                  {/* Lighting Setup */}
+                  {}
                   <ambientLight intensity={0.4} />
                   <directionalLight position={[10, 10, 5]} intensity={0.8} />
                   <pointLight position={[-10, -10, -5]} intensity={0.3} color="#00ffff" />
                   
-                  {/* Environment */}
+                  {}
                   <Environment preset={environmentLighting} />
                   
-                  {/* User Body Mesh */}
+                  {}
                   {bodyMesh && <BodyMesh mesh={bodyMesh} />}
                   
-                  {/* Quantum Fabric Simulation */}
+                  {}
                   {quantumSimulation && (
                     <QuantumFabric
                       simulation={quantumSimulation}
@@ -175,11 +172,11 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
                     />
                   )}
                   
-                  {/* Particle Effects */}
+                  {}
                   <QuantumParticles />
                 </Canvas>
                 
-                {/* Overlay Controls */}
+                {}
                 <div className="absolute top-4 right-4 flex flex-col space-y-2">
                   <QuantumButton
                     icon={FaEye}
@@ -201,24 +198,24 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
             </motion.div>
           </div>
 
-          {/* Quantum Analysis Panel */}
+          {}
           <div className="space-y-6">
             
-            {/* Fit Analysis */}
+            {}
             <QuantumAnalysisPanel
               title="FIT ANALYSIS"
               icon={FaAtom}
               data={quantumSimulation?.fitAnalysis}
             />
             
-            {/* Fabric Properties */}
+            {}
             <QuantumAnalysisPanel
               title="FABRIC QUANTUM STATE"
               icon={FaDna}
               data={fabricPhysics}
             />
             
-            {/* Recommendations */}
+            {}
             <QuantumAnalysisPanel
               title="NEURAL RECOMMENDATIONS"
               icon={FaRobot}
@@ -228,7 +225,7 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
           </div>
         </div>
         
-        {/* Advanced Controls */}
+        {}
         <QuantumAdvancedControls
           simulation={quantumSimulation}
           onPhysicsChange={setFabricPhysics}
@@ -241,11 +238,10 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
   );
 }
 
-// 🌌 Quantum Background Component
 function QuantumBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none">
-      {/* Quantum Field Lines */}
+      {}
       {[...Array(20)].map((_, i) => (
         <motion.div
           key={i}
@@ -266,7 +262,7 @@ function QuantumBackground() {
         />
       ))}
       
-      {/* Quantum Particles */}
+      {}
       {[...Array(50)].map((_, i) => (
         <motion.div
           key={`particle-${i}`}
@@ -292,17 +288,16 @@ function QuantumBackground() {
   );
 }
 
-// 🔬 Quantum Scanning Overlay
 function QuantumScanningOverlay() {
   return (
     <div className="absolute inset-0 z-10 bg-black/20">
-      {/* Scanning Lines */}
+      {}
       <motion.div
         className="absolute inset-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {/* Horizontal Scanner */}
+        {}
         <motion.div
           className="absolute w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
           animate={{
@@ -315,7 +310,7 @@ function QuantumScanningOverlay() {
           }}
         />
         
-        {/* Vertical Scanner */}
+        {}
         <motion.div
           className="absolute w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent"
           animate={{
@@ -330,7 +325,7 @@ function QuantumScanningOverlay() {
         />
       </motion.div>
       
-      {/* Scanning Text */}
+      {}
       <div className="absolute bottom-4 left-4 text-cyan-400 font-mono">
         <motion.div
           animate={{ opacity: [0.5, 1, 0.5] }}
@@ -343,7 +338,6 @@ function QuantumScanningOverlay() {
   );
 }
 
-// ⚙️ Quantum Control Component
 function QuantumControl({ label, value, min, max, unit, onChange }) {
   return (
     <div className="text-center">
@@ -362,7 +356,6 @@ function QuantumControl({ label, value, min, max, unit, onChange }) {
   );
 }
 
-// 🔘 Quantum Button Component
 function QuantumButton({ icon: Icon, label, onClick, active = false }) {
   return (
     <motion.button
@@ -381,7 +374,6 @@ function QuantumButton({ icon: Icon, label, onClick, active = false }) {
   );
 }
 
-// 📊 Quantum Analysis Panel Component
 function QuantumAnalysisPanel({ title, icon: Icon, data }) {
   return (
     <motion.div
@@ -414,7 +406,6 @@ function QuantumAnalysisPanel({ title, icon: Icon, data }) {
   );
 }
 
-// 🎛️ Advanced Controls Component
 function QuantumAdvancedControls({ simulation, onPhysicsChange, onEnvironmentChange, onQualityChange }) {
   return (
     <motion.div
@@ -429,7 +420,7 @@ function QuantumAdvancedControls({ simulation, onPhysicsChange, onEnvironmentCha
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* Physics Controls */}
+        {}
         <div>
           <h4 className="text-cyan-400 text-sm font-mono mb-3">PHYSICS ENGINE</h4>
           <div className="space-y-2">
@@ -449,7 +440,7 @@ function QuantumAdvancedControls({ simulation, onPhysicsChange, onEnvironmentCha
           </div>
         </div>
         
-        {/* Environment Controls */}
+        {}
         <div>
           <h4 className="text-purple-400 text-sm font-mono mb-3">ENVIRONMENT</h4>
           <div className="space-y-2">
@@ -465,7 +456,7 @@ function QuantumAdvancedControls({ simulation, onPhysicsChange, onEnvironmentCha
           </div>
         </div>
         
-        {/* Quality Controls */}
+        {}
         <div>
           <h4 className="text-green-400 text-sm font-mono mb-3">SIMULATION QUALITY</h4>
           <div className="space-y-2">
@@ -486,7 +477,6 @@ function QuantumAdvancedControls({ simulation, onPhysicsChange, onEnvironmentCha
   );
 }
 
-// 🧬 3D Body Mesh Component
 function BodyMesh({ mesh }) {
   const meshRef = useRef();
   
@@ -509,13 +499,12 @@ function BodyMesh({ mesh }) {
   );
 }
 
-// 🌊 Quantum Fabric Component
 function QuantumFabric({ simulation, garment, physics }) {
   const fabricRef = useRef();
   
   useFrame((state, delta) => {
     if (fabricRef.current && physics) {
-      // Simulate fabric movement
+
       fabricRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
       fabricRef.current.rotation.z = Math.cos(state.clock.elapsedTime * 0.3) * 0.05;
     }
@@ -536,7 +525,6 @@ function QuantumFabric({ simulation, garment, physics }) {
   );
 }
 
-// ✨ Quantum Particles Component
 function QuantumParticles() {
   const particlesRef = useRef();
   
@@ -565,9 +553,8 @@ function QuantumParticles() {
   );
 }
 
-// 🔧 Utility Functions
 async function initializeFabricPhysics(item) {
-  // Initialize fabric physics simulation
+
   return {
     gravity: 9.81,
     wind: 0,
@@ -579,7 +566,7 @@ async function initializeFabricPhysics(item) {
 }
 
 async function generateUserBodyMesh(userProfile) {
-  // Generate 3D body mesh from user measurements
+
   return {
     vertices: [],
     faces: [],
@@ -589,7 +576,7 @@ async function generateUserBodyMesh(userProfile) {
 }
 
 async function startQuantumSimulation(fabricPhysics, bodyMesh) {
-  // Start quantum fabric simulation
+
   return {
     fitAnalysis: {
       overall: 0.92,

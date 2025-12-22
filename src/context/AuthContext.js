@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+﻿import React, { createContext, useContext, useMemo } from 'react';
 import { useAuthState } from '../hooks/useAuthState';
 
 const AuthContext = createContext(null);
@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
     signInWithGithub,
     requestPasswordReset,
     signOut,
-    // Aliases for backward compatibility
+
     signInEmailPassword: signIn
   }), [user, loading, authError, signUp, signIn, signInWithGoogle, signInWithFacebook, signInWithTwitter, signInWithGithub, requestPasswordReset, signOut]);
 

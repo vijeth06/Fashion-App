@@ -1,9 +1,7 @@
-// 🧬 REVOLUTIONARY USER BIOMETRIC PROFILE SYSTEM
-// Features: AI Body Analysis, Style DNA, Quantum Fit Prediction, Behavioral Learning
+﻿
 
-// 📐 BIOMETRIC MEASUREMENT SYSTEM
 export const BiometricProfileSystem = {
-  // 🎯 ADVANCED BODY MEASUREMENTS
+
   bodyMeasurements: {
     primary: {
       height: { value: null, unit: 'cm', confidence: 0.0 },
@@ -12,29 +10,25 @@ export const BiometricProfileSystem = {
     },
     
     detailed: {
-      // Upper body measurements
+
       chest: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       bust: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       waist: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       hips: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       shoulderWidth: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
-      
-      // Arm measurements
+
       armLength: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       bicep: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       wrist: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
-      
-      // Leg measurements
+
       inseam: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       thigh: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       calf: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
-      
-      // Advanced measurements
+
       neckCircumference: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 },
       torsoLength: { value: null, unit: 'cm', method: 'AI_estimated', confidence: 0.0 }
     },
 
-    // 🤖 AI-POWERED BODY ANALYSIS
     aiAnalysis: {
       bodyType: null, // 'pear', 'apple', 'hourglass', 'rectangle', 'inverted_triangle'
       bodyTypeConfidence: 0.0,
@@ -53,10 +47,9 @@ export const BiometricProfileSystem = {
     }
   },
 
-  // 🧬 STYLE DNA SYSTEM
   styleDNA: {
     geneticStyleMarkers: {
-      // Core style genes (0.0 - 1.0 scale)
+
       minimalism: 0.5,
       maximalism: 0.5,
       classic: 0.5,
@@ -99,7 +92,6 @@ export const BiometricProfileSystem = {
     }
   },
 
-  // 🎯 BEHAVIORAL LEARNING ENGINE
   behaviorLearning: {
     shoppingBehavior: {
       browsingPatterns: {
@@ -148,7 +140,6 @@ export const BiometricProfileSystem = {
     }
   },
 
-  // 🎨 EMOTIONAL STYLE MAPPING
   emotionalProfile: {
     moodBasedStyling: {
       happy: { colorBoost: 'brights', styleBoost: 'playful' },
@@ -168,7 +159,6 @@ export const BiometricProfileSystem = {
     }
   },
 
-  // 🔮 QUANTUM FIT PREDICTION SYSTEM
   quantumFitSystem: {
     bodyGeometry: {
       measurements3D: {
@@ -202,15 +192,14 @@ export const BiometricProfileSystem = {
   }
 };
 
-// 🧠 AI LEARNING ALGORITHMS
 export const ProfileLearningEngine = {
-  // Update style DNA based on user interactions
+
   updateStyleDNA: (userProfile, interaction) => {
     const { type, item, duration, outcome } = interaction;
     
     switch (type) {
       case 'view':
-        // Boost style markers based on viewed item
+
         Object.keys(item.aiMetadata.styleVector).forEach((key, index) => {
           userProfile.styleDNA.geneticStyleMarkers[key] = 
             (userProfile.styleDNA.geneticStyleMarkers[key] * 0.95) + 
@@ -219,7 +208,7 @@ export const ProfileLearningEngine = {
         break;
         
       case 'like':
-        // Stronger boost for liked items
+
         Object.keys(item.aiMetadata.styleVector).forEach((key, index) => {
           userProfile.styleDNA.geneticStyleMarkers[key] = 
             (userProfile.styleDNA.geneticStyleMarkers[key] * 0.9) + 
@@ -228,7 +217,7 @@ export const ProfileLearningEngine = {
         break;
         
       case 'purchase':
-        // Strongest boost for purchased items
+
         Object.keys(item.aiMetadata.styleVector).forEach((key, index) => {
           userProfile.styleDNA.geneticStyleMarkers[key] = 
             (userProfile.styleDNA.geneticStyleMarkers[key] * 0.8) + 
@@ -240,7 +229,6 @@ export const ProfileLearningEngine = {
     return userProfile;
   },
 
-  // Predict user preferences based on profile
   predictPreferences: (userProfile) => {
     const styleDNA = userProfile.styleDNA.geneticStyleMarkers;
     
@@ -262,13 +250,12 @@ export const ProfileLearningEngine = {
     };
   },
 
-  // Generate size recommendations using quantum fit system
   generateSizeRecommendations: (userProfile, item) => {
     const bodyMetrics = userProfile.bodyMeasurements;
     const quantumFit = userProfile.quantumFitSystem;
     
     const sizeScores = item.sizing.traditional.map(size => {
-      // Calculate fit probability using neural network simulation
+
       const fitScore = calculateQuantumFitScore(bodyMetrics, item.sizing.bodyMetrics, size);
       const comfortScore = calculateComfortScore(userProfile.fitPreferences, item);
       const confidenceScore = quantumFit.virtualFitting.confidence;
@@ -286,7 +273,6 @@ export const ProfileLearningEngine = {
   }
 };
 
-// 🎨 HELPER FUNCTIONS
 const generatePersonalizedColorPalette = (colorGenetics) => {
   const palette = [];
   
@@ -304,17 +290,17 @@ const generatePersonalizedColorPalette = (colorGenetics) => {
 };
 
 const predictBrandAffinity = (userProfile) => {
-  // AI algorithm to predict brand preferences based on style DNA
+
   return ['NeuralThreads', 'QuantumCouture', 'BioFashion'];
 };
 
 const calculateQuantumFitScore = (userMetrics, itemMetrics, size) => {
-  // Quantum fit algorithm simulation
+
   return Math.random() * 0.3 + 0.7; // Placeholder for complex calculation
 };
 
 const calculateComfortScore = (fitPreferences, item) => {
-  // Calculate how comfortable this item will be for the user
+
   return Math.random() * 0.3 + 0.7; // Placeholder
 };
 
@@ -330,7 +316,6 @@ const calculateSweetSpot = (shoppingBehavior) => {
   return shoppingBehavior.averageOrderValue * 1.2;
 };
 
-// 📊 BIOMETRIC DATA VALIDATION
 export const BiometricValidator = {
   validateMeasurement: (measurement, type) => {
     const ranges = {
@@ -343,8 +328,7 @@ export const BiometricValidator = {
     
     const range = ranges[type];
     if (!range) return { valid: false, reason: 'Unknown measurement type' };
-    
-    // Check for obviously incorrect values (like the 104497 cm issue)
+
     if (measurement > 1000) {
       return {
         valid: false,
@@ -362,24 +346,19 @@ export const BiometricValidator = {
     return { valid: true };
   },
 
-  // Real body measurements extraction from image/video using TensorFlow.js
   extractRealMeasurementsFromImage: async (imageElement) => {
     try {
-      // Import pose detection service
+
       const enhancedPoseDetection = (await import('../services/EnhancedPoseDetection')).default;
-      
-      // Initialize if not already done
+
       await enhancedPoseDetection.initialize();
-      
-      // Detect pose and extract measurements
+
       const poseData = await enhancedPoseDetection.detectPose(imageElement);
       
       if (!poseData.success || !poseData.measurements) {
         throw new Error('Failed to detect body measurements');
       }
-      
-      // Convert pixel measurements to real-world measurements (requires calibration)
-      // For accurate measurements, user should provide at least one known dimension (e.g., height)
+
       const pixelToRealRatio = 170 / (poseData.measurements.torsoLength * 2.5); // Assuming average height
       
       return {
@@ -400,7 +379,6 @@ export const BiometricValidator = {
     }
   },
 
-  // Calibrate measurements with user-provided actual height
   calibrateMeasurements: (extractedMeasurements, actualHeight) => {
     const ratio = actualHeight / extractedMeasurements.height;
     
@@ -423,7 +401,7 @@ export const BiometricValidator = {
   },
 
   assessFitRisk: (userProfile, item) => {
-    // AI assessment of fit risk based on biometric profile
+
     const risks = [];
     
     if (userProfile.quantumFitSystem.virtualFitting.confidence < 0.7) {

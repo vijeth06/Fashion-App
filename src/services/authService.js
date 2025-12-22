@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -47,31 +47,26 @@ class AuthService {
     this.db = db;
     this.currentUser = null;
     this.isLoading = true;
-    
-    // Listen to auth state changes
+
     onAuthStateChanged(this.auth, (user) => {
       this.currentUser = user;
       this.isLoading = false;
     });
   }
 
-  // Email/Password Authentication
   async signUpWithEmail(email, password, additionalData = {}) {
     try {
       const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       const user = userCredential.user;
-      
-      // Update profile with display name
+
       if (additionalData.displayName) {
         await updateProfile(user, {
           displayName: additionalData.displayName
         });
       }
-      
-      // Create user document in Firestore
+
       await this.createUserDocument(user, additionalData);
-      
-      // Send email verification
+
       await sendEmailVerification(user);
       
       return {
@@ -102,7 +97,6 @@ class AuthService {
     }
   }
 
-  // Social Authentication
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(this.auth, googleProvider);
@@ -198,7 +192,6 @@ class AuthService {
     }
   }
 
-  // Phone Authentication
   async setupRecaptcha(containerId) {
     try {
       const recaptchaVerifier = new RecaptchaVerifier(this.auth, containerId, {
@@ -252,7 +245,6 @@ class AuthService {
     }
   }
 
-  // User Management
   async createUserDocument(user, additionalData = {}) {
     if (!user) return;
 
@@ -331,7 +323,7 @@ class AuthService {
         console.error('Error creating user document:', error);
       }
     } else {
-      // Update last login time
+
       await updateDoc(userRef, {
         lastLoginAt: serverTimestamp(),
         'stats.lastActivity': serverTimestamp()
@@ -379,7 +371,6 @@ class AuthService {
     }
   }
 
-  // Account Management
   async updateEmail(newEmail) {
     try {
       await this.currentUser.updateEmail(newEmail);
@@ -398,14 +389,13 @@ class AuthService {
 
   async updatePassword(currentPassword, newPassword) {
     try {
-      // Re-authenticate user
+
       const credential = EmailAuthProvider.credential(
         this.currentUser.email,
         currentPassword
       );
       await this.currentUser.reauthenticateWithCredential(credential);
-      
-      // Update password
+
       await updatePassword(this.currentUser, newPassword);
       return {
         success: true,
@@ -438,11 +428,9 @@ class AuthService {
     try {
       if (this.currentUser) {
         const uid = this.currentUser.uid;
-        
-        // Delete user document from Firestore
+
         await deleteDoc(doc(this.db, 'users', uid));
-        
-        // Delete user account
+
         await deleteUser(this.currentUser);
         
         return {
@@ -458,7 +446,6 @@ class AuthService {
     }
   }
 
-  // Utility Methods
   async signOut() {
     try {
       await signOut(this.auth);
@@ -498,17 +485,14 @@ class AuthService {
     return errorMessages[errorCode] || 'An unexpected error occurred. Please try again.';
   }
 
-  // Check if user is authenticated
   isAuthenticated() {
     return !!this.currentUser;
   }
 
-  // Get current user
   getCurrentUser() {
     return this.currentUser;
   }
 
-  // Check if user has specific role
   async hasRole(role) {
     if (!this.currentUser) return false;
     
@@ -525,6 +509,5 @@ class AuthService {
   }
 }
 
-// Export singleton instance
 const authService = new AuthService();
 export default authService;

@@ -1,8 +1,4 @@
-/**
- * Camera Service - Robust webcam/camera access
- * Handles permissions, device selection, and stream management
- * @version 1.0.0
- */
+﻿
 
 export class CameraService {
   constructor() {
@@ -13,9 +9,7 @@ export class CameraService {
     this.isActive = false;
   }
 
-  /**
-   * Check if camera is supported
-   */
+  
   static isSupported() {
     return !!(
       navigator.mediaDevices &&
@@ -23,22 +17,19 @@ export class CameraService {
     );
   }
 
-  /**
-   * Request camera permissions
-   */
+  
   async requestPermissions() {
     if (!CameraService.isSupported()) {
       throw new Error('Camera API not supported in this browser');
     }
 
     try {
-      // Request minimal permissions first
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
       });
-      
-      // Stop the stream immediately after getting permission
+
       stream.getTracks().forEach(track => track.stop());
       
       return { granted: true };
@@ -57,9 +48,7 @@ export class CameraService {
     }
   }
 
-  /**
-   * Get list of available camera devices
-   */
+  
   async getDevices() {
     try {
       if (!CameraService.isSupported()) {
@@ -82,12 +71,10 @@ export class CameraService {
     }
   }
 
-  /**
-   * Start camera stream
-   */
+  
   async startCamera(videoElement, options = {}) {
     try {
-      // Stop any existing stream
+
       this.stopCamera();
 
       const constraints = {
@@ -108,22 +95,19 @@ export class CameraService {
 
       if (videoElement) {
         videoElement.srcObject = this.stream;
-        
-        // Wait for video to be ready
+
         await new Promise((resolve, reject) => {
           videoElement.onloadedmetadata = () => {
             videoElement.play()
               .then(resolve)
               .catch(reject);
           };
-          
-          // Timeout after 10 seconds
+
           setTimeout(() => reject(new Error('Camera initialization timeout')), 10000);
         });
 
         this.isActive = true;
-        
-        // Get actual stream settings
+
         const track = this.stream.getVideoTracks()[0];
         const settings = track.getSettings();
         
@@ -147,9 +131,7 @@ export class CameraService {
     }
   }
 
-  /**
-   * Stop camera stream
-   */
+  
   stopCamera() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => {
@@ -165,9 +147,7 @@ export class CameraService {
     this.isActive = false;
   }
 
-  /**
-   * Switch camera device
-   */
+  
   async switchCamera(deviceId) {
     const wasActive = this.isActive;
     const videoElement = this.videoElement;
@@ -186,9 +166,7 @@ export class CameraService {
     return { success: true };
   }
 
-  /**
-   * Capture frame from video
-   */
+  
   captureFrame() {
     if (!this.videoElement || !this.isActive) {
       throw new Error('Camera not active');
@@ -209,9 +187,7 @@ export class CameraService {
     };
   }
 
-  /**
-   * Get current stream status
-   */
+  
   getStatus() {
     return {
       isActive: this.isActive,
@@ -223,9 +199,7 @@ export class CameraService {
     };
   }
 
-  /**
-   * Cleanup
-   */
+  
   dispose() {
     this.stopCamera();
     this.devices = [];

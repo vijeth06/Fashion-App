@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -20,10 +20,8 @@ export default function Recommendations() {
     outfits: []
   });
 
-  // Real user profile from database
   const [userProfile, setUserProfile] = useState(null);
 
-  // Fetch user profile and preferences
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user?.uid) return;
@@ -41,7 +39,7 @@ export default function Recommendations() {
             colors: data.user.preferences?.colors || ['blue', 'white', 'black']
           });
         } else {
-          // Use default profile if user preferences not found
+
           setUserProfile({
             preferredCategories: ['shirts', 'pants', 'accessories'],
             priceRange: { min: 20, max: 100 },
@@ -52,7 +50,7 @@ export default function Recommendations() {
         }
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
-        // Use default profile on error
+
         setUserProfile({
           preferredCategories: ['shirts', 'pants', 'accessories'],
           priceRange: { min: 20, max: 100 },
@@ -73,7 +71,7 @@ export default function Recommendations() {
       setLoading(true);
       
       try {
-        // Get real recommendations based on user profile
+
         const personalized = getPersonalizedRecommendations(userProfile, [], []);
         const occasions = getOccasionRecommendations(selectedOccasion, userProfile);
         const trending = getTrendingItems();
@@ -96,27 +94,27 @@ export default function Recommendations() {
   }, [selectedOccasion, userProfile]);
 
   const tabs = [
-    { id: 'personalized', name: 'For You', icon: '🎯', description: 'Personalized just for you' },
-    { id: 'occasions', name: 'Occasions', icon: '📅', description: 'Perfect for any event' },
-    { id: 'trending', name: 'Trending', icon: '🔥', description: 'What\'s hot right now' },
-    { id: 'outfits', name: 'Complete Outfits', icon: '👔', description: 'Ready-to-wear looks' }
+    { id: 'personalized', name: 'For You', icon: 'ðŸŽ¯', description: 'Personalized just for you' },
+    { id: 'occasions', name: 'Occasions', icon: 'ðŸ“…', description: 'Perfect for any event' },
+    { id: 'trending', name: 'Trending', icon: 'ðŸ”¥', description: 'What\'s hot right now' },
+    { id: 'outfits', name: 'Complete Outfits', icon: 'ðŸ‘”', description: 'Ready-to-wear looks' }
   ];
 
   const occasions = [
-    { id: 'casual', name: 'Casual', emoji: '👕' },
-    { id: 'formal', name: 'Formal', emoji: '👔' },
-    { id: 'business', name: 'Business', emoji: '💼' },
-    { id: 'party', name: 'Party', emoji: '🎉' },
-    { id: 'workout', name: 'Workout', emoji: '💪' },
-    { id: 'beach', name: 'Beach', emoji: '🏖️' },
-    { id: 'date', name: 'Date', emoji: '❤️' }
+    { id: 'casual', name: 'Casual', emoji: 'ðŸ‘•' },
+    { id: 'formal', name: 'Formal', emoji: 'ðŸ‘”' },
+    { id: 'business', name: 'Business', emoji: 'ðŸ’¼' },
+    { id: 'party', name: 'Party', emoji: 'ðŸŽ‰' },
+    { id: 'workout', name: 'Workout', emoji: 'ðŸ’ª' },
+    { id: 'beach', name: 'Beach', emoji: 'ðŸ–ï¸' },
+    { id: 'date', name: 'Date', emoji: 'â¤ï¸' }
   ];
 
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🎯</div>
+          <div className="text-6xl mb-4">ðŸŽ¯</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign in for Personalized Recommendations</h2>
           <p className="text-gray-600 mb-6">Get AI-powered fashion suggestions tailored just for you.</p>
           <Link to="/login" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
@@ -130,13 +128,13 @@ export default function Recommendations() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Recommendations</h1>
           <p className="text-gray-600">Discover your perfect style with AI-powered suggestions</p>
         </div>
 
-        {/* Tabs */}
+        {}
         <div className="bg-white rounded-2xl shadow-sm p-2 mb-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {tabs.map((tab) => (
@@ -163,7 +161,7 @@ export default function Recommendations() {
           </div>
         ) : (
           <>
-            {/* Personalized Recommendations */}
+            {}
             {activeTab === 'personalized' && (
               <div>
                 <div className="mb-6">
@@ -211,13 +209,13 @@ export default function Recommendations() {
               </div>
             )}
 
-            {/* Occasion-based Recommendations */}
+            {}
             {activeTab === 'occasions' && (
               <div>
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Perfect for Every Occasion</h2>
                   
-                  {/* Occasion Selector */}
+                  {}
                   <div className="flex flex-wrap gap-3 mb-6">
                     {occasions.map((occasion) => (
                       <button
@@ -265,7 +263,7 @@ export default function Recommendations() {
               </div>
             )}
 
-            {/* Trending Items */}
+            {}
             {activeTab === 'trending' && (
               <div>
                 <div className="mb-6">
@@ -305,7 +303,7 @@ export default function Recommendations() {
               </div>
             )}
 
-            {/* Complete Outfits */}
+            {}
             {activeTab === 'outfits' && (
               <div>
                 <div className="mb-6">
@@ -345,7 +343,7 @@ export default function Recommendations() {
                       
                       <div className="flex gap-4">
                         <button className="flex-1 bg-purple-100 text-purple-600 py-3 px-6 rounded-lg font-medium hover:bg-purple-200 transition-colors">
-                          ✨ Try Complete Outfit
+                          âœ¨ Try Complete Outfit
                         </button>
                         <button className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors">
                           Add All to Cart
@@ -359,7 +357,7 @@ export default function Recommendations() {
           </>
         )}
 
-        {/* Call to Action */}
+        {}
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl p-8 mt-12 text-center">
           <h2 className="text-2xl font-bold mb-4">Can't Find What You're Looking For?</h2>
           <p className="mb-6">Get personalized styling advice from our AI fashion assistant</p>

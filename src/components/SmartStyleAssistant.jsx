@@ -1,5 +1,5 @@
-// 🎨 SMART STYLE ASSISTANT - AI FASHION ADVISOR
-// Features: Emotion detection, trend prediction, outfit matching, personal styling
+﻿
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +12,6 @@ import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { emotionBasedStylist } from '../ai/emotionBasedStyling';
 
-// AI Style Assistant Component
 export default function SmartStyleAssistant({ isVisible, onClose, userPreferences = {} }) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('mood'); // mood, occasion, weather, trends
@@ -32,7 +31,6 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
   const videoRef = useRef();
   const canvasRef = useRef();
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -52,27 +50,24 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
     fetchProducts();
   }, []);
 
-  // Mood options
   const moodOptions = [
-    { id: 'confident', name: 'Confident', icon: '💪', color: 'from-red-500 to-pink-500' },
-    { id: 'creative', name: 'Creative', icon: '🎨', color: 'from-purple-500 to-indigo-500' },
-    { id: 'relaxed', name: 'Relaxed', icon: '😌', color: 'from-blue-500 to-cyan-500' },
-    { id: 'professional', name: 'Professional', icon: '💼', color: 'from-gray-600 to-gray-800' },
-    { id: 'romantic', name: 'Romantic', icon: '💕', color: 'from-pink-500 to-rose-500' },
-    { id: 'adventurous', name: 'Adventurous', icon: '🌟', color: 'from-green-500 to-emerald-500' }
+    { id: 'confident', name: 'Confident', icon: 'ðŸ’ª', color: 'from-red-500 to-pink-500' },
+    { id: 'creative', name: 'Creative', icon: 'ðŸŽ¨', color: 'from-purple-500 to-indigo-500' },
+    { id: 'relaxed', name: 'Relaxed', icon: 'ðŸ˜Œ', color: 'from-blue-500 to-cyan-500' },
+    { id: 'professional', name: 'Professional', icon: 'ðŸ’¼', color: 'from-gray-600 to-gray-800' },
+    { id: 'romantic', name: 'Romantic', icon: 'ðŸ’•', color: 'from-pink-500 to-rose-500' },
+    { id: 'adventurous', name: 'Adventurous', icon: 'ðŸŒŸ', color: 'from-green-500 to-emerald-500' }
   ];
 
-  // Occasion options
   const occasionOptions = [
-    { id: 'casual', name: 'Casual Day', icon: '👕' },
-    { id: 'work', name: 'Work/Office', icon: '💼' },
-    { id: 'date', name: 'Date Night', icon: '💕' },
-    { id: 'party', name: 'Party/Event', icon: '🎉' },
-    { id: 'workout', name: 'Workout', icon: '💪' },
-    { id: 'travel', name: 'Travel', icon: '✈️' }
+    { id: 'casual', name: 'Casual Day', icon: 'ðŸ‘•' },
+    { id: 'work', name: 'Work/Office', icon: 'ðŸ’¼' },
+    { id: 'date', name: 'Date Night', icon: 'ðŸ’•' },
+    { id: 'party', name: 'Party/Event', icon: 'ðŸŽ‰' },
+    { id: 'workout', name: 'Workout', icon: 'ðŸ’ª' },
+    { id: 'travel', name: 'Travel', icon: 'âœˆï¸' }
   ];
 
-  // Initialize AI systems
   useEffect(() => {
     if (isVisible) {
       initializeStyleAI();
@@ -84,14 +79,14 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
   const initializeStyleAI = async () => {
     try {
       await emotionBasedStylist.initialize();
-      console.log('✅ Style AI initialized');
+      console.log('âœ… Style AI initialized');
     } catch (error) {
-      console.error('❌ Style AI initialization failed:', error);
+      console.error('âŒ Style AI initialization failed:', error);
     }
   };
 
   const fetchTrendData = async () => {
-    // Mock trend data - in production, fetch from fashion APIs
+
     const trends = {
       current: [
         { name: 'Oversized Blazers', popularity: 0.92, growth: '+15%' },
@@ -114,20 +109,18 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
   };
 
   const detectUserLocation = () => {
-    // Mock location and weather - in production, use geolocation API
+
     setLocation('New York');
     setWeather({ temp: 22, condition: 'partly-cloudy', humidity: 65 });
   };
 
-  // Emotion detection from camera
   const startEmotionDetection = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsAnalyzing(true);
-        
-        // Simulate emotion detection
+
         setTimeout(() => {
           const emotions = {
             happiness: 0.8,
@@ -141,19 +134,17 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
           setCurrentMood(emotions.dominant);
           generateStyleRecommendations(emotions);
           setIsAnalyzing(false);
-          
-          // Stop camera
+
           stream.getTracks().forEach(track => track.stop());
         }, 3000);
       }
     } catch (error) {
       console.error('Camera access failed:', error);
-      // Use manual mood selection
+
       generateStyleRecommendations({ dominant: currentMood });
     }
   };
 
-  // Generate AI style recommendations
   const generateStyleRecommendations = async (emotions = null) => {
     setIsAnalyzing(true);
     
@@ -170,7 +161,6 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
         skinTone: user?.biometricProfile?.skinTone || 'medium'
       };
 
-      // Use emotion-based styling AI
       const recommendations = await emotionBasedStylist.generateOutfitRecommendations(context);
       
       setStyleRecommendations(recommendations.outfits);
@@ -178,7 +168,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
       
     } catch (error) {
       console.error('Style generation failed:', error);
-      // Fallback recommendations
+
       generateFallbackRecommendations();
     } finally {
       setIsAnalyzing(false);
@@ -208,7 +198,6 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
     setOutfitSuggestions(fallbackOutfits);
   };
 
-  // Weather-based recommendations
   const getWeatherRecommendations = () => {
     const { temp, condition } = weather;
     
@@ -249,7 +238,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
         >
-          {/* Header */}
+          {}
           <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
@@ -260,11 +249,11 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                 <p className="text-purple-100 mt-1">Your personal AI fashion advisor</p>
               </div>
               <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
-                ✕
+                âœ•
               </button>
             </div>
 
-            {/* Tab Navigation */}
+            {}
             <div className="flex gap-4 mt-6">
               {[
                 { id: 'mood', name: 'Mood Styling', icon: FaHeart },
@@ -292,7 +281,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
           </div>
 
           <div className="p-6 overflow-y-auto max-h-[70vh]">
-            {/* Mood Styling Tab */}
+            {}
             {activeTab === 'mood' && (
               <div className="space-y-6">
                 <div>
@@ -301,7 +290,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                     How are you feeling today?
                   </h3>
                   
-                  {/* Emotion Detection */}
+                  {}
                   <div className="bg-gray-50 rounded-xl p-6 mb-6">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="font-medium text-gray-900">AI Emotion Detection</h4>
@@ -326,7 +315,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                     <canvas ref={canvasRef} className="hidden" />
                   </div>
 
-                  {/* Mood Selection */}
+                  {}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                     {moodOptions.map(mood => (
                       <motion.button
@@ -351,7 +340,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                     ))}
                   </div>
 
-                  {/* Emotion Analysis Results */}
+                  {}
                   {emotionData && (
                     <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
                       <h4 className="font-medium text-gray-900 mb-4">Your Emotion Analysis</h4>
@@ -371,7 +360,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
               </div>
             )}
 
-            {/* Occasion Tab */}
+            {}
             {activeTab === 'occasion' && (
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">What's the occasion?</h3>
@@ -398,7 +387,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
               </div>
             )}
 
-            {/* Weather Tab */}
+            {}
             {activeTab === 'weather' && (
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Weather-Smart Styling</h3>
@@ -407,7 +396,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                   <div className="flex items-center gap-4 mb-4">
                     <FaThermometerHalf className="w-6 h-6 text-blue-600" />
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{weather.temp}°C</div>
+                      <div className="text-2xl font-bold text-gray-900">{weather.temp}Â°C</div>
                       <div className="text-gray-600 capitalize">{weather.condition}</div>
                     </div>
                     <div className="ml-auto">
@@ -435,13 +424,13 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
               </div>
             )}
 
-            {/* Trends Tab */}
+            {}
             {activeTab === 'trends' && trendData && (
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Fashion Trends & Predictions</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Current Trends */}
+                  {}
                   <div className="bg-green-50 border border-green-200 rounded-xl p-6">
                     <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
                       <FaFire className="w-5 h-5 text-red-500" />
@@ -465,7 +454,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                     </div>
                   </div>
 
-                  {/* Upcoming Trends */}
+                  {}
                   <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
                     <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
                       <FaLightbulb className="w-5 h-5 text-yellow-500" />
@@ -487,7 +476,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
                   </div>
                 </div>
 
-                {/* Seasonal Colors */}
+                {}
                 <div className="bg-white border border-gray-200 rounded-xl p-6">
                   <h4 className="font-medium text-gray-900 mb-4">Seasonal Color Palette</h4>
                   <div className="flex gap-4">
@@ -504,7 +493,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
               </div>
             )}
 
-            {/* Style Recommendations */}
+            {}
             {outfitSuggestions.length > 0 && (
               <div className="mt-8 border-t pt-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -552,7 +541,7 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
               </div>
             )}
 
-            {/* Loading State */}
+            {}
             {isAnalyzing && !emotionData && (
               <div className="text-center py-12">
                 <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>

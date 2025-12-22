@@ -1,5 +1,5 @@
-// 🗄️ DATABASE INITIALIZATION SERVICE
-// Initializes database with sample quantum fashion data
+﻿
+
 
 const apiService = require('./api');
 
@@ -8,24 +8,22 @@ class DatabaseInitializer {
     this.api = apiService;
   }
 
-  // 🌟 Initialize database with sample data
   async initializeWithSampleData() {
     try {
-      console.log('🚀 Initializing database with sample data...');
+      console.log('ðŸš€ Initializing database with sample data...');
       
       await this.createSampleProducts();
       await this.createSampleUsers();
       
-      console.log('✅ Database initialization completed successfully');
+      console.log('âœ… Database initialization completed successfully');
       return { success: true, message: 'Sample data created' };
       
     } catch (error) {
-      console.error('❌ Database initialization failed:', error);
+      console.error('âŒ Database initialization failed:', error);
       return { success: false, error: error.message };
     }
   }
 
-  // 👔 Create sample quantum fashion products
   async createSampleProducts() {
     const quantumProducts = [
       {
@@ -139,14 +137,13 @@ class DatabaseInitializer {
     for (const product of quantumProducts) {
       try {
         await this.api.createProduct(product);
-        console.log(`✅ Created product: ${product.name}`);
+        console.log(`âœ… Created product: ${product.name}`);
       } catch (error) {
-        console.error(`❌ Failed to create product ${product.name}:`, error);
+        console.error(`âŒ Failed to create product ${product.name}:`, error);
       }
     }
   }
 
-  // 👤 Create sample users
   async createSampleUsers() {
     const sampleUsers = [
       {
@@ -196,21 +193,20 @@ class DatabaseInitializer {
     for (const user of sampleUsers) {
       try {
         await this.api.createUser(user);
-        console.log(`✅ Created user: ${user.displayName}`);
+        console.log(`âœ… Created user: ${user.displayName}`);
       } catch (error) {
-        console.error(`❌ Failed to create user ${user.displayName}:`, error);
+        console.error(`âŒ Failed to create user ${user.displayName}:`, error);
       }
     }
   }
 
-  // 🧪 Test database connection
   async testConnection() {
     try {
       const result = await this.api.testConnection();
-      console.log('🔍 Database connection test result:', result);
+      console.log('ðŸ” Database connection test result:', result);
       return result;
     } catch (error) {
-      console.error('❌ Database connection test failed:', error);
+      console.error('âŒ Database connection test failed:', error);
       return { connected: false, error: error.message };
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import apiService from '../services/apiService';
 import { 
@@ -22,7 +22,6 @@ const DatabaseManager = () => {
   const [dbStats, setDbStats] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Check database status on component mount
   useEffect(() => {
     checkDatabaseStatus();
   }, []);
@@ -30,11 +29,9 @@ const DatabaseManager = () => {
   const checkDatabaseStatus = async () => {
     try {
       setStatus(prev => ({ ...prev, loading: true, error: null }));
-      
-      // Test connection
+
       const connectionResult = await apiService.testDatabase();
-      
-      // Get initialization status
+
       const statusResult = await apiService.getDatabaseStatus();
       
       setStatus({
@@ -96,7 +93,7 @@ const DatabaseManager = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 p-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,9 +116,9 @@ const DatabaseManager = () => {
           </p>
         </motion.div>
 
-        {/* Status Cards */}
+        {}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Connection Status */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -154,7 +151,7 @@ const DatabaseManager = () => {
             </div>
           </motion.div>
 
-          {/* Initialization Status */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -188,7 +185,7 @@ const DatabaseManager = () => {
           </motion.div>
         </div>
 
-        {/* Error Display */}
+        {}
         {status.error && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -203,7 +200,7 @@ const DatabaseManager = () => {
           </motion.div>
         )}
 
-        {/* Database Statistics */}
+        {}
         {dbStats && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -263,7 +260,7 @@ const DatabaseManager = () => {
           </motion.div>
         )}
 
-        {/* Action Buttons */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -294,7 +291,7 @@ const DatabaseManager = () => {
           )}
         </motion.div>
 
-        {/* Instructions */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

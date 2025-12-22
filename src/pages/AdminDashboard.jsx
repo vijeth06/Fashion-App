@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaChartLine, 
@@ -56,8 +56,7 @@ export default function AdminDashboard() {
     popularCategories: [],
     topProducts: []
   });
-  
-  // Fetch products from API
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -84,7 +83,6 @@ export default function AdminDashboard() {
     fetchProducts();
   }, []);
 
-  // Fetch real analytics from MongoDB
   useEffect(() => {
     async function fetchAnalytics() {
       try {
@@ -115,8 +113,7 @@ export default function AdminDashboard() {
     }
     
     fetchAnalytics();
-    
-    // Refresh analytics every 30 seconds
+
     const interval = setInterval(fetchAnalytics, 30000);
     return () => clearInterval(interval);
   }, [dateRange, products.length]);
@@ -155,7 +152,7 @@ export default function AdminDashboard() {
   ];
 
   useEffect(() => {
-    // Simulate loading notifications
+
     setNotifications([
       { id: 1, type: 'warning', message: '8 products are low in stock', time: '2 min ago' },
       { id: 2, type: 'info', message: 'New order received #ORD-006', time: '5 min ago' },
@@ -196,7 +193,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
       <div className="flex">
-        {/* Enhanced Sidebar */}
+        {}
         <div className="w-64 bg-white shadow-xl border-r border-gray-200">
           <div className="p-6 bg-gradient-to-r from-purple-600 to-blue-600">
             <h2 className="text-xl font-bold text-white">Admin Panel</h2>
@@ -222,7 +219,7 @@ export default function AdminDashboard() {
             })}
           </nav>
 
-          {/* Notifications Panel */}
+          {}
           <div className="p-6 mt-8">
             <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
               <FaBell className="w-4 h-4" />
@@ -246,9 +243,9 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Enhanced Main Content */}
+        {}
         <div className="flex-1 p-8">
-          {/* Header with Quick Stats */}
+          {}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -276,14 +273,14 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Overview Section */}
+          {}
           {activeSection === 'overview' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Enhanced Stats Grid */}
+              {}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
@@ -362,7 +359,7 @@ export default function AdminDashboard() {
                 </motion.div>
               </div>
 
-              {/* Quick Metrics */}
+              {}
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
                   <div className="flex items-center gap-3">
@@ -413,9 +410,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent Orders and Inventory Alerts */}
+              {}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                {/* Recent Orders */}
+                {}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
                   <div className="p-6 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -433,7 +430,7 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                               <p className="font-medium text-gray-900">{order.customer}</p>
-                              <p className="text-sm text-gray-500">{order.items} items • ${order.amount}</p>
+                              <p className="text-sm text-gray-500">{order.items} items â€¢ ${order.amount}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -448,7 +445,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Inventory Alerts */}
+                {}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
                   <div className="p-6 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -482,7 +479,7 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Products */}
+          {}
           {activeSection === 'products' && (
             <div>
               <div className="flex justify-between items-center mb-8">
@@ -547,7 +544,7 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* Content Moderation */}
+          {}
           {activeSection === 'content' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -659,7 +656,7 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Inventory Management */}
+          {}
           {activeSection === 'inventory' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -763,7 +760,7 @@ export default function AdminDashboard() {
                           <div>
                             <p className="font-medium text-gray-900">{alert.product}</p>
                             <p className="text-sm text-gray-600">
-                              Stock: {alert.stock} units • 
+                              Stock: {alert.stock} units â€¢ 
                               Status: <span className={`font-medium ${
                                 alert.type === 'out_of_stock' ? 'text-red-600' :
                                 alert.type === 'critical_stock' ? 'text-orange-600' : 'text-yellow-600'
@@ -789,7 +786,7 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Enhanced Analytics */}
+          {}
           {activeSection === 'analytics' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -881,7 +878,7 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Enhanced Orders Management */}
+          {}
           {activeSection === 'orders' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1016,7 +1013,7 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Enhanced Customer Management */}
+          {}
           {activeSection === 'customers' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

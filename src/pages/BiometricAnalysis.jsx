@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -23,7 +23,6 @@ import {
   FaTimesCircle
 } from 'react-icons/fa';
 
-// Real-time Biometric Scanner Component
 const BiometricScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
@@ -47,8 +46,7 @@ const BiometricScanner = () => {
           }
           return prev + 2;
         });
-        
-        // Simulate real-time biometric changes
+
         setBiometrics(prev => ({
           ...prev,
           heartRate: 68 + Math.random() * 10,
@@ -82,7 +80,7 @@ const BiometricScanner = () => {
         </motion.button>
       </div>
 
-      {/* Scanner Progress */}
+      {}
       {isScanning && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
@@ -98,7 +96,7 @@ const BiometricScanner = () => {
         </div>
       )}
 
-      {/* Biometric Grid */}
+      {}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {Object.entries(biometrics).map(([key, value]) => (
           <motion.div
@@ -119,7 +117,7 @@ const BiometricScanner = () => {
             <div className="text-white font-semibold">
               {typeof value === 'number' ? value.toFixed(1) : value}
               {key === 'heartRate' && ' BPM'}
-              {key === 'bodyTemp' && '°F'}
+              {key === 'bodyTemp' && 'Â°F'}
             </div>
           </motion.div>
         ))}
@@ -128,7 +126,6 @@ const BiometricScanner = () => {
   );
 };
 
-// Body Composition Analysis
 const BodyCompositionAnalysis = () => {
   const [composition, setComposition] = useState({
     muscle: 45,
@@ -181,7 +178,6 @@ const BodyCompositionAnalysis = () => {
   );
 };
 
-// Real-time Health Monitoring
 const HealthMonitoring = () => {
   const [healthData, setHealthData] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -196,8 +192,7 @@ const HealthMonitoring = () => {
       };
       
       setHealthData(prev => [...prev.slice(-19), newDataPoint]);
-      
-      // Generate alerts
+
       if (newDataPoint.heartRate > 75 && Math.random() > 0.8) {
         setAlerts(prev => [...prev, {
           id: Date.now(),
@@ -218,7 +213,7 @@ const HealthMonitoring = () => {
         Real-time Monitoring
       </h3>
       
-      {/* Live Chart */}
+      {}
       <div className="h-32 bg-black/20 rounded-xl mb-6 p-4">
         <div className="flex items-end h-full space-x-1">
           {healthData.map((data, index) => (
@@ -233,7 +228,7 @@ const HealthMonitoring = () => {
         </div>
       </div>
       
-      {/* Alerts */}
+      {}
       <div className="space-y-2 max-h-32 overflow-y-auto">
         <h4 className="text-white font-semibold">Health Alerts</h4>
         {alerts.slice(-3).map(alert => (
@@ -255,7 +250,6 @@ const HealthMonitoring = () => {
   );
 };
 
-// Fit Prediction Engine
 const FitPredictionEngine = () => {
   const [predictions, setPredictions] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -379,7 +373,6 @@ const FitPredictionEngine = () => {
   );
 };
 
-// Main BiometricAnalysis Component
 const BiometricAnalysis = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('scanner');
@@ -394,7 +387,7 @@ const BiometricAnalysis = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950">
-      {/* Header */}
+      {}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20" />
@@ -450,7 +443,7 @@ const BiometricAnalysis = () => {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {}
       <div className="container mx-auto px-6">
         <div className="flex justify-center mb-8">
           <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-2 border border-gray-700">
@@ -473,7 +466,7 @@ const BiometricAnalysis = () => {
           </div>
         </div>
 
-        {/* Content */}
+        {}
         <div className="max-w-6xl mx-auto pb-20">
           <AnimatePresence mode="wait">
             <motion.div
@@ -491,7 +484,7 @@ const BiometricAnalysis = () => {
           </AnimatePresence>
         </div>
 
-        {/* Quick Actions */}
+        {}
         <div className="fixed bottom-6 right-6 space-y-3">
           <motion.button
             whileHover={{ scale: 1.1 }}

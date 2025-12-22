@@ -1,24 +1,6 @@
-/**
- * Real Body Analysis AI - Integrated with Pose Detection
- * 
- * This module provides actual body measurement extraction using
- * pose detection data from MediaPipe/TensorFlow.
- * 
- * Features:
- * - Body measurements from pose keypoints
- * - Size recommendations
- * - Body type classification
- * - Proportions analysis
- * 
- * @version 1.0.0
- */
+﻿
 
-/**
- * Calculate body measurements from pose keypoints
- * @param {Object} poseData - Pose detection results
- * @param {Object} imageInfo - Image dimensions and metadata
- * @returns {Object} Body measurements
- */
+
 export function calculateBodyMeasurements(poseData, imageInfo = {}) {
   if (!poseData || !poseData.keypoints) {
     return null;
@@ -27,7 +9,6 @@ export function calculateBodyMeasurements(poseData, imageInfo = {}) {
   const { keypoints } = poseData;
   const { width = 1, height = 1, pixelsPerCm = null } = imageInfo;
 
-  // Extract key points
   const leftShoulder = keypoints.leftShoulder;
   const rightShoulder = keypoints.rightShoulder;
   const leftHip = keypoints.leftHip;
@@ -37,40 +18,33 @@ export function calculateBodyMeasurements(poseData, imageInfo = {}) {
   const leftAnkle = keypoints.leftAnkle;
   const rightAnkle = keypoints.rightAnkle;
 
-  // Validate required keypoints
   if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) {
     return null;
   }
 
-  // Calculate pixel-based measurements
   const measurements = {
-    // Shoulder width (pixels)
+
     shoulderWidthPx: calculateDistance(leftShoulder, rightShoulder),
-    
-    // Hip width (pixels)
+
     hipWidthPx: calculateDistance(leftHip, rightHip),
-    
-    // Torso length (pixels)
+
     torsoLengthPx: calculateDistance(
       { x: (leftShoulder.x + rightShoulder.x) / 2, y: (leftShoulder.y + rightShoulder.y) / 2 },
       { x: (leftHip.x + rightHip.x) / 2, y: (leftHip.y + rightHip.y) / 2 }
     ),
-    
-    // Leg length (pixels) - if knees and ankles available
+
     leftLegLengthPx: leftKnee && leftAnkle ? 
       calculateDistance(leftHip, leftKnee) + calculateDistance(leftKnee, leftAnkle) : null,
     rightLegLengthPx: rightKnee && rightAnkle ?
       calculateDistance(rightHip, rightKnee) + calculateDistance(rightKnee, rightAnkle) : null,
   };
 
-  // Calculate proportions (relative measurements)
   const proportions = {
     shoulderToHipRatio: measurements.shoulderWidthPx / measurements.hipWidthPx,
     torsoToLegRatio: measurements.leftLegLengthPx ? 
       measurements.torsoLengthPx / measurements.leftLegLengthPx : null,
   };
 
-  // Convert to real-world measurements if calibration available
   let realWorldMeasurements = null;
   if (pixelsPerCm) {
     realWorldMeasurements = {
@@ -91,9 +65,7 @@ export function calculateBodyMeasurements(poseData, imageInfo = {}) {
   };
 }
 
-/**
- * Calculate Euclidean distance between two points
- */
+
 function calculateDistance(point1, point2) {
   if (!point1 || !point2) return 0;
   
@@ -102,11 +74,7 @@ function calculateDistance(point1, point2) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-/**
- * Classify body type based on proportions
- * @param {Object} measurements - Body measurements
- * @returns {Object} Body type classification
- */
+
 export function classifyBodyType(measurements) {
   if (!measurements || !measurements.proportions) {
     return null;
@@ -139,11 +107,7 @@ export function classifyBodyType(measurements) {
   };
 }
 
-/**
- * Recommend clothing sizes based on measurements
- * @param {Object} measurements - Body measurements
- * @returns {Object} Size recommendations
- */
+
 export function recommendSizes(measurements) {
   if (!measurements || !measurements.realWorldMeasurements) {
     return {
@@ -155,7 +119,6 @@ export function recommendSizes(measurements) {
 
   const { shoulderWidthCm, hipWidthCm } = measurements.realWorldMeasurements;
 
-  // Generic size mapping (approximate)
   const sizeMap = {
     tops: getSizeFromMeasurement(shoulderWidthCm, 'shoulders'),
     bottoms: getSizeFromMeasurement(hipWidthCm, 'hips')
@@ -169,9 +132,7 @@ export function recommendSizes(measurements) {
   };
 }
 
-/**
- * Map measurement to size
- */
+
 function getSizeFromMeasurement(measurement, type) {
   if (!measurement) return 'M';
 
@@ -194,11 +155,7 @@ function getSizeFromMeasurement(measurement, type) {
   return 'M';
 }
 
-/**
- * Generate fitting recommendations based on body type
- * @param {Object} bodyType - Body type classification
- * @returns {Object} Fitting recommendations
- */
+
 export function getFittingRecommendations(bodyType) {
   if (!bodyType || !bodyType.type) {
     return {
@@ -244,12 +201,7 @@ export function getFittingRecommendations(bodyType) {
   };
 }
 
-/**
- * Main analysis function - integrates all features
- * @param {Object} poseData - Pose detection results
- * @param {Object} imageInfo - Image metadata
- * @returns {Object} Complete body analysis
- */
+
 export function analyzeBody(poseData, imageInfo = {}) {
   try {
     const measurements = calculateBodyMeasurements(poseData, imageInfo);

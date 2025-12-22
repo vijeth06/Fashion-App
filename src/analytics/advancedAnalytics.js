@@ -1,5 +1,5 @@
-// 📊 ADVANCED ANALYTICS & PERSONALIZATION ENGINE
-// Features: AI-driven analytics, A/B testing, predictive modeling, hyper-personalization
+﻿
+
 
 import { TensorFlow } from '@tensorflow/tfjs';
 import { EventTracker } from './eventTracking';
@@ -17,37 +17,28 @@ export class AdvancedAnalyticsEngine {
     this.isInitialized = false;
   }
 
-  // 🚀 Initialize Advanced Analytics System
   async initialize(config = {}) {
     try {
-      console.log('📊 Initializing Advanced Analytics Engine...');
-      
-      // Initialize data collection
+      console.log('ðŸ“Š Initializing Advanced Analytics Engine...');
+
       await this.dataCollector.initialize(config.dataCollection);
-      
-      // Setup analytics processing
+
       await this.analyticsProcessor.initialize(config.analytics);
-      
-      // Initialize personalization engine
+
       await this.personalizationEngine.initialize(config.personalization);
-      
-      // Setup A/B testing framework
+
       await this.abTestingFramework.initialize(config.abTesting);
-      
-      // Initialize predictive modeling
+
       await this.predictiveModeler.initialize(config.predictive);
-      
-      // Setup behavior analysis
+
       await this.behaviorAnalyzer.initialize(config.behavior);
-      
-      // Initialize customer segmentation
+
       await this.segmentationEngine.initialize(config.segmentation);
-      
-      // Setup recommendation system
+
       await this.recommendationSystem.initialize(config.recommendations);
       
       this.isInitialized = true;
-      console.log('✅ Advanced Analytics Engine initialized successfully');
+      console.log('âœ… Advanced Analytics Engine initialized successfully');
       
       return {
         success: true,
@@ -55,12 +46,11 @@ export class AdvancedAnalyticsEngine {
         models: this.getLoadedModels()
       };
     } catch (error) {
-      console.error('❌ Analytics Engine initialization failed:', error);
+      console.error('âŒ Analytics Engine initialization failed:', error);
       throw new Error('Advanced Analytics Engine initialization failed');
     }
   }
 
-  // 📈 Real-Time Analytics Dashboard
   async generateRealTimeDashboard(userId, timeframe = '24h') {
     await this.ensureInitialized();
 
@@ -90,7 +80,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 🎯 Hyper-Personalization Engine
   async personalizeExperience(userId, context = {}) {
     await this.ensureInitialized();
 
@@ -111,7 +100,6 @@ export class AdvancedAnalyticsEngine {
     return personalization;
   }
 
-  // 🧪 A/B Testing Framework
   async runABTest(testConfig) {
     await this.ensureInitialized();
 
@@ -127,7 +115,6 @@ export class AdvancedAnalyticsEngine {
       targetAudience: testConfig.targetAudience || 'all'
     });
 
-    // Start test execution
     await this.abTestingFramework.startTest(test.id);
     
     return {
@@ -140,7 +127,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 🔮 Predictive Analytics
   async generatePredictions(predictionType, parameters = {}) {
     await this.ensureInitialized();
 
@@ -163,7 +149,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 🎭 Customer Segmentation
   async performCustomerSegmentation(segmentationCriteria) {
     await this.ensureInitialized();
 
@@ -200,7 +185,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 🎪 Advanced Recommendation System
   async generateAdvancedRecommendations(userId, recommendationType, context = {}) {
     await this.ensureInitialized();
 
@@ -233,7 +217,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 📊 Behavioral Analytics
   async analyzeBehavior(userId, analysisType = 'comprehensive') {
     await this.ensureInitialized();
 
@@ -258,7 +241,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 💡 Smart Insights Generation
   generateSmartInsights(analyticsData) {
     const insights = {
       performance: this.analyzePerformanceInsights(analyticsData),
@@ -279,7 +261,6 @@ export class AdvancedAnalyticsEngine {
     };
   }
 
-  // 🎯 Conversion Optimization
   async optimizeConversions(optimizationTarget) {
     await this.ensureInitialized();
 
@@ -307,7 +288,6 @@ export class AdvancedAnalyticsEngine {
   }
 }
 
-// 📊 Data Collection Manager
 class DataCollectionManager {
   constructor() {
     this.collectors = {
@@ -344,10 +324,8 @@ class DataCollectionManager {
       }
     };
 
-    // Add to queue for batch processing
     this.dataQueue.push(event);
 
-    // Process immediately for critical events
     if (this.isCriticalEvent(eventType)) {
       await this.processEvent(event);
     }
@@ -375,7 +353,6 @@ class DataCollectionManager {
   }
 }
 
-// 🎯 Hyper-Personalization Engine
 class HyperPersonalizationEngine {
   constructor() {
     this.models = {
@@ -429,7 +406,6 @@ class HyperPersonalizationEngine {
   }
 }
 
-// 🧪 A/B Testing Framework
 class ABTestingFramework {
   constructor() {
     this.tests = new Map();

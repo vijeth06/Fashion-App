@@ -1,11 +1,10 @@
-// 🔮 METAVERSE INTEGRATION SYSTEM
-// Features: AR/VR Fashion Try-On, Spatial Computing, Haptic Feedback, Cross-Platform Metaverse
+﻿
+
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaVrCardboard, FaCube, FaEye, FaHandPaper, FaMagic, FaGlobe, FaWifi } from 'react-icons/fa';
 
-// Mock Classes for Advanced Features
 class VRFrameData {
   constructor() {
     this.timestamp = 0;
@@ -119,7 +118,6 @@ class FashionParty {
   }
 }
 
-// 🌐 MAIN METAVERSE INTEGRATION ENGINE
 export class MetaverseIntegrationEngine {
   constructor() {
     this.vrManager = new VRManager();
@@ -131,9 +129,8 @@ export class MetaverseIntegrationEngine {
     this.socialMetaverse = new SocialMetaverseLayer();
   }
 
-  // 🚀 INITIALIZE METAVERSE CAPABILITIES
   async initializeMetaverse(userProfile, preferences = {}) {
-    console.log('🔮 Initializing Metaverse Integration...');
+    console.log('ðŸ”® Initializing Metaverse Integration...');
     
     try {
       const [
@@ -176,7 +173,6 @@ export class MetaverseIntegrationEngine {
     }
   }
 
-  // 🎯 LAUNCH METAVERSE FASHION EXPERIENCE
   async launchMetaverseFashion(mode, sessionConfig = {}) {
     const session = await this.createMetaverseSession(mode, sessionConfig);
     
@@ -197,7 +193,6 @@ export class MetaverseIntegrationEngine {
   }
 }
 
-// 🥽 VR MANAGER
 export class VRManager {
   constructor() {
     this.vrDisplay = null;
@@ -208,7 +203,7 @@ export class VRManager {
 
   async detectCapabilities() {
     try {
-      // Check WebXR support
+
       if ('xr' in navigator) {
         const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
         
@@ -231,8 +226,7 @@ export class VRManager {
           };
         }
       }
-      
-      // Fallback to WebVR if available
+
       if ('getVRDisplays' in navigator) {
         const displays = await navigator.getVRDisplays();
         if (displays.length > 0) {
@@ -287,7 +281,6 @@ export class VRManager {
   }
 }
 
-// 📱 AR MANAGER  
 export class ARManager {
   constructor() {
     this.arSession = null;
@@ -298,7 +291,7 @@ export class ARManager {
 
   async detectCapabilities() {
     try {
-      // Check WebXR AR support
+
       if ('xr' in navigator) {
         const isSupported = await navigator.xr.isSessionSupported('immersive-ar');
         
@@ -316,7 +309,6 @@ export class ARManager {
         }
       }
 
-      // Check WebRTC camera support for marker-based AR
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         return {
           supported: true,
@@ -341,7 +333,7 @@ export class ARManager {
 
   async launchARTryOn(garmentData, userBodyModel) {
     try {
-      // Request AR session
+
       this.arSession = await navigator.xr.requestSession('immersive-ar', {
         requiredFeatures: ['local-floor'],
         optionalFeatures: ['light-estimation', 'plane-detection']
@@ -357,7 +349,7 @@ export class ARManager {
       return await arTryOnEngine.start();
 
     } catch (error) {
-      // Fallback to camera-based AR
+
       return await this.launchCameraBasedAR(garmentData, userBodyModel);
     }
   }
@@ -381,7 +373,6 @@ export class ARManager {
   }
 }
 
-// 🧠 SPATIAL COMPUTER
 export class SpatialComputer {
   constructor() {
     this.spatialMap = new Map();
@@ -392,14 +383,12 @@ export class SpatialComputer {
 
   async initialize() {
     try {
-      // Initialize spatial mapping
+
       this.spatialMapping = new SpatialMapping();
       await this.spatialMapping.initialize();
 
-      // Setup coordinate system
       this.coordinateSystem = new SpatialCoordinateSystem();
-      
-      // Initialize plane detection
+
       this.planeDetector = new PlaneDetector();
       await this.planeDetector.initialize();
 
@@ -453,7 +442,6 @@ export class SpatialComputer {
   }
 }
 
-// 🎮 HAPTIC FEEDBACK ENGINE
 export class HapticFeedbackEngine {
   constructor() {
     this.hapticDevices = new Map();
@@ -465,7 +453,7 @@ export class HapticFeedbackEngine {
     const devices = [];
 
     try {
-      // Check for gamepad haptic support
+
       const gamepads = navigator.getGamepads();
       for (const gamepad of gamepads) {
         if (gamepad && gamepad.hapticActuators) {
@@ -478,7 +466,6 @@ export class HapticFeedbackEngine {
         }
       }
 
-      // Check for WebHID haptic devices
       if ('hid' in navigator) {
         const hidDevices = await navigator.hid.getDevices();
         for (const device of hidDevices) {
@@ -550,7 +537,6 @@ export class HapticFeedbackEngine {
   }
 }
 
-// 👤 AVATAR SYSTEM
 export class AvatarSystem {
   constructor() {
     this.avatarEngine = new AvatarEngine();
@@ -560,20 +546,18 @@ export class AvatarSystem {
 
   async loadOrCreateAvatar(userProfile) {
     try {
-      // Try to load existing avatar
+
       let avatar = await this.loadExistingAvatar(userProfile.id);
       
       if (!avatar) {
-        // Create new avatar from biometric data
+
         avatar = await this.createAvatarFromBiometrics(userProfile.biometrics);
       }
 
-      // Update avatar with latest measurements if available
       if (userProfile.latestMeasurements) {
         avatar = await this.updateAvatarMeasurements(avatar, userProfile.latestMeasurements);
       }
 
-      // Initialize avatar in metaverse spaces
       await this.initializeAvatarForMetaverse(avatar);
 
       return {
@@ -607,7 +591,6 @@ export class AvatarSystem {
   }
 }
 
-// 🌉 CROSS-PLATFORM BRIDGE
 export class CrossPlatformBridge {
   constructor() {
     this.connectedPlatforms = new Set();
@@ -621,8 +604,7 @@ export class CrossPlatformBridge {
     try {
       const connection = await adapter.connect(credentials);
       this.connectedPlatforms.add(platform);
-      
-      // Sync user data and preferences
+
       await this.dataSync.syncUserData(platform, connection);
       
       return {
@@ -652,7 +634,6 @@ export class CrossPlatformBridge {
   }
 }
 
-// 🎪 SOCIAL METAVERSE LAYER
 export class SocialMetaverseLayer {
   constructor() {
     this.socialHub = new SocialHub();
@@ -682,7 +663,6 @@ export class SocialMetaverseLayer {
   }
 }
 
-// 🎨 MAIN METAVERSE UI COMPONENT
 export default function MetaverseIntegration({ 
   isVisible = false, 
   userProfile, 
@@ -696,7 +676,6 @@ export default function MetaverseIntegration({
   const [avatar, setAvatar] = useState(null);
   const [connectedPlatforms, setConnectedPlatforms] = useState([]);
 
-  // Initialize metaverse capabilities
   useEffect(() => {
     if (isVisible && userProfile) {
       initializeMetaverse();
@@ -747,7 +726,7 @@ export default function MetaverseIntegration({
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-gradient-to-br from-gray-900 to-black border border-cyan-400/30 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
         >
-          {/* Header */}
+          {}
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-4xl font-black text-white mb-2">
@@ -763,7 +742,7 @@ export default function MetaverseIntegration({
               onClick={onClose}
               className="text-gray-400 hover:text-white text-2xl transition-colors"
             >
-              ✕
+              âœ•
             </button>
           </div>
 
@@ -771,10 +750,10 @@ export default function MetaverseIntegration({
             <MetaverseLoadingScreen />
           ) : (
             <>
-              {/* Capability Status */}
+              {}
               <CapabilityStatus capabilities={capabilities} />
               
-              {/* Experience Modes */}
+              {}
               <ExperienceModeSelector
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -782,10 +761,10 @@ export default function MetaverseIntegration({
                 onLaunch={launchExperience}
               />
               
-              {/* Avatar Preview */}
+              {}
               <AvatarPreview avatar={avatar} />
               
-              {/* Platform Connections */}
+              {}
               <PlatformConnections
                 connectedPlatforms={connectedPlatforms}
                 onConnect={(platform) => {
@@ -800,7 +779,6 @@ export default function MetaverseIntegration({
   );
 }
 
-// 🎯 SUPPORTING COMPONENTS
 function MetaverseLoadingScreen() {
   return (
     <div className="text-center py-16">
@@ -934,7 +912,7 @@ function AvatarPreview({ avatar }) {
       <h3 className="text-xl font-bold text-white mb-4">Your Avatar</h3>
       <div className="bg-gray-800/50 rounded-xl p-6 flex items-center space-x-4">
         <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-full flex items-center justify-center text-2xl">
-          👤
+          ðŸ‘¤
         </div>
         <div>
           <h4 className="text-white font-bold">Avatar #{avatar.id}</h4>
@@ -950,10 +928,10 @@ function AvatarPreview({ avatar }) {
 
 function PlatformConnections({ connectedPlatforms, onConnect }) {
   const platforms = [
-    { id: 'horizon', name: 'Horizon Worlds', icon: '🌐' },
-    { id: 'vrchat', name: 'VRChat', icon: '🎭' },
-    { id: 'recroom', name: 'Rec Room', icon: '🎮' },
-    { id: 'decentraland', name: 'Decentraland', icon: '🏛️' }
+    { id: 'horizon', name: 'Horizon Worlds', icon: 'ðŸŒ' },
+    { id: 'vrchat', name: 'VRChat', icon: 'ðŸŽ­' },
+    { id: 'recroom', name: 'Rec Room', icon: 'ðŸŽ®' },
+    { id: 'decentraland', name: 'Decentraland', icon: 'ðŸ›ï¸' }
   ];
 
   return (
@@ -979,5 +957,3 @@ function PlatformConnections({ connectedPlatforms, onConnect }) {
     </div>
   );
 }
-
-// Export the main component and engine

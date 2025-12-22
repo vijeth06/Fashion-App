@@ -1,4 +1,4 @@
-// Performance Optimization Utilities and Hooks
+﻿
 import React, { 
   memo, 
   useMemo, 
@@ -10,7 +10,6 @@ import React, {
   Suspense 
 } from 'react';
 
-// Memoized Product Card Component
 export const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, onTryOn }) => {
   const handleAddToCart = useCallback(() => {
     onAddToCart(product);
@@ -67,7 +66,7 @@ export const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, onTryO
             onClick={handleAddToWishlist}
             className="btn btn-outline"
           >
-            ♡
+            â™¡
           </button>
         </div>
       </div>
@@ -75,7 +74,6 @@ export const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, onTryO
   );
 });
 
-// Virtualized List Hook for large datasets
 export const useVirtualizedList = (items, containerHeight = 400, itemHeight = 100) => {
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(0);
@@ -106,7 +104,6 @@ export const useVirtualizedList = (items, containerHeight = 400, itemHeight = 10
   };
 };
 
-// Debounced Search Hook
 export const useDebouncedSearch = (searchTerm, delay = 300) => {
   const [debouncedValue, setDebouncedValue] = useState(searchTerm);
 
@@ -123,7 +120,6 @@ export const useDebouncedSearch = (searchTerm, delay = 300) => {
   return debouncedValue;
 };
 
-// Memoized Search Results Component
 export const SearchResults = memo(({ 
   searchTerm, 
   items, 
@@ -155,7 +151,6 @@ export const SearchResults = memo(({
   );
 });
 
-// Optimized Image Component with lazy loading and error handling
 export const OptimizedImage = memo(({ 
   src, 
   alt, 
@@ -200,7 +195,6 @@ export const OptimizedImage = memo(({
   );
 });
 
-// Intersection Observer Hook for lazy loading
 export const useIntersectionObserver = (options = {}) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const ref = useRef(null);
@@ -224,7 +218,6 @@ export const useIntersectionObserver = (options = {}) => {
   return [ref, isIntersecting];
 };
 
-// Lazy Loading Container
 export const LazyContainer = memo(({ children, height = '200px', className = '' }) => {
   const [ref, isIntersecting] = useIntersectionObserver({
     threshold: 0.1,
@@ -243,7 +236,6 @@ export const LazyContainer = memo(({ children, height = '200px', className = '' 
   );
 });
 
-// Performance Monitoring Hook
 export const usePerformanceMonitor = (componentName) => {
   const renderStart = useRef(Date.now());
   const renderCount = useRef(0);
@@ -262,12 +254,10 @@ export const usePerformanceMonitor = (componentName) => {
   return renderCount.current;
 };
 
-// Lazy loaded components
 export const LazyARTryOn = lazy(() => import('./AdvancedARTryOn.jsx'));
 export const LazyQuantumTryOn = lazy(() => import('./QuantumTryOn.jsx'));
 export const LazyCatalog = lazy(() => import('../pages/Catalog.jsx'));
 
-// HOC for adding performance monitoring
 export const withPerformanceMonitoring = (WrappedComponent, componentName) => {
   return memo((props) => {
     usePerformanceMonitor(componentName);
@@ -275,7 +265,6 @@ export const withPerformanceMonitoring = (WrappedComponent, componentName) => {
   });
 };
 
-// Cache Hook for expensive computations
 export const useCache = (key, computeFn, dependencies = []) => {
   const cache = useRef(new Map());
   

@@ -1,4 +1,4 @@
-// Barrel exports for pages
+﻿
 export { default as AdminDashboard } from './AdminDashboard.jsx';
 export { default as Cart } from './Cart.jsx';
 export { default as Catalog } from './Catalog.jsx';
@@ -14,7 +14,7 @@ export { default as ProductDetails } from './ProductDetails.jsx';
 export { default as Profile } from './Profile.jsx';
 export { default as Recommendations } from './Recommendations.jsx';
 export { default as Signup } from './Signup.jsx';
-// Use EnhancedTryOn (with VirtualTryOnComponent) as the main TryOn page
+
 export { default as TryOn } from './EnhancedTryOn.jsx';
 export { default as EnhancedTryOn } from './EnhancedTryOn.jsx';
 export { default as Wishlist } from './Wishlist.jsx';

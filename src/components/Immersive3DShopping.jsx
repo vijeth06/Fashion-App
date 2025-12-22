@@ -1,5 +1,5 @@
-// 🌐 IMMERSIVE 3D SHOPPING ENVIRONMENT
-// Features: Spatial Navigation, Gesture Controls, Virtual Showrooms, Holographic Product Display
+﻿
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
@@ -28,7 +28,6 @@ import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts.js';
 import { useNeuralInterface } from './AdaptiveNeuralInterface.jsx';
 
-// 🏗️ MAIN 3D SHOPPING ENVIRONMENT
 export default function Immersive3DShopping({ 
   isVisible = true, 
   onItemSelect, 
@@ -50,7 +49,6 @@ export default function Immersive3DShopping({
   const gestureDetector = useRef(new GestureDetector());
   const { learnFromInteraction } = useNeuralInterface();
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -76,7 +74,6 @@ export default function Immersive3DShopping({
     fetchProducts();
   }, []);
 
-  // Initialize gesture controls
   useEffect(() => {
     if (gestureControls && containerRef.current) {
       gestureDetector.current.initialize(containerRef.current);
@@ -84,7 +81,6 @@ export default function Immersive3DShopping({
     }
   }, [gestureControls]);
 
-  // Track 3D interactions for neural learning
   const trackSpatialInteraction = (interactionData) => {
     learnFromInteraction({
       ...interactionData,
@@ -101,7 +97,7 @@ export default function Immersive3DShopping({
       ref={containerRef}
       className="relative w-full h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-black overflow-hidden"
     >
-      {/* 3D Environment Controls */}
+      {}
       <Immersive3DControls
         navigationMode={navigationMode}
         setNavigationMode={setNavigationMode}
@@ -114,7 +110,7 @@ export default function Immersive3DShopping({
         onRoomChange={setCurrentRoom}
       />
 
-      {/* Main 3D Canvas */}
+      {}
       <Canvas
         shadows
         camera={{ position: [0, 5, 10], fov: 75 }}
@@ -130,17 +126,17 @@ export default function Immersive3DShopping({
         }}
       >
           
-          {/* Lighting Setup */}
+          {}
           <LightingRig />
           
-          {/* Environment and Atmosphere */}
+          {}
           <Environment preset="city" />
           <Stars radius={300} depth={60} count={20000} factor={7} saturation={0} fade />
           
-          {/* Physics World */}
+          {}
           <Physics gravity={[0, -9.81, 0]} iterations={5}>
             
-            {/* Navigation Controls */}
+            {}
             <CameraController 
               mode={navigationMode}
               room={currentRoom}
@@ -148,7 +144,7 @@ export default function Immersive3DShopping({
               onInteraction={trackSpatialInteraction}
             />
             
-            {/* 3D Room Environments */}
+            {}
             <SpatialRoomManager
               currentRoom={currentRoom}
               onRoomTransition={setCurrentRoom}
@@ -156,7 +152,7 @@ export default function Immersive3DShopping({
               onInteraction={trackSpatialInteraction}
             />
             
-            {/* Product Display System */}
+            {}
             <HolographicProductDisplay
               items={fashionItems}
               selectedCategory={selectedCategory}
@@ -173,14 +169,14 @@ export default function Immersive3DShopping({
               interactionMode={interactionMode}
             />
             
-            {/* Spatial UI Elements */}
+            {}
             <SpatialUIElements
               currentRoom={currentRoom}
               selectedItem={selectedItem}
               onInteraction={trackSpatialInteraction}
             />
             
-            {/* Gesture Interaction Zones */}
+            {}
             {gestureControls && (
               <GestureInteractionZones
                 onGesture={(gestureData) => {
@@ -195,7 +191,7 @@ export default function Immersive3DShopping({
             
           </Physics>
           
-          {/* Post-processing Effects */}
+          {}
           <EffectComposer>
             <Bloom intensity={0.5} luminanceThreshold={0.9} />
             <ChromaticAberration offset={[0.001, 0.001]} />
@@ -203,7 +199,7 @@ export default function Immersive3DShopping({
           
       </Canvas>
 
-      {/* Spatial Audio Controls */}
+      {}
       {spatialAudio && (
         <SpatialAudioManager
           currentRoom={currentRoom}
@@ -212,7 +208,7 @@ export default function Immersive3DShopping({
         />
       )}
 
-      {/* Item Detail Overlay */}
+      {}
       <AnimatePresence>
         {selectedItem && (
           <ItemDetailOverlay
@@ -223,7 +219,7 @@ export default function Immersive3DShopping({
         )}
       </AnimatePresence>
 
-      {/* VR/AR Transition */}
+      {}
       {isVRMode && (
         <VRTransitionOverlay
           onExitVR={() => setIsVRMode(false)}
@@ -233,7 +229,6 @@ export default function Immersive3DShopping({
   );
 }
 
-// 🎮 3D ENVIRONMENT CONTROLS
 function Immersive3DControls({
   navigationMode,
   setNavigationMode,
@@ -248,7 +243,7 @@ function Immersive3DControls({
   return (
     <div className="absolute top-4 left-4 z-50 space-y-4">
       
-      {/* Navigation Mode Selector */}
+      {}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -280,7 +275,7 @@ function Immersive3DControls({
         </div>
       </motion.div>
 
-      {/* Room Selector */}
+      {}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -305,7 +300,7 @@ function Immersive3DControls({
         </div>
       </motion.div>
 
-      {/* Advanced Controls */}
+      {}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -341,7 +336,6 @@ function Immersive3DControls({
   );
 }
 
-// 🎥 CAMERA CONTROLLER
 function CameraController({ mode, room, gestureControls, onInteraction }) {
   const { camera, gl } = useThree();
   const controlsRef = useRef();
@@ -349,31 +343,28 @@ function CameraController({ mode, room, gestureControls, onInteraction }) {
   
   useFrame((state, delta) => {
     if (mode === 'fps') {
-      // First person movement logic
+
       handleFPSMovement(state, delta);
     } else if (mode === 'gesture' && gestureControls) {
-      // Gesture-based camera control
+
       handleGestureMovement(state, delta);
     }
-    
-    // Room-specific camera positioning
+
     adjustCameraForRoom(room, state, delta);
   });
 
   const handleFPSMovement = (state, delta) => {
-    // Smooth FPS movement implementation
+
     const speed = 5;
     const { camera } = state;
-    
-    // Simulate smooth movement based on input
+
     if (isMoving) {
       camera.position.z -= speed * delta;
     }
   };
 
   const handleGestureMovement = (state, delta) => {
-    // Gesture-controlled camera movement
-    // This would integrate with gesture detection API
+
   };
 
   const adjustCameraForRoom = (room, state, delta) => {
@@ -386,7 +377,7 @@ function CameraController({ mode, room, gestureControls, onInteraction }) {
     
     const targetPos = roomPositions[room];
     if (targetPos) {
-      // Smooth camera transition to room position
+
       state.camera.position.lerp(
         new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z),
         delta * 0.5
@@ -418,7 +409,6 @@ function CameraController({ mode, room, gestureControls, onInteraction }) {
   );
 }
 
-// 🏢 SPATIAL ROOM MANAGER
 function SpatialRoomManager({ currentRoom, onRoomTransition, userProfile, onInteraction }) {
   const roomEnvironments = {
     main_gallery: <MainGalleryRoom userProfile={userProfile} onInteraction={onInteraction} />,
@@ -429,23 +419,22 @@ function SpatialRoomManager({ currentRoom, onRoomTransition, userProfile, onInte
 
   return (
     <group>
-      {/* Room Transition Portals */}
+      {}
       <RoomPortals currentRoom={currentRoom} onRoomTransition={onRoomTransition} />
       
-      {/* Current Room Environment */}
+      {}
       {roomEnvironments[currentRoom]}
       
-      {/* Spatial Boundaries */}
+      {}
       <SpatialBoundaries room={currentRoom} />
     </group>
   );
 }
 
-// 🎨 MAIN GALLERY ROOM
 function MainGalleryRoom({ userProfile, onInteraction }) {
   return (
     <group position={[0, 0, 0]}>
-      {/* Gallery Floor */}
+      {}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
         <planeGeometry args={[50, 50]} />
         <meshStandardMaterial 
@@ -455,10 +444,10 @@ function MainGalleryRoom({ userProfile, onInteraction }) {
         />
       </mesh>
       
-      {/* Gallery Walls */}
+      {}
       <GalleryWalls />
       
-      {/* Floating Display Platforms */}
+      {}
       {[...Array(8)].map((_, i) => (
         <FloatingPlatform
           key={i}
@@ -472,36 +461,34 @@ function MainGalleryRoom({ userProfile, onInteraction }) {
         />
       ))}
       
-      {/* Ambient Lighting Orbs */}
+      {}
       <AmbientLightingOrbs />
     </group>
   );
 }
 
-// 💎 PREMIUM LOUNGE ROOM
 function PremiumLoungeRoom({ userProfile, onInteraction }) {
   return (
     <group position={[15, 0, 0]}>
-      {/* Luxurious Environment */}
+      {}
       <mesh position={[0, -2, 0]}>
         <cylinderGeometry args={[12, 12, 0.2, 32]} />
         <meshStandardMaterial color="#2d1b69" metalness={0.8} roughness={0.2} />
       </mesh>
       
-      {/* Floating Luxury Items */}
+      {}
       <LuxuryItemDisplay onInteraction={onInteraction} />
       
-      {/* Premium Atmosphere Effects */}
+      {}
       <PremiumAtmosphereEffects />
     </group>
   );
 }
 
-// 🧪 TREND LAB ROOM
 function TrendLabRoom({ userProfile, onInteraction }) {
   return (
     <group position={[-10, 0, 15]}>
-      {/* Futuristic Lab Environment */}
+      {}
       <mesh position={[0, -1, 0]}>
         <boxGeometry args={[20, 0.2, 20]} />
         <MeshDistortMaterial
@@ -512,16 +499,15 @@ function TrendLabRoom({ userProfile, onInteraction }) {
         />
       </mesh>
       
-      {/* Trend Analysis Displays */}
+      {}
       <TrendAnalysisDisplays onInteraction={onInteraction} />
       
-      {/* Data Visualization */}
+      {}
       <DataVisualization3D />
     </group>
   );
 }
 
-// 👗 HOLOGRAPHIC PRODUCT DISPLAY
 function HolographicProductDisplay({ 
   items, 
   selectedCategory, 
@@ -553,7 +539,6 @@ function HolographicProductDisplay({
   );
 }
 
-// 🎯 HOLOGRAPHIC PRODUCT ITEM
 function HolographicProductItem({ 
   item, 
   position, 
@@ -568,8 +553,7 @@ function HolographicProductItem({
   useFrame((state, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.5;
-      
-      // Scale animation based on interaction
+
       const targetScale = hovered ? 1.2 : isSelected ? 1.1 : 1;
       meshRef.current.scale.lerp(
         new THREE.Vector3(targetScale, targetScale, targetScale),
@@ -598,7 +582,7 @@ function HolographicProductItem({
     <Float speed={1} rotationIntensity={0.2} floatIntensity={0.3}>
       <group position={position}>
         
-        {/* Main Product Representation */}
+        {}
         <mesh
           ref={meshRef}
           onClick={handleClick}
@@ -615,7 +599,7 @@ function HolographicProductItem({
           />
         </mesh>
 
-        {/* Holographic Effect Ring */}
+        {}
         <mesh position={[0, -2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[1.5, 2, 32]} />
           <meshBasicMaterial
@@ -625,7 +609,7 @@ function HolographicProductItem({
           />
         </mesh>
 
-        {/* Product Information */}
+        {}
         <Html
           position={[0, 2, 0]}
           center
@@ -645,7 +629,7 @@ function HolographicProductItem({
           </div>
         </Html>
 
-        {/* Selection Indicator */}
+        {}
         {isSelected && (
           <Sphere args={[3]} position={[0, 0, 0]}>
             <meshBasicMaterial
@@ -657,14 +641,13 @@ function HolographicProductItem({
           </Sphere>
         )}
 
-        {/* Particle Effects */}
+        {}
         {hovered && <ProductParticleEffects />}
       </group>
     </Float>
   );
 }
 
-// ✨ SUPPORTING COMPONENTS
 function LoadingEnvironment() {
   return (
     <group>
@@ -708,7 +691,7 @@ function LightingRig() {
 function GestureDetector() {
   this.initialize = (container) => {
     console.log('Initializing gesture detection...');
-    // Gesture detection implementation would go here
+
   };
   
   this.cleanup = () => {
@@ -716,7 +699,6 @@ function GestureDetector() {
   };
 }
 
-// Additional supporting functions and components would be implemented here...
 function RoomPortals() { return null; }
 function SpatialBoundaries() { return null; }
 function GalleryWalls() { return null; }
@@ -734,5 +716,4 @@ function VRTransitionOverlay() { return null; }
 function ProductParticleEffects() { return null; }
 function VirtualRunwayRoom() { return null; }
 
-// Export the main component
 export { Immersive3DShopping };

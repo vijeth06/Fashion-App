@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
 import userService from '../services/userService';
@@ -29,7 +29,7 @@ export default function ProductDetails() {
         const data = await productService.getProductById(id);
         if (data && data.product) {
           setProduct(data.product);
-          // Check if user has this in wishlist
+
           if (user?.uid) {
             const wishlist = await userService.getWishlist(user.uid);
             const isInWishlist = wishlist.wishlist?.some(item => 
@@ -76,7 +76,6 @@ export default function ProductDetails() {
     );
   }
 
-  // Product images from real data
   const productImages = [
     product.images?.main || product.imageUrl || '/placeholder.jpg',
     product.images?.overlay || product.images?.main || '/placeholder.jpg',
@@ -125,7 +124,6 @@ export default function ProductDetails() {
     }
   };
 
-  // Calculate average rating from real product data
   const averageRating = product?.reviews?.averageRating || 
     (product?.reviews?.items?.length > 0 
       ? product.reviews.items.reduce((acc, review) => acc + review.rating, 0) / product.reviews.items.length 
@@ -134,7 +132,7 @@ export default function ProductDetails() {
   return (
     <div className="min-h-screen bg-slate-950">
       <div className="container py-10">
-        {/* Breadcrumb */}
+        {}
         <nav className="mb-8">
           <div className="flex items-center space-x-2 text-sm text-gray-300">
             <Link to="/" className="hover:text-cyan-400">Home</Link>
@@ -148,9 +146,9 @@ export default function ProductDetails() {
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Product Images */}
+          {}
           <div className="space-y-4">
-            {/* Main Image */}
+            {}
             <div className="aspect-square overflow-hidden rounded-2xl card">
               <img
                 src={productImages[selectedImageIndex]}
@@ -159,7 +157,7 @@ export default function ProductDetails() {
               />
             </div>
             
-            {/* Image Thumbnails */}
+            {}
             <div className="grid grid-cols-4 gap-2">
               {productImages.map((image, index) => (
                 <button
@@ -179,9 +177,9 @@ export default function ProductDetails() {
             </div>
           </div>
 
-          {/* Product Information */}
+          {}
           <div className="space-y-6">
-            {/* Product Header */}
+            {}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs tracking-wide text-black font-bold capitalize bg-gradient-to-r from-emerald-400 to-cyan-400 px-3 py-1 rounded-full">
@@ -195,7 +193,7 @@ export default function ProductDetails() {
               </div>
               <h1 className="text-4xl font-bold text-white mb-4">{product.name?.en || product.name}</h1>
               
-              {/* Rating */}
+              {}
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -216,11 +214,11 @@ export default function ProductDetails() {
               
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                  ₹{(product.pricing?.selling || product.price || 0).toLocaleString('en-IN')}
+                  â‚¹{(product.pricing?.selling || product.price || 0).toLocaleString('en-IN')}
                 </div>
                 {product.pricing?.mrp && product.pricing.mrp > product.pricing.selling && (
                   <div className="text-xl text-gray-500 line-through">
-                    ₹{product.pricing.mrp.toLocaleString('en-IN')}
+                    â‚¹{product.pricing.mrp.toLocaleString('en-IN')}
                   </div>
                 )}
                 {product.pricing?.discount && (
@@ -231,7 +229,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            {/* Size Selection */}
+            {}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="text-lg font-semibold text-white">Size</label>
@@ -259,7 +257,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            {/* Quantity */}
+            {}
             <div>
               <label className="text-lg font-semibold text-white mb-3 block">Quantity</label>
               <div className="flex items-center border border-white/20 rounded-xl w-36 bg-white/5">
@@ -283,13 +281,13 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {}
             <div className="space-y-3">
               <button
                 onClick={handleAddToCart}
                 className="w-full btn-primary py-4 px-6 text-lg"
               >
-                Add to Cart - ₹{((product.pricing?.selling || product.price || 0) * quantity).toLocaleString('en-IN')}
+                Add to Cart - â‚¹{((product.pricing?.selling || product.price || 0) * quantity).toLocaleString('en-IN')}
               </button>
               
               <div className="grid grid-cols-2 gap-3">
@@ -297,7 +295,7 @@ export default function ProductDetails() {
                   to="/try-on"
                   className="flex items-center justify-center gap-2 btn-secondary py-3 px-6"
                 >
-                  <span>✨</span>
+                  <span>âœ¨</span>
                   Virtual Try-On
                 </Link>
                 <button
@@ -318,7 +316,7 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Size Guide Modal */}
+        {}
         {showSizeGuide && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
             <div className="card max-w-2xl w-full max-h-[80vh] overflow-y-auto">
@@ -369,9 +367,9 @@ export default function ProductDetails() {
                 <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
                   <h3 className="font-semibold text-white mb-2">How to Measure</h3>
                   <ul className="text-sm text-gray-300 space-y-1">
-                    <li>• <strong>Chest:</strong> Measure around the fullest part of your chest</li>
-                    <li>• <strong>Waist:</strong> Measure around your natural waistline</li>
-                    <li>• <strong>Length:</strong> Measure from shoulder to desired hem length</li>
+                    <li>â€¢ <strong>Chest:</strong> Measure around the fullest part of your chest</li>
+                    <li>â€¢ <strong>Waist:</strong> Measure around your natural waistline</li>
+                    <li>â€¢ <strong>Length:</strong> Measure from shoulder to desired hem length</li>
                   </ul>
                 </div>
               </div>

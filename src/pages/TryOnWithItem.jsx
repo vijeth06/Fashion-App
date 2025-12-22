@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -28,18 +28,13 @@ import {
   FaSpinner
 } from 'react-icons/fa';
 
-/**
- * TryOnWithItem Page
- * Integrates with existing project architecture and services
- * Supports item-specific virtual try-on with proper routing
- */
+
 const TryOnWithItem = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToOutfit, currentOutfit, saveOutfit } = useOutfit();
-  
-  // State management
+
   const [product, setProduct] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,11 +46,9 @@ const TryOnWithItem = () => {
   const [capturedImages, setCapturedImages] = useState([]);
   const [tryOnMode, setTryOnMode] = useState('virtual'); // 'virtual' or 'ar'
 
-  // Try-on specific state
   const [clothingItems, setClothingItems] = useState([]);
   const [isCapturing, setIsCapturing] = useState(false);
 
-  // Get item ID from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const itemId = parseInt(urlParams.get('item'));
@@ -69,18 +62,15 @@ const TryOnWithItem = () => {
     loadProductData(itemId);
   }, [location]);
 
-  // Load product data from the service
   const loadProductData = async (itemId) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch all products first
       const productsResponse = await productService.getAllProducts({ limit: 100 });
       const allProductsList = productsResponse.products || [];
       setAllProducts(allProductsList);
 
-      // Find the specific product
       let targetProduct = allProductsList.find(p => p.id === itemId || p._id === itemId);
 
       if (!targetProduct) {
@@ -93,7 +83,6 @@ const TryOnWithItem = () => {
       setSelectedColor(targetProduct.colors?.[0] || '');
       setSelectedSize(targetProduct.sizes?.[Math.floor(targetProduct.sizes.length / 2)] || '');
 
-      // Format products for virtual try-on component
       const formattedProducts = allProductsList.map(product => ({
         id: product.id || product._id,
         name: product.name?.en || product.name,
@@ -112,7 +101,6 @@ const TryOnWithItem = () => {
     }
   };
 
-  // Handle virtual try-on capture
   const handleCapture = (imageData) => {
     setIsCapturing(true);
     setCapturedImages(prev => [...prev, {
@@ -126,7 +114,6 @@ const TryOnWithItem = () => {
     setTimeout(() => setIsCapturing(false), 1000);
   };
 
-  // Handle sharing
   const handleShare = async (imageData) => {
     try {
       if (navigator.share && navigator.canShare) {
@@ -140,7 +127,7 @@ const TryOnWithItem = () => {
           files: [file]
         });
       } else {
-        // Fallback to download
+
         const link = document.createElement('a');
         link.download = `tryon-${product?.name || 'item'}-${Date.now()}.png`;
         link.href = imageData;
@@ -148,7 +135,7 @@ const TryOnWithItem = () => {
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback to download
+
       const link = document.createElement('a');
       link.download = `tryon-${product?.name || 'item'}-${Date.now()}.png`;
       link.href = imageData;
@@ -156,7 +143,6 @@ const TryOnWithItem = () => {
     }
   };
 
-  // Add to outfit
   const handleAddToOutfit = () => {
     if (product) {
       addToOutfit({
@@ -168,7 +154,6 @@ const TryOnWithItem = () => {
     }
   };
 
-  // Save look
   const handleSaveLook = async () => {
     if (capturedImages.length > 0) {
       try {
@@ -185,7 +170,6 @@ const TryOnWithItem = () => {
     }
   };
 
-  // Navigate to different products
   const navigateToProduct = (productId) => {
     navigate(`/try?item=${productId}`);
   };
@@ -210,7 +194,7 @@ const TryOnWithItem = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 flex items-center justify-center">
         <div className="text-center p-8">
-          <div className="text-red-400 text-6xl mb-4">⚠️</div>
+          <div className="text-red-400 text-6xl mb-4">âš ï¸</div>
           <h2 className="text-white text-2xl font-bold mb-4">Try-On Error</h2>
           <p className="text-gray-300 mb-6">{error}</p>
           <div className="space-x-4">
@@ -234,7 +218,7 @@ const TryOnWithItem = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950">
-      {/* Header */}
+      {}
       <div className="relative overflow-hidden py-6">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between">
@@ -284,9 +268,9 @@ const TryOnWithItem = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {}
       <div className="container mx-auto px-6 pb-12">
-        {/* Mode Selection */}
+        {}
         <div className="flex justify-center mb-8">
           <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-2 border border-gray-700">
             <div className="flex space-x-2">
@@ -316,7 +300,7 @@ const TryOnWithItem = () => {
           </div>
         </div>
 
-        {/* Try-On Interface */}
+        {}
         <AnimatePresence mode="wait">
           <motion.div
             key={tryOnMode}
@@ -343,10 +327,10 @@ const TryOnWithItem = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Product Actions */}
+        {}
         {!isFullscreen && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Product Info */}
+            {}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -360,12 +344,12 @@ const TryOnWithItem = () => {
                   ${product?.price || '29.99'}
                 </span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-yellow-400">★</span>
+                  <span className="text-yellow-400">â˜…</span>
                   <span className="text-white">{product?.rating || '4.8'}</span>
                 </div>
               </div>
               
-              {/* Color and Size Selection */}
+              {}
               <div className="space-y-4">
                 <div>
                   <label className="block text-gray-300 mb-2">Color</label>
@@ -417,7 +401,7 @@ const TryOnWithItem = () => {
               </motion.button>
             </motion.div>
 
-            {/* Captured Images */}
+            {}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -492,7 +476,7 @@ const TryOnWithItem = () => {
         )}
       </div>
 
-      {/* Capture Success Animation */}
+      {}
       <AnimatePresence>
         {isCapturing && (
           <motion.div
@@ -502,7 +486,7 @@ const TryOnWithItem = () => {
             className="fixed inset-0 pointer-events-none flex items-center justify-center z-50"
           >
             <div className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg">
-              ✨ Look Captured!
+              âœ¨ Look Captured!
             </div>
           </motion.div>
         )}

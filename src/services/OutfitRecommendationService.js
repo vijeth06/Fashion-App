@@ -1,8 +1,4 @@
-/**
- * Outfit Recommendation Service
- * Real implementation for outfit scoring and recommendations
- * @version 1.0.0
- */
+﻿
 
 export class OutfitRecommendationService {
   constructor() {
@@ -10,12 +6,10 @@ export class OutfitRecommendationService {
     this.styleRules = this.initializeStyleRules();
   }
 
-  /**
-   * Initialize style compatibility rules
-   */
+  
   initializeStyleRules() {
     return {
-      // Color harmony rules
+
       colorHarmony: {
         complementary: ['red-green', 'blue-orange', 'yellow-purple'],
         analogous: ['red-orange', 'blue-green', 'yellow-green'],
@@ -23,7 +17,6 @@ export class OutfitRecommendationService {
         neutral: ['black', 'white', 'gray', 'beige', 'navy']
       },
 
-      // Style compatibility
       styleCompatibility: {
         casual: ['jeans', 't-shirt', 'sneakers', 'hoodie'],
         formal: ['suit', 'dress-shirt', 'blazer', 'dress-shoes'],
@@ -32,7 +25,6 @@ export class OutfitRecommendationService {
         elegant: ['dress', 'heels', 'blouse', 'skirt']
       },
 
-      // Occasion matching
       occasions: {
         work: ['business', 'formal'],
         casual: ['casual', 'sporty'],
@@ -41,7 +33,6 @@ export class OutfitRecommendationService {
         date: ['elegant', 'casual']
       },
 
-      // Season rules
       seasonRules: {
         summer: ['light-colors', 'breathable', 'short-sleeve'],
         winter: ['dark-colors', 'warm', 'long-sleeve', 'layers'],
@@ -51,9 +42,7 @@ export class OutfitRecommendationService {
     };
   }
 
-  /**
-   * Set user preferences
-   */
+  
   setUserPreferences(preferences) {
     this.userPreferences = {
       style: preferences.style || 'casual',
@@ -64,9 +53,7 @@ export class OutfitRecommendationService {
     };
   }
 
-  /**
-   * Get current season
-   */
+  
   getCurrentSeason() {
     const month = new Date().getMonth();
     if (month >= 2 && month <= 4) return 'spring';
@@ -75,9 +62,7 @@ export class OutfitRecommendationService {
     return 'winter';
   }
 
-  /**
-   * Score an outfit
-   */
+  
   scoreOutfit(items) {
     if (!items || items.length === 0) {
       return {
@@ -95,7 +80,6 @@ export class OutfitRecommendationService {
       personalFit: this.scorePersonalFit(items)
     };
 
-    // Weighted average
     const weights = {
       colorHarmony: 0.25,
       styleCoherence: 0.30,
@@ -121,22 +105,18 @@ export class OutfitRecommendationService {
     };
   }
 
-  /**
-   * Score color harmony
-   */
+  
   scoreColorHarmony(items) {
     const colors = items.map(item => this.extractColor(item));
     
     if (colors.length < 2) return 80;
 
-    // Check for neutral colors
     const neutralCount = colors.filter(c => 
       this.styleRules.colorHarmony.neutral.includes(c)
     ).length;
 
     if (neutralCount >= colors.length - 1) return 90; // Neutrals always work
 
-    // Check color relationships
     let harmonyScore = 70;
     
     for (let i = 0; i < colors.length - 1; i++) {
@@ -150,9 +130,7 @@ export class OutfitRecommendationService {
     return Math.min(harmonyScore, 100);
   }
 
-  /**
-   * Extract color from item
-   */
+  
   extractColor(item) {
     if (item.color) return item.color.toLowerCase();
     if (item.name) {
@@ -166,9 +144,7 @@ export class OutfitRecommendationService {
     return 'unknown';
   }
 
-  /**
-   * Check if colors match well
-   */
+  
   colorsMatch(color1, color2) {
     if (color1 === color2) return true;
     if (this.styleRules.colorHarmony.neutral.includes(color1) ||
@@ -185,13 +161,10 @@ export class OutfitRecommendationService {
     );
   }
 
-  /**
-   * Score style coherence
-   */
+  
   scoreStyleCoherence(items) {
     const categories = items.map(item => item.category || item.type || 'unknown');
-    
-    // Identify dominant style
+
     const styleScores = {};
     
     Object.entries(this.styleRules.styleCompatibility).forEach(([style, keywords]) => {
@@ -206,9 +179,7 @@ export class OutfitRecommendationService {
     return Math.round(coherenceRatio * 100);
   }
 
-  /**
-   * Score occasion match
-   */
+  
   scoreOccasionMatch(items) {
     if (!this.userPreferences || !this.userPreferences.occasion) {
       return 75; // Neutral score if no preference
@@ -227,9 +198,7 @@ export class OutfitRecommendationService {
     return Math.round((matches / items.length) * 100);
   }
 
-  /**
-   * Score seasonal fit
-   */
+  
   scoreSeasonalFit(items) {
     const season = this.userPreferences?.season || this.getCurrentSeason();
     const seasonalKeywords = this.styleRules.seasonRules[season] || [];
@@ -246,15 +215,12 @@ export class OutfitRecommendationService {
     return Math.min(score, 100);
   }
 
-  /**
-   * Score personal fit
-   */
+  
   scorePersonalFit(items) {
     if (!this.userPreferences) return 75;
 
     let score = 60;
 
-    // Check favorite colors
     if (this.userPreferences.favoriteColors) {
       items.forEach(item => {
         const color = this.extractColor(item);
@@ -264,7 +230,6 @@ export class OutfitRecommendationService {
       });
     }
 
-    // Check style preference
     const categories = items.map(item => item.category || '');
     const preferredStyle = this.userPreferences.style || 'casual';
     const matchingKeywords = this.styleRules.styleCompatibility[preferredStyle] || [];
@@ -278,9 +243,7 @@ export class OutfitRecommendationService {
     return Math.min(score, 100);
   }
 
-  /**
-   * Generate suggestions
-   */
+  
   generateSuggestions(items, scores) {
     const suggestions = [];
 
@@ -307,13 +270,10 @@ export class OutfitRecommendationService {
     return suggestions;
   }
 
-  /**
-   * Generate recommendations
-   */
+  
   generateRecommendations(items, scores) {
     const recommendations = [];
 
-    // Recommend missing pieces
     const hasTop = items.some(item => 
       (item.category || '').toLowerCase().includes('top') ||
       (item.category || '').toLowerCase().includes('shirt')
@@ -341,7 +301,6 @@ export class OutfitRecommendationService {
       });
     }
 
-    // Style recommendations based on scores
     if (scores.colorHarmony > 80) {
       recommendations.push({
         type: 'strength',
@@ -352,18 +311,14 @@ export class OutfitRecommendationService {
     return recommendations;
   }
 
-  /**
-   * Identify strengths
-   */
+  
   identifyStrengths(scores) {
     return Object.entries(scores)
       .filter(([_, score]) => score >= 80)
       .map(([category, _]) => category);
   }
 
-  /**
-   * Identify areas for improvement
-   */
+  
   identifyImprovements(scores) {
     return Object.entries(scores)
       .filter(([_, score]) => score < 70)

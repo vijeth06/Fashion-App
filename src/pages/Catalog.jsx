@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import productService from '../services/productService';
 import userService from '../services/userService';
@@ -26,13 +26,11 @@ export default function Catalog() {
   const { addFavorite } = useOutfit();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  
-  // State for products
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // State for filters and sorting
+
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [priceRange, setPriceRange] = useState('all');
@@ -43,7 +41,6 @@ export default function Catalog() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [filterOpen, setFilterOpen] = useState({ category: false, price: false, sort: false });
 
-  // Fetch products on mount
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -61,7 +58,6 @@ export default function Catalog() {
     fetchProducts();
   }, []);
 
-  // Fetch wishlist if user is logged in
   useEffect(() => {
     async function fetchWishlist() {
       if (user?.uid) {
@@ -77,22 +73,19 @@ export default function Catalog() {
     fetchWishlist();
   }, [user]);
 
-  // Get unique categories
   const categories = useMemo(() => {
     const cats = ['all', ...new Set(products.map(item => item.category))];
     return cats;
   }, [products]);
 
-  // Price range options (Indian Rupees)
   const priceRanges = [
     { value: 'all', label: 'ALL PRICES' },
-    { value: '0-1000', label: 'UNDER ₹1,000' },
-    { value: '1000-2500', label: '₹1,000 - ₹2,500' },
-    { value: '2500-5000', label: '₹2,500 - ₹5,000' },
-    { value: '5000+', label: '₹5,000+' }
+    { value: '0-1000', label: 'UNDER â‚¹1,000' },
+    { value: '1000-2500', label: 'â‚¹1,000 - â‚¹2,500' },
+    { value: '2500-5000', label: 'â‚¹2,500 - â‚¹5,000' },
+    { value: '5000+', label: 'â‚¹5,000+' }
   ];
 
-  // Sort options
   const sortOptions = [
     { value: 'featured', label: 'FEATURED' },
     { value: 'price-low', label: 'PRICE: LOW TO HIGH' },
@@ -101,20 +94,17 @@ export default function Catalog() {
     { value: 'name-za', label: 'NAME: Z-A' }
   ];
 
-  // Filter and sort items
   const filteredAndSortedItems = useMemo(() => {
     let filtered = products.filter(item => {
-      // Search query filter
+
       const itemName = item.name?.en || item.name || '';
       const matchesQuery = !query.trim() || 
         itemName.toLowerCase().includes(query.toLowerCase()) ||
         item.category?.toLowerCase().includes(query.toLowerCase()) ||
         item.brand?.toLowerCase().includes(query.toLowerCase());
-      
-      // Category filter
+
       const matchesCategory = category === 'all' || item.category === category;
-      
-      // Price range filter (using Indian pricing)
+
       let matchesPrice = true;
       const price = item.pricing?.selling || item.price || 0;
       if (priceRange !== 'all') {
@@ -127,7 +117,6 @@ export default function Catalog() {
       return matchesQuery && matchesCategory && matchesPrice;
     });
 
-    // Sort items
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => (a.pricing?.selling || a.price || 0) - (b.pricing?.selling || b.price || 0));
@@ -192,7 +181,7 @@ export default function Catalog() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-600/10 via-amber-500/10 to-sky-500/10 relative overflow-hidden">
-      {/* Industrial Background Pattern */}
+      {}
       <div className="fixed inset-0 opacity-30">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -203,7 +192,7 @@ export default function Catalog() {
           backgroundSize: 'auto'
         }}></div>
         
-        {/* Industrial pipes/beams */}
+        {}
         {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
@@ -231,7 +220,7 @@ export default function Catalog() {
           />
         ))}
         
-        {/* Sparks/welding effects */}
+        {}
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
@@ -253,7 +242,7 @@ export default function Catalog() {
           />
         ))}
       </div>
-      {/* Header Section */}
+      {}
       <div className="relative z-10 container mx-auto px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -279,14 +268,14 @@ export default function Catalog() {
           </p>
         </motion.div>
 
-        {/* Advanced Search & Filter System */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
           className="bg-black/40 backdrop-blur-xl rounded-2xl shadow-2xl p-8 mb-12 border border-white/20"
         >
-          {/* Search Bar */}
+          {}
           <div className="relative mb-8">
             <div className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-purple-500/90 rounded-lg p-2">
               <FaSearch className="text-white w-5 h-5" />
@@ -308,9 +297,9 @@ export default function Catalog() {
             )}
           </div>
 
-          {/* Filter Controls */}
+          {}
           <div className="grid md:grid-cols-3 gap-6">
-            {/* Category Dropdown */}
+            {}
             <div className="relative">
               <button
                 onClick={() => toggleFilter('category')}
@@ -352,7 +341,7 @@ export default function Catalog() {
               </AnimatePresence>
             </div>
 
-            {/* Price Range Dropdown */}
+            {}
             <div className="relative">
               <button
                 onClick={() => toggleFilter('price')}
@@ -394,7 +383,7 @@ export default function Catalog() {
               </AnimatePresence>
             </div>
 
-            {/* Sort Dropdown */}
+            {}
             <div className="relative">
               <button
                 onClick={() => toggleFilter('sort')}
@@ -437,7 +426,7 @@ export default function Catalog() {
             </div>
           </div>
 
-          {/* Results Info & View Toggle */}
+          {}
           <div className="flex flex-col md:flex-row justify-between items-center mt-8 pt-6 border-t border-white/20">
             <div className="mb-4 md:mb-0">
               <p className="text-gray-300">
@@ -471,7 +460,7 @@ export default function Catalog() {
             </div>
           </div>
         </motion.div>
-        {/* Product Showcase */}
+        {}
         {loading ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -555,7 +544,7 @@ export default function Catalog() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="group relative bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-500"
                     >
-                      {/* Product Image */}
+                      {}
                       <div className="relative aspect-square overflow-hidden">
                         <img 
                           src={itemImage} 
@@ -564,7 +553,7 @@ export default function Catalog() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         
-                        {/* Hover Actions */}
+                        {}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                           <div className="flex space-x-3">
                             <Link
@@ -582,7 +571,7 @@ export default function Catalog() {
                           </div>
                         </div>
                         
-                        {/* Favorite Button */}
+                        {}
                         <button
                           onClick={() => toggleFavorite(item)}
                           className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
@@ -594,7 +583,7 @@ export default function Catalog() {
                           <FaHeart className={`w-4 h-4 ${favorites.has(itemId) ? 'fill-current' : ''}`} />
                         </button>
                         
-                        {/* Category Badge */}
+                        {}
                         <div className="absolute top-4 left-4">
                           <span className="px-3 py-1 bg-gradient-to-r from-rose-400 to-amber-400 backdrop-blur-xl text-black text-xs font-bold rounded-full uppercase tracking-wide">
                             {item.category}
@@ -602,7 +591,7 @@ export default function Catalog() {
                         </div>
                       </div>
                       
-                      {/* Product Info */}
+                      {}
                       <div className="p-6">
                         <div className="space-y-3">
                           {itemBrand && (
@@ -615,11 +604,11 @@ export default function Catalog() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <span className="text-2xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                ₹{itemPrice.toLocaleString('en-IN')}
+                                â‚¹{itemPrice.toLocaleString('en-IN')}
                               </span>
                               {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  ₹{itemMRP.toLocaleString('en-IN')}
+                                  â‚¹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                             </div>
@@ -660,7 +649,7 @@ export default function Catalog() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="flex bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-500 group"
                     >
-                      {/* Image */}
+                      {}
                       <div className="relative w-48 h-48 flex-shrink-0 overflow-hidden">
                         <img 
                           src={itemImage} 
@@ -674,7 +663,7 @@ export default function Catalog() {
                         </div>
                       </div>
                       
-                      {/* Content */}
+                      {}
                       <div className="flex-1 p-6 flex justify-between">
                         <div className="flex-1 space-y-4">
                           <div>
@@ -686,11 +675,11 @@ export default function Catalog() {
                             </h3>
                             <div className="flex items-center space-x-4">
                               <span className="text-3xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                ₹{itemPrice.toLocaleString('en-IN')}
+                                â‚¹{itemPrice.toLocaleString('en-IN')}
                               </span>
                               {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-lg text-gray-500 line-through">
-                                  ₹{itemMRP.toLocaleString('en-IN')}
+                                  â‚¹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                               <div className="flex items-center space-x-1">

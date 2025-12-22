@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   doc, 
   getDoc, 
   setDoc, 
@@ -15,7 +15,6 @@ class WishlistService {
     this.cache = new Map();
   }
 
-  // Get user's wishlist
   async getWishlist(userId) {
     if (!userId) {
       return this.getLocalWishlist();
@@ -37,7 +36,7 @@ class WishlistService {
           data: wishlist
         };
       } else {
-        // Create empty wishlist
+
         const emptyWishlist = {
           userId,
           items: [],
@@ -59,7 +58,6 @@ class WishlistService {
     }
   }
 
-  // Add item to wishlist
   async addToWishlist(userId, productId, productData) {
     if (!userId) {
       return this.addToLocalWishlist(productId, productData);
@@ -78,7 +76,6 @@ class WishlistService {
         updatedAt: serverTimestamp()
       });
 
-      // Update cache
       this.invalidateCache(userId);
 
       return {
@@ -94,7 +91,6 @@ class WishlistService {
     }
   }
 
-  // Remove item from wishlist
   async removeFromWishlist(userId, productId) {
     if (!userId) {
       return this.removeFromLocalWishlist(productId);
@@ -112,7 +108,6 @@ class WishlistService {
             updatedAt: serverTimestamp()
           });
 
-          // Update cache
           this.invalidateCache(userId);
 
           return {
@@ -135,7 +130,6 @@ class WishlistService {
     }
   }
 
-  // Check if item is in wishlist
   async isInWishlist(userId, productId) {
     if (!userId) {
       return this.isInLocalWishlist(productId);
@@ -153,7 +147,6 @@ class WishlistService {
     }
   }
 
-  // Toggle item in wishlist
   async toggleWishlist(userId, productId, productData) {
     const isInWishlist = await this.isInWishlist(userId, productId);
     
@@ -164,7 +157,6 @@ class WishlistService {
     }
   }
 
-  // Get wishlist count
   async getWishlistCount(userId) {
     if (!userId) {
       return this.getLocalWishlistCount();
@@ -182,7 +174,6 @@ class WishlistService {
     }
   }
 
-  // Clear wishlist
   async clearWishlist(userId) {
     if (!userId) {
       return this.clearLocalWishlist();
@@ -210,7 +201,6 @@ class WishlistService {
     }
   }
 
-  // Sync local wishlist to user account
   async syncLocalWishlist(userId) {
     try {
       const localWishlist = this.getLocalWishlist();
@@ -227,7 +217,6 @@ class WishlistService {
           });
         }
 
-        // Clear local wishlist after sync
         this.clearLocalWishlist();
         this.invalidateCache(userId);
 
@@ -250,7 +239,6 @@ class WishlistService {
     }
   }
 
-  // Local storage methods for guests
   getLocalWishlist() {
     try {
       const localWishlist = localStorage.getItem('guest_wishlist');
@@ -329,7 +317,6 @@ class WishlistService {
     }
   }
 
-  // Cache management
   invalidateCache(userId) {
     this.cache.delete(userId);
   }
@@ -339,6 +326,5 @@ class WishlistService {
   }
 }
 
-// Export singleton instance
 const wishlistService = new WishlistService();
 export default wishlistService;

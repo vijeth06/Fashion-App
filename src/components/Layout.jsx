@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -36,7 +36,6 @@ const Layout = () => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  // Navigation items
   const mainNavItems = [
     { path: '/', label: 'Home', icon: FaHome },
     { path: '/catalog', label: 'Catalog', icon: FaSearch },
@@ -62,7 +61,7 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 relative overflow-hidden">
-      {/* Revolutionary Background Pattern */}
+      {}
       <div className="fixed inset-0 opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -73,7 +72,7 @@ const Layout = () => {
         }}></div>
       </div>
       
-      {/* Dynamic Floating Elements */}
+      {}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div 
           className="absolute top-20 left-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
@@ -94,7 +93,7 @@ const Layout = () => {
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
-      {/* Revolutionary Header */}
+      {}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
           ? 'bg-black/90 backdrop-blur-3xl border-b border-blue-500/30 shadow-2xl shadow-blue-500/10' 
@@ -102,7 +101,7 @@ const Layout = () => {
       }`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            {/* Revolutionary Logo */}
+            {}
             <Link to="/" className="group flex items-center space-x-3">
               <motion.div 
                 className="relative"
@@ -140,7 +139,7 @@ const Layout = () => {
               </div>
             </Link>
             
-            {/* Navigation */}
+            {}
             <nav className="hidden lg:flex items-center space-x-8">
               <Link to="/catalog" className="relative group py-2 px-4 text-gray-300 hover:text-white transition-all duration-300">
                 <span className="relative z-10 font-medium tracking-wide">CATALOG</span>
@@ -235,7 +234,7 @@ const Layout = () => {
               )}
             </nav>
 
-            {/* Mobile menu button */}
+            {}
             <button className="lg:hidden p-2 text-gray-300 hover:text-white focus:outline-none group">
               <div className="relative">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,16 +247,16 @@ const Layout = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {}
       <main className="flex-grow pt-20 relative z-10">
         <Outlet />
       </main>
 
-      {/* Footer */}
+      {}
       <footer className="relative z-10 bg-black/60 backdrop-blur-2xl border-t border-emerald-500/20">
         <div className="container mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {/* Brand Section */}
+            {}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="relative">
@@ -303,7 +302,7 @@ const Layout = () => {
               </div>
             </div>
             
-            {/* Quick Links */}
+            {}
             <div>
               <h4 className="text-white font-bold mb-6 tracking-wide relative">
                 EXPLORE
@@ -329,7 +328,7 @@ const Layout = () => {
               </ul>
             </div>
             
-            {/* Community */}
+            {}
             <div>
               <h4 className="text-white font-bold mb-6 tracking-wide relative">
                 COMMUNITY
@@ -375,10 +374,10 @@ const Layout = () => {
             </div>
           </div>
           
-          {/* Bottom Section */}
+          {}
           <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-500 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} VIRTUAL FASHION. All rights reserved. 
+              Â© {new Date().getFullYear()} VIRTUAL FASHION. All rights reserved. 
               <span className="text-emerald-400 font-medium">Powered by AI Innovation.</span>
             </div>
             <div className="flex items-center space-x-6 text-sm">
@@ -390,7 +389,7 @@ const Layout = () => {
         </div>
       </footer>
       
-      {/* Auth Modal */}
+      {}
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}

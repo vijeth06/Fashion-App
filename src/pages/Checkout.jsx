@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,7 +13,6 @@ export default function Checkout() {
   const [cartItems, setCartItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
 
-  // Form data
   const [shippingAddress, setShippingAddress] = useState({
     firstName: '',
     lastName: '',
@@ -57,7 +56,6 @@ export default function Checkout() {
   });
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Calculate proper GST when address/items change
   useEffect(() => {
     calculateGST();
   }, [cartItems, shippingAddress.state]);
@@ -92,7 +90,6 @@ export default function Checkout() {
     }
   };
 
-  // Fetch cart data from API
   useEffect(() => {
     async function fetchCart() {
       if (!user?.uid) return;
@@ -103,7 +100,7 @@ export default function Checkout() {
         const data = await response.json();
         
         if (data.success && data.cart) {
-          // Format cart items for checkout display
+
           const formattedItems = data.cart.map(item => ({
             id: item.productId,
             name: item.name,
@@ -127,7 +124,7 @@ export default function Checkout() {
   }, [user]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000 in India
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above â‚¹2000 in India
   const tax = taxBreakdown.totalGST || 0;
   const total = subtotal + shipping + tax;
 
@@ -146,14 +143,12 @@ export default function Checkout() {
   const handleShippingSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate Indian address
     const errors = validateIndianAddress(shippingAddress);
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       return;
     }
 
-    // Check delivery serviceability
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/v1/shipping/check-serviceability`,
@@ -182,12 +177,10 @@ export default function Checkout() {
   const validateIndianAddress = (address) => {
     const errors = {};
 
-    // Validate pincode (6 digits)
     if (!/^\d{6}$/.test(address.zipCode)) {
       errors.zipCode = 'Invalid pincode (must be 6 digits)';
     }
 
-    // Validate state
     const validStates = [
       'ANDAMAN AND NICOBAR',
       'ANDHRA PRADESH',
@@ -233,7 +226,6 @@ export default function Checkout() {
       errors.state = 'Invalid state';
     }
 
-    // Validate name
     if (!address.firstName?.trim()) {
       errors.firstName = 'First name is required';
     }
@@ -254,7 +246,7 @@ export default function Checkout() {
     setLoading(true);
     
     try {
-      // Create order with real API call
+
       const orderData = {
         userId: user.uid,
         items: cartItems.map(item => ({
@@ -295,8 +287,7 @@ export default function Checkout() {
       if (result.success && result.order) {
         setOrderId(result.order._id || result.order.orderId);
         setOrderPlaced(true);
-        
-        // Clear cart after successful order
+
         try {
           await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/${user.uid}/cart/clear`, {
             method: 'DELETE'
@@ -319,7 +310,7 @@ export default function Checkout() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="text-6xl mb-6">✅</div>
+          <div className="text-6xl mb-6">âœ…</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Confirmed!</h2>
           <p className="text-gray-600 mb-2">Thank you for your purchase.</p>
           <p className="text-sm text-gray-500 mb-6">Order ID: {orderId}</p>
@@ -328,9 +319,9 @@ export default function Checkout() {
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-2">What's Next?</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• You'll receive an email confirmation</li>
-                <li>• Your order will be processed within 24 hours</li>
-                <li>• Estimated delivery: 3-5 business days</li>
+                <li>â€¢ You'll receive an email confirmation</li>
+                <li>â€¢ Your order will be processed within 24 hours</li>
+                <li>â€¢ Estimated delivery: 3-5 business days</li>
               </ul>
             </div>
             
@@ -364,12 +355,11 @@ export default function Checkout() {
     );
   }
 
-  // Show empty cart message if no items
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🛒</div>
+          <div className="text-6xl mb-4">ðŸ›’</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">Add some items to your cart to proceed with checkout</p>
           <button
@@ -386,13 +376,13 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
           <p className="text-gray-600">Complete your purchase</p>
         </div>
 
-        {/* Step Indicator */}
+        {}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => (
@@ -431,9 +421,9 @@ export default function Checkout() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+          {}
           <div className="lg:col-span-2">
-            {/* Step 1: Shipping */}
+            {}
             {currentStep === 1 && (
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Shipping Information</h2>
@@ -548,19 +538,19 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* Step 2: Payment */}
+            {}
             {currentStep === 2 && (
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Information</h2>
                 
-                {/* Payment Method Selection */}
+                {}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-3">Payment Method</label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
-                      { id: 'card', name: 'Credit Card', icon: '💳' },
-                      { id: 'paypal', name: 'PayPal', icon: '💰' },
-                      { id: 'apple', name: 'Apple Pay', icon: '🍎' }
+                      { id: 'card', name: 'Credit Card', icon: 'ðŸ’³' },
+                      { id: 'paypal', name: 'PayPal', icon: 'ðŸ’°' },
+                      { id: 'apple', name: 'Apple Pay', icon: 'ðŸŽ' }
                     ].map((method) => (
                       <button
                         key={method.id}
@@ -668,10 +658,10 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* Step 3: Review */}
+            {}
             {currentStep === 3 && (
               <div className="space-y-6">
-                {/* Order Review */}
+                {}
                 <div className="bg-white rounded-2xl shadow-sm p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-6">Review Your Order</h2>
                   
@@ -697,7 +687,7 @@ export default function Checkout() {
                   </div>
                 </div>
                 
-                {/* Shipping & Payment Info */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-white rounded-2xl shadow-sm p-6">
                     <h3 className="font-semibold text-gray-900 mb-4">Shipping Address</h3>
@@ -741,7 +731,7 @@ export default function Checkout() {
             )}
           </div>
 
-          {/* Order Summary Sidebar */}
+          {}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
@@ -777,7 +767,7 @@ export default function Checkout() {
               </div>
             </div>
             
-            {/* Security Features */}
+            {}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h3 className="font-semibold text-gray-900 mb-4">Secure Checkout</h3>
               <div className="space-y-3 text-sm text-gray-600">

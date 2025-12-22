@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function LoginForm({ onToggleForm }) {
@@ -19,7 +19,7 @@ export default function LoginForm({ onToggleForm }) {
     try {
       await signIn(email, password);
     } catch (error) {
-      // Error is handled by AuthContext
+
       console.error('Login error:', error);
     }
   };
@@ -61,7 +61,7 @@ export default function LoginForm({ onToggleForm }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
-            placeholder="••••••••"
+            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
             required
             minLength={6}
           />

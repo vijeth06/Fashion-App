@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+﻿import React, { useRef, useState } from 'react';
 import segmentationTools from '../services/segmentationColorMap';
 
 export default function SegmentationUpload() {
@@ -15,7 +15,7 @@ export default function SegmentationUpload() {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       const matrix = segmentationTools.colorSegmentationToLabelMatrix(canvas);
-      // compute counts
+
       const freq = {};
       for (let y=0;y<matrix.length;y++){
         for (let x=0;x<matrix[0].length;x++){

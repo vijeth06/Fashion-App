@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFound = () => {
@@ -14,7 +14,7 @@ const NotFound = () => {
           to="/" 
           className="btn btn-primary px-6 py-3"
         >
-          ← Back to Home
+          â† Back to Home
         </Link>
         <Link 
           to="/catalog" 

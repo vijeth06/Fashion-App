@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaCamera, 
@@ -10,14 +10,11 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * AI-Powered Body Analysis Page
- * Real body measurements from pose detection
- */
+
 export const BodyAnalysisPage = () => {
-  // const { user } = useAuth();
+
   const [analysis] = React.useState(null);
-  // const [loading, setLoading] = React.useState(false);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12">
@@ -38,7 +35,7 @@ export const BodyAnalysisPage = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Analysis Input */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6">Upload Your Photo</h2>
             <div className="border-4 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-purple-500 transition-colors cursor-pointer">
@@ -48,7 +45,7 @@ export const BodyAnalysisPage = () => {
             </div>
           </div>
 
-          {/* Analysis Results */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6">Your Measurements</h2>
             {analysis ? (
@@ -71,20 +68,20 @@ export const BodyAnalysisPage = () => {
           </div>
         </div>
 
-        {/* Features */}
+        {}
         <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">📏</div>
+            <div className="text-4xl mb-4">ðŸ“</div>
             <h3 className="font-bold text-lg mb-2">Precise Measurements</h3>
             <p className="text-gray-600 text-sm">AI-powered body analysis from pose detection</p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">👕</div>
+            <div className="text-4xl mb-4">ðŸ‘•</div>
             <h3 className="font-bold text-lg mb-2">Size Recommendations</h3>
             <p className="text-gray-600 text-sm">Get accurate size suggestions for every item</p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">✨</div>
+            <div className="text-4xl mb-4">âœ¨</div>
             <h3 className="font-bold text-lg mb-2">Style Advice</h3>
             <p className="text-gray-600 text-sm">Personalized fitting recommendations</p>
           </div>
@@ -94,13 +91,9 @@ export const BodyAnalysisPage = () => {
   );
 };
 
-/**
- * AI-Powered Outfit Recommendations Page
- * Smart outfit scoring and suggestions
- */
+
 export const OutfitRecommendationsPage = () => {
-  // const { user } = useAuth();
-  // const [selectedItems, setSelectedItems] = React.useState([]);
+
   const [score] = React.useState(null);
 
   return (
@@ -122,11 +115,11 @@ export const OutfitRecommendationsPage = () => {
         </motion.div>
 
         <div className="max-w-6xl mx-auto">
-          {/* Outfit Builder */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <h2 className="text-2xl font-bold mb-6">Build Your Outfit</h2>
             <div className="grid md:grid-cols-4 gap-4">
-              {/* Placeholder for clothing items */}
+              {}
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
                 <FaPlus className="text-3xl text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-500">Add Top</p>
@@ -146,7 +139,7 @@ export const OutfitRecommendationsPage = () => {
             </div>
           </div>
 
-          {/* Outfit Score */}
+          {}
           {score && (
             <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl shadow-xl p-8 text-white mb-8">
               <div className="text-center">
@@ -171,7 +164,7 @@ export const OutfitRecommendationsPage = () => {
             </div>
           )}
 
-          {/* Suggestions */}
+          {}
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6">AI Suggestions</h2>
             <div className="space-y-3">

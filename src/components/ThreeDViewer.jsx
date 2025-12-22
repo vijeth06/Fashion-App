@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaExpand, 
@@ -27,7 +27,6 @@ const ThreeDViewer = ({
   const [selectedTexture, setSelectedTexture] = useState(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // Initialize 3D scene (mock implementation)
   const initThreeJS = useCallback(() => {
     if (!mountRef.current) return;
 
@@ -43,15 +42,13 @@ const ThreeDViewer = ({
       
       const drawMockModel = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Background
+
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
         gradient.addColorStop(0, '#667eea');
         gradient.addColorStop(1, '#764ba2');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 3D Model simulation
+
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         
@@ -59,20 +56,18 @@ const ThreeDViewer = ({
           const time = Date.now() * 0.001;
           ctx.rotate(time * 0.5);
         }
-        
-        // Draw garment shape
+
         const colors = ['#ff6b6b', '#4a90e2', '#2ecc71', '#2c3e50', '#e74c3c'];
         ctx.fillStyle = colors[selectedTexture] || colors[0];
         ctx.shadowColor = 'rgba(0,0,0,0.3)';
         ctx.shadowBlur = 20;
         ctx.shadowOffsetY = 10;
-        
-        // Main body
+
         ctx.fillRect(-60, -100, 120, 150);
-        // Arms
+
         ctx.fillRect(-90, -80, 25, 100);
         ctx.fillRect(65, -80, 25, 100);
-        // Bottom
+
         ctx.beginPath();
         ctx.moveTo(-60, 50);
         ctx.lineTo(-80, 120);
@@ -92,8 +87,7 @@ const ThreeDViewer = ({
       animate();
       mountRef.current.innerHTML = '';
       mountRef.current.appendChild(canvas);
-      
-      // Simulate loading
+
       let progress = 0;
       const loadingInterval = setInterval(() => {
         progress += 20;
@@ -163,7 +157,7 @@ const ThreeDViewer = ({
             isFullscreen ? 'w-full h-full rounded-none' : 'w-full max-w-5xl h-[80vh]'
           }`}
         >
-          {/* Header */}
+          {}
           <div className="absolute top-0 left-0 right-0 z-10 bg-white bg-opacity-95 backdrop-blur-sm border-b">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-4">
@@ -205,7 +199,7 @@ const ThreeDViewer = ({
             </div>
           </div>
 
-          {/* Loading */}
+          {}
           {isLoading && (
             <div className="absolute inset-0 z-20 bg-white flex items-center justify-center">
               <div className="text-center">
@@ -222,7 +216,7 @@ const ThreeDViewer = ({
             </div>
           )}
 
-          {/* 3D Viewer */}
+          {}
           <div className="relative w-full h-full pt-20">
             <div 
               ref={mountRef} 
@@ -230,7 +224,7 @@ const ThreeDViewer = ({
             />
           </div>
 
-          {/* Controls */}
+          {}
           {!isLoading && (
             <div className="absolute top-20 right-4 w-64 bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl shadow-xl p-6">
               <h4 className="font-semibold mb-4 flex items-center gap-2">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useOutfit } from '../context/OutfitContext';
@@ -47,9 +47,9 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 relative overflow-hidden">
-      {/* Modern Geometric Background */}
+      {}
       <div className="absolute inset-0">
-        {/* Subtle grid pattern */}
+        {}
         <div 
           className="absolute inset-0 opacity-5"
           style={{
@@ -61,7 +61,7 @@ export default function Profile() {
           }}
         ></div>
         
-        {/* Floating modern shapes */}
+        {}
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
@@ -90,9 +90,9 @@ export default function Profile() {
         ))}
       </div>
       
-      {/* Main Content */}
+      {}
       <div className="relative z-10 container mx-auto px-6 py-12">
-        {/* Profile Header */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
@@ -100,7 +100,7 @@ export default function Profile() {
           className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 mb-8"
         >
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-            {/* Profile Avatar */}
+            {}
             <div className="relative">
               {user?.photoURL ? (
                 <img
@@ -121,10 +121,10 @@ export default function Profile() {
               </button>
             </div>
             
-            {/* Profile Info */}
+            {}
             <div className="flex-1 text-center lg:text-left">
               <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-4">
-                { /* Show skeletons if user profile data hasn't arrived yet */ }
+                {  }
                 {(!user || !user.displayName) ? (
                   <div className="space-y-2 w-full lg:w-auto">
                     <div className="h-8 w-64 bg-gray-300/30 rounded-md animate-pulse" />
@@ -152,7 +152,7 @@ export default function Profile() {
                 track your orders, and discover new looks tailored just for you.
               </p>
               
-              {/* Quick Stats */}
+              {}
               <div className="grid grid-cols-3 gap-6 mt-8">
                 <div className="text-center">
                     {userProfile ? (
@@ -183,7 +183,7 @@ export default function Profile() {
           </div>
         </motion.div>
         
-        {/* Navigation Tabs */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
@@ -219,7 +219,7 @@ export default function Profile() {
           </LayoutGroup>
         </motion.div>
         
-        {/* Tab Content */}
+        {}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -233,7 +233,7 @@ export default function Profile() {
               <div className="space-y-8">
                 <h2 className="text-3xl font-bold text-white mb-6">Account Overview</h2>
                 
-                {/* Recent Activity */}
+                {}
                 <div className="grid lg:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-white mb-4">Recent Activity</h3>

@@ -1,11 +1,10 @@
-// 💎 PREMIUM FEATURES SYSTEM
-// Features: Blockchain Fashion NFTs, Quantum Wardrobe Management, Digital Fashion Ownership
+﻿
+
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGem, FaCube, FaWallet, FaShield, FaStar, FaCrown, FaRocket, FaInfinity } from 'react-icons/fa';
 
-// Mock Classes for Advanced Features
 class BlockchainFashionManager {
   constructor() {
     this.contracts = new Map();
@@ -59,7 +58,6 @@ class QuantumPersonalStylist {
   }
 }
 
-// 💎 MAIN PREMIUM FEATURES ENGINE
 export class PremiumFeaturesEngine {
   constructor() {
     this.blockchainManager = new BlockchainFashionManager();
@@ -70,7 +68,7 @@ export class PremiumFeaturesEngine {
   }
 
   async initializePremiumFeatures(userProfile) {
-    console.log('💎 Initializing Premium Features...');
+    console.log('ðŸ’Ž Initializing Premium Features...');
     
     const [nftCollection, quantumWardrobe, premiumServices, digitalAssets] = await Promise.all([
       this.nftEngine.getUserNFTCollection(userProfile.id),
@@ -109,7 +107,6 @@ export class PremiumFeaturesEngine {
   }
 }
 
-// 🎨 FASHION NFT ENGINE
 export class FashionNFTEngine {
   constructor() {
     this.blockchainConnector = new BlockchainConnector();
@@ -207,7 +204,6 @@ export class FashionNFTEngine {
   }
 }
 
-// ⚛️ QUANTUM WARDROBE MANAGER
 export class QuantumWardrobeManager {
   constructor() {
     this.quantumStorage = new QuantumStorageSystem();
@@ -240,7 +236,7 @@ export class QuantumWardrobeManager {
   }
 
   async generateInfiniteOutfits(wardrobeItems, occasion, preferences) {
-    // Quantum algorithm for infinite outfit combinations
+
     const quantumCombinations = this.quantumAlgorithm.generateCombinations(
       wardrobeItems, 
       occasion, 
@@ -258,8 +254,7 @@ export class QuantumWardrobeManager {
 
   async syncCrossReality(physicalWardrobe, virtualWardrobe) {
     const syncMap = new Map();
-    
-    // Create quantum links between physical and virtual items
+
     physicalWardrobe.forEach(physical => {
       const virtualMatch = virtualWardrobe.find(virtual => 
         this.calculateItemSimilarity(physical, virtual) > 0.85
@@ -283,7 +278,6 @@ export class QuantumWardrobeManager {
   }
 }
 
-// 🔐 DIGITAL OWNERSHIP SYSTEM
 export class DigitalOwnershipSystem {
   async getDigitalAssets(userId) {
     return {
@@ -327,7 +321,6 @@ export class DigitalOwnershipSystem {
   }
 }
 
-// 🤖 PREMIUM AI SERVICES
 export class PremiumAIServices {
   async getPremiumServices(userProfile) {
     return {
@@ -364,7 +357,6 @@ export class PremiumAIServices {
   }
 }
 
-// 🌟 MAIN UI COMPONENT
 export default function PremiumFeaturesDashboard({ userProfile, isVisible = false, onClose }) {
   const [engine] = useState(() => new PremiumFeaturesEngine());
   const [features, setFeatures] = useState(null);
@@ -418,7 +410,7 @@ export default function PremiumFeaturesDashboard({ userProfile, isVisible = fals
                 </span>
               </div>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">✕</button>
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">âœ•</button>
           </div>
 
           {loading ? (

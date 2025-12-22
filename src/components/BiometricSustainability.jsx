@@ -1,11 +1,10 @@
-// 🧬 BIOMETRIC & SUSTAINABILITY SYSTEM
-// Features: DNA-Based Styling, Eco-Fashion Tracking, Sustainability AI
+﻿
+
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDna, FaLeaf, FaHeart, FaRecycle, FaTree, FaWater } from 'react-icons/fa';
 
-// 🧬 MAIN BIOMETRIC SUSTAINABILITY ENGINE
 export class BiometricSustainabilityEngine {
   constructor() {
     this.dnaAnalyzer = new DNAStyleAnalyzer();
@@ -15,7 +14,7 @@ export class BiometricSustainabilityEngine {
   }
 
   async analyzeBiometricSustainability(userProfile) {
-    console.log('🧬 Analyzing Biometric & Sustainability Profile...');
+    console.log('ðŸ§¬ Analyzing Biometric & Sustainability Profile...');
     
     const [dnaProfile, sustainabilityScore, ecoRecommendations, circularOpportunities] = await Promise.all([
       this.dnaAnalyzer.analyzeGeneticStyleMarkers(userProfile),
@@ -40,7 +39,6 @@ export class BiometricSustainabilityEngine {
   }
 }
 
-// 🧬 DNA STYLE ANALYZER
 export class DNAStyleAnalyzer {
   async analyzeGeneticStyleMarkers(userProfile) {
     const mockDNA = this.generateMockDNAProfile(userProfile);
@@ -79,7 +77,6 @@ export class DNAStyleAnalyzer {
   }
 }
 
-// 🌱 SUSTAINABILITY TRACKER
 export class SustainabilityTracker {
   async calculateSustainabilityScore(userProfile) {
     return {
@@ -104,7 +101,6 @@ export class SustainabilityTracker {
   }
 }
 
-// 💚 ECO FASHION AI
 export class EcoFashionAI {
   async generateEcoRecommendations(userProfile) {
     return {
@@ -123,7 +119,6 @@ export class EcoFashionAI {
   }
 }
 
-// ♻️ CIRCULAR FASHION ENGINE
 export class CircularFashionEngine {
   async identifyCircularOpportunities(userProfile) {
     return {
@@ -136,7 +131,6 @@ export class CircularFashionEngine {
   }
 }
 
-// 🌟 MAIN UI COMPONENT
 export default function BiometricSustainabilityDashboard({ userProfile, isVisible = false, onClose }) {
   const [engine] = useState(() => new BiometricSustainabilityEngine());
   const [analysis, setAnalysis] = useState(null);
@@ -184,7 +178,7 @@ export default function BiometricSustainabilityDashboard({ userProfile, isVisibl
               </h2>
               <p className="text-gray-400">Your genetic style signature and eco-impact analysis</p>
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">✕</button>
+            <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">âœ•</button>
           </div>
 
           {loading ? (
@@ -318,7 +312,7 @@ function TabContent({ activeTab, analysis }) {
               <h4 className="text-white font-bold mb-2 capitalize">{timeframe}</h4>
               <ul className="space-y-1">
                 {actions.map((action, i) => (
-                  <li key={i} className="text-gray-300 text-sm">• {action}</li>
+                  <li key={i} className="text-gray-300 text-sm">â€¢ {action}</li>
                 ))}
               </ul>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaCheckCircle, 
@@ -15,17 +15,14 @@ import {
 } from 'react-icons/fa';
 import APIConnectionTester from '../utils/apiConnectionTester';
 
-/**
- * API Connection Status Dashboard
- * Tests and displays the status of all backend API connections
- */
+
 const APIStatusDashboard = () => {
   const [testing, setTesting] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Auto-test on mount
+
     runTests();
   }, []);
 
@@ -84,7 +81,7 @@ const APIStatusDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,7 +98,7 @@ const APIStatusDashboard = () => {
           </p>
         </motion.div>
 
-        {/* Test Button */}
+        {}
         <div className="text-center mb-8">
           <button
             onClick={runTests}
@@ -122,7 +119,7 @@ const APIStatusDashboard = () => {
           </button>
         </div>
 
-        {/* Error Display */}
+        {}
         {error && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -139,7 +136,7 @@ const APIStatusDashboard = () => {
           </motion.div>
         )}
 
-        {/* Summary Cards */}
+        {}
         {results && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -188,7 +185,7 @@ const APIStatusDashboard = () => {
           </motion.div>
         )}
 
-        {/* Results Table */}
+        {}
         {results && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -265,7 +262,7 @@ const APIStatusDashboard = () => {
               </table>
             </div>
 
-            {/* Response Data Preview */}
+            {}
             <div className="p-6 bg-gray-50 border-t">
               <details className="cursor-pointer">
                 <summary className="font-bold text-gray-700 hover:text-gray-900">
@@ -279,7 +276,7 @@ const APIStatusDashboard = () => {
           </motion.div>
         )}
 
-        {/* Instructions */}
+        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -291,14 +288,14 @@ const APIStatusDashboard = () => {
             Backend Status
           </h3>
           <div className="space-y-2 text-blue-800">
-            <p>✓ Backend Server: <strong>http://localhost:5000</strong></p>
-            <p>✓ API Base URL: <strong>http://localhost:5000/api/v1</strong></p>
-            <p>✓ Health Check: <a href="http://localhost:5000/health" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">http://localhost:5000/health</a></p>
-            <p>✓ Database: <strong>MongoDB Atlas Connected</strong></p>
+            <p>âœ“ Backend Server: <strong>http://localhost:5000</strong></p>
+            <p>âœ“ API Base URL: <strong>http://localhost:5000/api/v1</strong></p>
+            <p>âœ“ Health Check: <a href="http://localhost:5000/health" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">http://localhost:5000/health</a></p>
+            <p>âœ“ Database: <strong>MongoDB Atlas Connected</strong></p>
           </div>
         </motion.div>
 
-        {/* Quick Actions */}
+        {}
         <div className="mt-8 grid md:grid-cols-3 gap-4">
           <a
             href="http://localhost:5000/health"

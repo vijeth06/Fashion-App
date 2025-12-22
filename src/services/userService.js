@@ -1,16 +1,9 @@
-/**
- * User Service
- * Handles all user-related API calls (cart, wishlist, addresses, profile)
- */
+﻿
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 class UserService {
-  /**
-   * Get user profile
-   * @param {string} firebaseUid - Firebase UID
-   * @returns {Promise<Object>} - User profile
-   */
+  
   async getUserProfile(firebaseUid) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}`);
@@ -30,11 +23,7 @@ class UserService {
     }
   }
 
-  /**
-   * Create user profile
-   * @param {Object} userData - User data
-   * @returns {Promise<Object>} - Created user
-   */
+  
   async createUserProfile(userData) {
     try {
       const response = await fetch(`${API_BASE_URL}/users`, {
@@ -57,12 +46,7 @@ class UserService {
     }
   }
 
-  /**
-   * Update user profile
-   * @param {string} firebaseUid - Firebase UID
-   * @param {Object} updates - Profile updates
-   * @returns {Promise<Object>} - Updated user
-   */
+  
   async updateUserProfile(firebaseUid, updates) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/profile`, {
@@ -85,13 +69,8 @@ class UserService {
     }
   }
 
-  // ==================== CART METHODS ====================
 
-  /**
-   * Get user cart
-   * @param {string} firebaseUid - Firebase UID
-   * @returns {Promise<Object>} - Cart data
-   */
+  
   async getCart(firebaseUid) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/cart`);
@@ -108,12 +87,7 @@ class UserService {
     }
   }
 
-  /**
-   * Add item to cart
-   * @param {string} firebaseUid - Firebase UID
-   * @param {Object} item - Cart item
-   * @returns {Promise<Object>} - Updated cart
-   */
+  
   async addToCart(firebaseUid, item) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/cart`, {
@@ -136,14 +110,7 @@ class UserService {
     }
   }
 
-  /**
-   * Remove item from cart
-   * @param {string} firebaseUid - Firebase UID
-   * @param {string} productId - Product ID
-   * @param {string} size - Size
-   * @param {string} color - Color
-   * @returns {Promise<Object>} - Updated cart
-   */
+  
   async removeFromCart(firebaseUid, productId, size, color) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/cart`, {
@@ -166,11 +133,7 @@ class UserService {
     }
   }
 
-  /**
-   * Clear entire cart
-   * @param {string} firebaseUid - Firebase UID
-   * @returns {Promise<Object>} - Empty cart
-   */
+  
   async clearCart(firebaseUid) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/cart/clear`, {
@@ -189,13 +152,8 @@ class UserService {
     }
   }
 
-  // ==================== WISHLIST METHODS ====================
 
-  /**
-   * Get user wishlist
-   * @param {string} firebaseUid - Firebase UID
-   * @returns {Promise<Array>} - Wishlist items
-   */
+  
   async getWishlist(firebaseUid) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/wishlist`);
@@ -212,12 +170,7 @@ class UserService {
     }
   }
 
-  /**
-   * Add item to wishlist
-   * @param {string} firebaseUid - Firebase UID
-   * @param {string} productId - Product ID
-   * @returns {Promise<Object>} - Updated wishlist
-   */
+  
   async addToWishlist(firebaseUid, productId) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/wishlist`, {
@@ -240,12 +193,7 @@ class UserService {
     }
   }
 
-  /**
-   * Remove item from wishlist
-   * @param {string} firebaseUid - Firebase UID
-   * @param {string} productId - Product ID
-   * @returns {Promise<Object>} - Updated wishlist
-   */
+  
   async removeFromWishlist(firebaseUid, productId) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/wishlist/${productId}`, {
@@ -264,13 +212,8 @@ class UserService {
     }
   }
 
-  // ==================== ADDRESS METHODS ====================
 
-  /**
-   * Get all user addresses
-   * @param {string} firebaseUid - Firebase UID
-   * @returns {Promise<Array>} - User addresses
-   */
+  
   async getAddresses(firebaseUid) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/addresses`);
@@ -287,12 +230,7 @@ class UserService {
     }
   }
 
-  /**
-   * Add new address
-   * @param {string} firebaseUid - Firebase UID
-   * @param {Object} address - Address data
-   * @returns {Promise<Object>} - Updated user with new address
-   */
+  
   async addAddress(firebaseUid, address) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/addresses`, {
@@ -315,13 +253,7 @@ class UserService {
     }
   }
 
-  /**
-   * Update existing address
-   * @param {string} firebaseUid - Firebase UID
-   * @param {string} addressId - Address ID
-   * @param {Object} updates - Address updates
-   * @returns {Promise<Object>} - Updated user
-   */
+  
   async updateAddress(firebaseUid, addressId, updates) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/addresses/${addressId}`, {
@@ -344,12 +276,7 @@ class UserService {
     }
   }
 
-  /**
-   * Delete address
-   * @param {string} firebaseUid - Firebase UID
-   * @param {string} addressId - Address ID
-   * @returns {Promise<Object>} - Updated user
-   */
+  
   async deleteAddress(firebaseUid, addressId) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/addresses/${addressId}`, {
@@ -368,14 +295,8 @@ class UserService {
     }
   }
 
-  // ==================== MEASUREMENTS ====================
 
-  /**
-   * Update user measurements
-   * @param {string} firebaseUid - Firebase UID
-   * @param {Object} measurements - Body measurements
-   * @returns {Promise<Object>} - Updated user
-   */
+  
   async updateMeasurements(firebaseUid, measurements) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUid}/measurements`, {
@@ -399,9 +320,7 @@ class UserService {
   }
 }
 
-// Export singleton instance
 const userService = new UserService();
 export default userService;
 
-// Named exports
 export { UserService };

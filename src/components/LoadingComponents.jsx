@@ -1,9 +1,8 @@
-// Enhanced Loading Components and Hooks
+﻿
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaSpinner, FaCircleNotch, FaCog, FaRocket, FaMagic } from 'react-icons/fa';
 
-// Loading Hook for API calls
 export const useAsyncOperation = (asyncFunction, dependencies = []) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -27,7 +26,6 @@ export const useAsyncOperation = (asyncFunction, dependencies = []) => {
   return { loading, data, error, execute };
 };
 
-// Advanced Loading Spinner Component
 export const LoadingSpinner = ({ 
   size = 'medium', 
   color = 'primary', 
@@ -94,7 +92,6 @@ export const LoadingSpinner = ({
   );
 };
 
-// Skeleton Loading Component
 export const SkeletonLoader = ({ 
   type = 'text', 
   count = 1, 
@@ -125,7 +122,6 @@ export const SkeletonLoader = ({
   );
 };
 
-// Progress Bar Component
 export const ProgressBar = ({ 
   progress = 0, 
   showPercentage = true,
@@ -155,7 +151,6 @@ export const ProgressBar = ({
   );
 };
 
-// Loading State Manager Hook
 export const useLoadingState = () => {
   const [loadingStates, setLoadingStates] = useState({});
 
@@ -172,7 +167,6 @@ export const useLoadingState = () => {
   return { setLoading, isLoading, isAnyLoading, loadingStates };
 };
 
-// Enhanced Button with Loading State
 export const LoadingButton = ({ 
   children, 
   loading = false, 
@@ -218,7 +212,6 @@ export const LoadingButton = ({
   );
 };
 
-// Loading Card Component
 export const LoadingCard = ({ title, description, progress }) => {
   return (
     <motion.div
@@ -238,7 +231,6 @@ export const LoadingCard = ({ title, description, progress }) => {
   );
 };
 
-// Page Loading Component
 export const PageLoader = ({ message = 'Loading page...' }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">

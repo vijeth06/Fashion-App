@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ const Profile = () => {
         ...prev,
         displayName: user.displayName || '',
         email: user.email || '',
-        // TODO: Load additional user data from Firestore
+
       }));
     }
   }, [user]);
@@ -43,9 +43,7 @@ const Profile = () => {
     setIsUpdating(true);
 
     try {
-      // TODO: Update user profile in Firebase
-      // await updateProfile(user, { displayName: formData.displayName });
-      // await updateUserPreferences(user.uid, formData);
+
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
     } catch (err) {
@@ -102,7 +100,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Profile Header */}
+        {}
         <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-primary to-primary-dark">
             <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -127,9 +125,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Main Content */}
+        {}
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          {/* Tabs */}
+          {}
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               <button
@@ -165,7 +163,7 @@ const Profile = () => {
             </nav>
           </div>
 
-          {/* Tab Content */}
+          {}
           <div className="p-6">
             {error && (
               <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-md">

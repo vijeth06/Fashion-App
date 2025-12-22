@@ -1,5 +1,5 @@
-// Color to label mapping ported from Vastra get_seg_grayscale.py
-// Exposes a function to convert an ImageData/RGB array into a label matrix
+﻿
+
 
 const COLOR_LABEL_MAP = new Map([
   ['0,0,0', 0],
@@ -31,7 +31,6 @@ const COLOR_LABEL_MAP = new Map([
   ['255,255,255', 26]
 ]);
 
-// Extend with additional colors observed in Vastra get_seg_grayscale.py
 const EXTRA_MAPPINGS = [
   [[34,34,34].toString(), 0],
   [[0,255,0].toString(), 12],
@@ -41,7 +40,6 @@ const EXTRA_MAPPINGS = [
 ];
 for (const [k, v] of EXTRA_MAPPINGS) COLOR_LABEL_MAP.set(k, v);
 
-// More mappings inferred from common segmentation palettes used by Vastra / Graphonomy
 [
   [[255,170,0].toString(), 5],
   [[170,85,0].toString(), 10],
@@ -60,15 +58,11 @@ function colorDistanceSquared(a, b) {
   return dr*dr + dg*dg + db*db;
 }
 
-/**
- * Find best label for rgb using exact match then nearest within tolerance
- * @param {[number,number,number]} rgb
- */
+
 export function rgbToLabel(rgb, tolerance = 1000) {
   const key = rgb.toString();
   if (COLOR_LABEL_MAP.has(key)) return COLOR_LABEL_MAP.get(key);
 
-  // nearest neighbor search with squared distance tolerance
   let best = { dist: Infinity, label: 0 };
   for (const [k, label] of COLOR_LABEL_MAP.entries()) {
     const parts = k.split(',').map(n => Number(n));
@@ -81,13 +75,7 @@ export function rgbToLabel(rgb, tolerance = 1000) {
   return best.dist <= tolerance ? best.label : 0;
 }
 
-/**
- * Convert ImageData (Uint8ClampedArray) or an HTMLCanvas/HTMLImage into a
- * grayscale label matrix matching Vastra's segmentation labels.
- *
- * @param {ImageData|Uint8ClampedArray|HTMLCanvasElement|HTMLImageElement} src
- * @returns {number[][]} 2D array [height][width] of label integers
- */
+
 export function colorSegmentationToLabelMatrix(src) {
   let width, height, data;
 
@@ -105,7 +93,7 @@ export function colorSegmentationToLabelMatrix(src) {
     width = canvas.width; height = canvas.height;
     data = ctx.getImageData(0,0,width,height).data;
   } else if (src instanceof Uint8ClampedArray || src instanceof Uint8Array) {
-    // caller must provide width/height via properties if using raw array
+
     throw new Error('Raw array input not supported without width/height. Pass ImageData or HTML element.');
   } else {
     throw new Error('Unsupported source type for colorSegmentationToLabelMatrix');

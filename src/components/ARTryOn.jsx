@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, 
@@ -54,10 +54,9 @@ const ARTryOn = ({
     accessories: []
   });
 
-  // Initialize camera and AR session
   const initializeAR = async () => {
     try {
-      // Check for WebXR support
+
       if ('xr' in navigator) {
         const isSupported = await navigator.xr.isSessionSupported('immersive-ar');
         if (isSupported) {
@@ -67,7 +66,6 @@ const ARTryOn = ({
         }
       }
 
-      // Initialize camera stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -83,7 +81,6 @@ const ARTryOn = ({
         setIsCameraActive(true);
       }
 
-      // Initialize real pose detection with TensorFlow.js
       await initializePoseDetection();
 
     } catch (error) {
@@ -92,20 +89,17 @@ const ARTryOn = ({
     }
   };
 
-  // Real pose detection initialization using TensorFlow.js
   const initializePoseDetection = async () => {
     try {
       await enhancedPoseDetection.initialize();
-      console.log('✅ Real pose detection initialized with TensorFlow.js');
-      
-      // Start pose detection loop
+      console.log('âœ… Real pose detection initialized with TensorFlow.js');
+
       startPoseDetectionLoop();
     } catch (error) {
       console.error('Failed to initialize pose detection:', error);
     }
   };
 
-  // Continuous pose detection loop
   const startPoseDetectionLoop = () => {
     const detectPose = async () => {
       if (videoRef.current && videoRef.current.readyState === 4) {
@@ -113,15 +107,14 @@ const ARTryOn = ({
           const poseData = await enhancedPoseDetection.detectPose(videoRef.current);
           
           if (poseData.success && canvasRef.current) {
-            // Draw pose keypoints and overlay garments
+
             drawPoseAndGarments(poseData);
           }
         } catch (error) {
           console.error('Pose detection error:', error);
         }
       }
-      
-      // Continue loop
+
       if (isCameraActive) {
         requestAnimationFrame(detectPose);
       }
@@ -130,7 +123,6 @@ const ARTryOn = ({
     detectPose();
   };
 
-  // Draw pose keypoints and garments
   const drawPoseAndGarments = (poseData) => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -140,10 +132,8 @@ const ARTryOn = ({
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Draw video frame
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Draw pose keypoints for debugging
     if (poseData.keypoints) {
       ctx.fillStyle = 'red';
       poseData.keypoints.forEach(kp => {
@@ -155,11 +145,9 @@ const ARTryOn = ({
       });
     }
 
-    // Overlay virtual garments based on pose
     drawVirtualGarmentsWithPose(ctx, poseData);
   };
 
-  // Start AR session
   const startARSession = async () => {
     if ('xr' in navigator) {
       try {
@@ -170,7 +158,7 @@ const ARTryOn = ({
         });
 
         console.log('AR session started:', session);
-        // Handle AR session setup
+
         
       } catch (error) {
         console.log('WebXR not available, using camera fallback');
@@ -181,7 +169,6 @@ const ARTryOn = ({
     }
   };
 
-  // Handle product selection for mix and match
   const selectProduct = (product, category) => {
     const newSelection = { ...mixAndMatch };
     
@@ -199,23 +186,21 @@ const ARTryOn = ({
     setSelectedProducts(Object.values(newSelection).flat().filter(Boolean));
   };
 
-  // Handle gesture controls
   const handleGestureStart = (e) => {
     e.preventDefault();
-    // Implement gesture handling for scaling, rotation, positioning
+
   };
 
   const handleGestureMove = (e) => {
     e.preventDefault();
-    // Update garment position/scale based on touch/mouse movement
+
   };
 
   const handleGestureEnd = (e) => {
     e.preventDefault();
-    // Finalize gesture transformation
+
   };
 
-  // Capture photo/video
   const capturePhoto = () => {
     if (canvasRef.current && videoRef.current) {
       const canvas = canvasRef.current;
@@ -224,14 +209,11 @@ const ARTryOn = ({
       
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
-      // Draw video frame
+
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Overlay virtual garments (mock implementation)
+
       drawVirtualGarments(ctx);
-      
-      // Download image
+
       const link = document.createElement('a');
       link.download = `ar-tryon-${Date.now()}.png`;
       link.href = canvas.toDataURL();
@@ -239,7 +221,6 @@ const ARTryOn = ({
     }
   };
 
-  // Share AR try-on look using Web Share API
   const shareARLook = async () => {
     if (!canvasRef.current || !videoRef.current) return;
     
@@ -250,14 +231,11 @@ const ARTryOn = ({
       
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      
-      // Draw video frame
+
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Overlay virtual garments
+
       drawVirtualGarments(ctx);
-      
-      // Convert to blob for sharing
+
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) {
         capturePhoto(); // Fallback to download
@@ -265,8 +243,7 @@ const ARTryOn = ({
       }
       
       const file = new File([blob], 'ar-tryon-look.png', { type: 'image/png' });
-      
-      // Get selected items for share text
+
       const selectedItems = Object.values(mixAndMatch).filter(Boolean);
       const itemNames = selectedItems.map(item => item.name).join(', ');
       
@@ -277,41 +254,39 @@ const ARTryOn = ({
           text: itemNames ? `I'm trying on ${itemNames} using AR technology!` : 'Check out my virtual try-on look!'
         });
       } else {
-        // Fallback: copy share text to clipboard and download image
+
         const shareText = `Check out my AR virtual try-on! ${itemNames ? `Trying on: ${itemNames}` : ''} #VirtualFashion #ARTryOn`;
         
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(shareText);
           console.log('Share text copied to clipboard!');
         }
-        
-        // Download the image as fallback
+
         capturePhoto();
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback to download
+
       capturePhoto();
     }
   };
 
   const startRecording = () => {
     setIsRecording(true);
-    // Implement video recording functionality
+
   };
 
   const stopRecording = () => {
     setIsRecording(false);
-    // Stop and save video recording
+
   };
 
-  // Draw virtual garments with real pose-based positioning
   const drawVirtualGarmentsWithPose = (ctx, poseData) => {
     if (!poseData.keypoints || !poseData.measurements) return;
 
     Object.entries(mixAndMatch).forEach(([category, product]) => {
       if (product && category !== 'accessories') {
-        // Use real body measurements for garment positioning
+
         const measurements = poseData.measurements;
         
         if (category === 'top' || category === 'shirt') {
@@ -322,7 +297,6 @@ const ARTryOn = ({
       }
     });
 
-    // Draw accessories
     if (mixAndMatch.accessories) {
       mixAndMatch.accessories.forEach(accessory => {
         drawAccessory(ctx, accessory, poseData.keypoints);
@@ -330,7 +304,6 @@ const ARTryOn = ({
     }
   };
 
-  // Draw upper body garment based on pose
   const drawUpperBodyGarment = (ctx, product, keypoints, measurements) => {
     const leftShoulder = keypoints.find(kp => kp.name === 'left_shoulder');
     const rightShoulder = keypoints.find(kp => kp.name === 'right_shoulder');
@@ -342,7 +315,6 @@ const ARTryOn = ({
     const shoulderWidth = measurements.shoulderWidth || Math.abs(rightShoulder.x - leftShoulder.x);
     const torsoLength = measurements.torsoLength || Math.abs(leftHip.y - leftShoulder.y);
 
-    // Draw garment as a simple overlay (in production, use actual garment image)
     ctx.fillStyle = product.color || 'rgba(100, 100, 200, 0.5)';
     ctx.fillRect(
       leftShoulder.x,
@@ -351,7 +323,6 @@ const ARTryOn = ({
       torsoLength
     );
 
-    // Add product image if available
     if (product.imageUrl) {
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -370,7 +341,6 @@ const ARTryOn = ({
     }
   };
 
-  // Draw lower body garment
   const drawLowerBodyGarment = (ctx, product, keypoints, measurements) => {
     const leftHip = keypoints.find(kp => kp.name === 'left_hip');
     const rightHip = keypoints.find(kp => kp.name === 'right_hip');
@@ -407,19 +377,16 @@ const ARTryOn = ({
     }
   };
 
-  // Draw accessories
   const drawAccessory = (ctx, accessory, keypoints) => {
     const nose = keypoints.find(kp => kp.name === 'nose');
     if (!nose) return;
 
-    // Position accessory based on type
     if (accessory.category === 'hat' || accessory.category === 'cap') {
       ctx.fillStyle = accessory.color || 'rgba(200, 100, 100, 0.6)';
       ctx.fillRect(nose.x - 50, nose.y - 100, 100, 50);
     }
   };
 
-  // Original mock implementation (fallback)
   const drawVirtualGarments = (ctx) => {
     Object.entries(mixAndMatch).forEach(([category, product]) => {
       if (product && category !== 'accessories') {
@@ -443,17 +410,15 @@ const ARTryOn = ({
       }
     });
 
-    // Draw accessories
     mixAndMatch.accessories.forEach((accessory, index) => {
       ctx.fillStyle = accessory.color || '#333';
       ctx.globalAlpha = 0.8;
-      // Position accessories around the body
+
       ctx.fillRect(50 + index * 30, 100, 25, 25);
       ctx.globalAlpha = 1;
     });
   };
 
-  // Cleanup camera stream
   const cleanup = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
@@ -483,9 +448,9 @@ const ARTryOn = ({
         className={`fixed inset-0 z-50 bg-black ${isFullscreen ? '' : 'p-4'}`}
       >
         <div className="relative w-full h-full flex">
-          {/* Main AR View */}
+          {}
           <div className="flex-1 relative">
-            {/* Video Stream */}
+            {}
             <video
               ref={videoRef}
               autoPlay
@@ -500,14 +465,14 @@ const ARTryOn = ({
               onMouseUp={handleGestureEnd}
             />
 
-            {/* AR Overlay Canvas */}
+            {}
             <canvas
               ref={canvasRef}
               className="absolute inset-0 pointer-events-none"
               style={{ mixBlendMode: 'multiply' }}
             />
 
-            {/* Virtual Garment Overlays */}
+            {}
             <div className="absolute inset-0 pointer-events-none">
               {Object.entries(mixAndMatch).map(([category, product]) => {
                 if (!product || category === 'accessories') return null;
@@ -533,7 +498,7 @@ const ARTryOn = ({
               })}
             </div>
 
-            {/* AR Controls Overlay */}
+            {}
             <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <button
@@ -565,7 +530,7 @@ const ARTryOn = ({
               </div>
             </div>
 
-            {/* Bottom Controls */}
+            {}
             <div className="absolute bottom-4 left-4 right-4 flex justify-center items-center gap-4">
               <button
                 onClick={capturePhoto}
@@ -594,7 +559,7 @@ const ARTryOn = ({
             </div>
           </div>
 
-          {/* Side Panel */}
+          {}
           <AnimatePresence>
             {showControls && (
               <motion.div
@@ -606,7 +571,7 @@ const ARTryOn = ({
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-6">Mix & Match</h3>
 
-                  {/* Product Categories */}
+                  {}
                   {['top', 'bottom', 'shoes'].map(category => (
                     <div key={category} className="mb-6">
                       <h4 className="font-medium text-gray-900 mb-3 capitalize flex items-center gap-2">
@@ -640,7 +605,7 @@ const ARTryOn = ({
                     </div>
                   ))}
 
-                  {/* AR Settings */}
+                  {}
                   <div className="mb-6">
                     <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                       <FaPalette className="w-4 h-4" />
@@ -669,18 +634,18 @@ const ARTryOn = ({
                     </div>
                   </div>
 
-                  {/* Gesture Controls Info */}
+                  {}
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">Gesture Controls</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
-                      <li>• Pinch to scale garments</li>
-                      <li>• Drag to reposition</li>
-                      <li>• Rotate with two fingers</li>
-                      <li>• Tap to select/deselect</li>
+                      <li>â€¢ Pinch to scale garments</li>
+                      <li>â€¢ Drag to reposition</li>
+                      <li>â€¢ Rotate with two fingers</li>
+                      <li>â€¢ Tap to select/deselect</li>
                     </ul>
                   </div>
 
-                  {/* Action Buttons */}
+                  {}
                   <div className="mt-6 space-y-3">
                     <button
                       onClick={() => setGestures({ scale: 1, rotation: 0, position: { x: 0, y: 0 } })}

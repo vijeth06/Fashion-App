@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaRuler, 
@@ -33,7 +33,6 @@ const SizeRecommendation = ({
     bodyType: ''
   });
 
-  // Size charts for different categories
   const sizeCharts = {
     clothing: {
       XS: { chest: '32-34', waist: '24-26', hips: '34-36' },
@@ -53,11 +52,9 @@ const SizeRecommendation = ({
     }
   };
 
-  // AI recommendation algorithm
   const generateRecommendation = (userMeasurements) => {
     setLoading(true);
-    
-    // Simulate AI processing delay
+
     setTimeout(() => {
       const { chest, waist, hips, height, weight, bodyType } = userMeasurements;
       
@@ -65,8 +62,7 @@ const SizeRecommendation = ({
       let confidence = 85;
       let reasons = [];
       let warnings = [];
-      
-      // Simple size recommendation logic (in real app, this would use ML)
+
       const chestNum = parseFloat(chest);
       const waistNum = parseFloat(waist);
       const hipsNum = parseFloat(hips);
@@ -91,11 +87,9 @@ const SizeRecommendation = ({
           recommendedSize = 'XXL';
           confidence = 82;
         }
-        
-        // Add reasoning
+
         reasons.push('Based on your chest, waist, and hip measurements');
-        
-        // Body type considerations
+
         if (bodyType === 'athletic') {
           reasons.push('Adjusted for athletic build');
           confidence += 3;
@@ -105,8 +99,7 @@ const SizeRecommendation = ({
             warnings.push('Consider sizing up for hip comfort');
           }
         }
-        
-        // Height and weight considerations
+
         const heightNum = parseFloat(height);
         const weightNum = parseFloat(weight);
         
@@ -200,7 +193,7 @@ const SizeRecommendation = ({
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
         >
-          {/* Header */}
+          {}
           <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -220,7 +213,7 @@ const SizeRecommendation = ({
               </button>
             </div>
 
-            {/* Progress Steps */}
+            {}
             <div className="flex items-center gap-4 mt-6">
               <div className={`flex items-center gap-2 ${step >= 1 ? 'text-white' : 'text-white text-opacity-50'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
@@ -243,7 +236,7 @@ const SizeRecommendation = ({
           </div>
 
           <div className="p-6">
-            {/* Step 1: Measurements */}
+            {}
             {step === 1 && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -337,11 +330,11 @@ const SizeRecommendation = ({
                     <div>
                       <h4 className="font-medium text-blue-900 mb-1">Measurement Tips</h4>
                       <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• Measure over your regular undergarments</li>
-                        <li>• Keep the tape measure level and snug but not tight</li>
-                        <li>• For chest: measure around fullest part</li>
-                        <li>• For waist: measure at natural waistline</li>
-                        <li>• For hips: measure around fullest part</li>
+                        <li>â€¢ Measure over your regular undergarments</li>
+                        <li>â€¢ Keep the tape measure level and snug but not tight</li>
+                        <li>â€¢ For chest: measure around fullest part</li>
+                        <li>â€¢ For waist: measure at natural waistline</li>
+                        <li>â€¢ For hips: measure around fullest part</li>
                       </ul>
                     </div>
                   </div>
@@ -357,7 +350,7 @@ const SizeRecommendation = ({
               </motion.div>
             )}
 
-            {/* Loading */}
+            {}
             {loading && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -370,7 +363,7 @@ const SizeRecommendation = ({
               </motion.div>
             )}
 
-            {/* Step 2: Recommendation */}
+            {}
             {step === 2 && recommendation && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -389,7 +382,7 @@ const SizeRecommendation = ({
                   </div>
                 </div>
 
-                {/* Size Chart Comparison */}
+                {}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-medium text-gray-900 mb-3">Size Chart Comparison</h4>
                   <div className="grid grid-cols-3 gap-4 text-sm">
@@ -408,7 +401,7 @@ const SizeRecommendation = ({
                   </div>
                 </div>
 
-                {/* Reasoning */}
+                {}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-3">Why this size?</h4>
                   <ul className="space-y-2">
@@ -421,7 +414,7 @@ const SizeRecommendation = ({
                   </ul>
                 </div>
 
-                {/* Warnings */}
+                {}
                 {recommendation.warnings.length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-900 mb-3">Important Notes</h4>
@@ -436,7 +429,7 @@ const SizeRecommendation = ({
                   </div>
                 )}
 
-                {/* Alternative Sizes */}
+                {}
                 <div>
                   <h4 className="font-medium text-gray-900 mb-3">Alternative Options</h4>
                   <div className="flex gap-3">
@@ -468,7 +461,7 @@ const SizeRecommendation = ({
                   </div>
                 </div>
 
-                {/* Actions */}
+                {}
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => setStep(1)}

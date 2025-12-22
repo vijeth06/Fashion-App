@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Favorites = () => {
   const [savedOutfits, setSavedOutfits] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
-  
-  // In a real app, this would be fetched from an API or context
+
   useEffect(() => {
-    // Mock data for demonstration
+
     const mockSavedOutfits = [
       { id: 1, name: 'Summer Look', imageUrl: 'https://images.unsplash.com/photo-1485965373059-f07aacff3b26?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', date: '2023-06-15' },
       { id: 2, name: 'Casual Friday', imageUrl: 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80', date: '2023-06-10' },
@@ -34,12 +33,12 @@ const Favorites = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">My Favorites</h1>
       
-      {/* Saved Outfits */}
+      {}
       <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Saved Outfits</h2>
           <Link to="/try" className="text-primary hover:underline">
-            Create New Outfit →
+            Create New Outfit â†’
           </Link>
         </div>
         
@@ -89,7 +88,7 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="bg-gray-50 rounded-xl p-8 text-center">
-            <div className="text-5xl mb-4">👕</div>
+            <div className="text-5xl mb-4">ðŸ‘•</div>
             <h3 className="text-xl font-medium mb-2">No saved outfits yet</h3>
             <p className="text-gray-600 mb-4">Try on some clothes and save your favorite looks!</p>
             <Link to="/try" className="btn btn-primary">
@@ -99,7 +98,7 @@ const Favorites = () => {
         )}
       </section>
       
-      {/* Liked Items */}
+      {}
       <section>
         <h2 className="text-2xl font-semibold mb-6">Liked Items</h2>
         
@@ -132,7 +131,7 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="bg-gray-50 rounded-xl p-8 text-center">
-            <div className="text-5xl mb-4">❤️</div>
+            <div className="text-5xl mb-4">â¤ï¸</div>
             <h3 className="text-xl font-medium mb-2">No liked items yet</h3>
             <p className="text-gray-600 mb-4">Browse our catalog and like items to save them here</p>
             <Link to="/catalog" className="btn btn-primary">

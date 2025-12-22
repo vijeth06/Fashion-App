@@ -1,5 +1,5 @@
-// 🌐 SOCIAL FASHION PLATFORM
-// Features: Community feed, style sharing, look creation, social commerce
+﻿
+
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +13,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 
-// Mock social data
 const mockInfluencers = [
   {
     id: 1,
@@ -39,7 +38,7 @@ const mockPosts = [
   {
     id: 1,
     user: mockInfluencers[0],
-    content: 'Loving this sustainable wool blend sweater! Perfect for fall weather 🍂',
+    content: 'Loving this sustainable wool blend sweater! Perfect for fall weather ðŸ‚',
     image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400',
     items: [], // Will be populated with real products
     likes: 2843,
@@ -51,7 +50,7 @@ const mockPosts = [
   {
     id: 2,
     user: mockInfluencers[1],
-    content: 'Street style transformation using just 3 pieces! 🔥',
+    content: 'Street style transformation using just 3 pieces! ðŸ”¥',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400',
     items: [], // Will be populated with real products
     likes: 5621,
@@ -62,7 +61,6 @@ const mockPosts = [
   }
 ];
 
-// Social Post Component
 function SocialPost({ post, onLike, onComment, onShare }) {
   const [liked, setLiked] = useState(false);
   const [showShoppable, setShowShoppable] = useState(false);
@@ -73,7 +71,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6"
     >
-      {/* Post Header */}
+      {}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3">
             <img 
@@ -88,12 +86,12 @@ function SocialPost({ post, onLike, onComment, onShare }) {
               <h3 className="font-bold text-gray-900">{post.user.name}</h3>
               {post.user.verified && <FaCrown className="w-4 h-4 text-yellow-500" />}
             </div>
-            <p className="text-sm text-gray-600">{post.user.username} • {post.timestamp}</p>
+            <p className="text-sm text-gray-600">{post.user.username} â€¢ {post.timestamp}</p>
           </div>
         </div>
         <p className="mt-4 text-gray-900">{post.content}</p>
         
-        {/* Tags */}
+        {}
         <div className="flex flex-wrap gap-2 mt-3">
           {post.tags.map(tag => (
             <span key={tag} className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
@@ -103,7 +101,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
         </div>
       </div>
 
-      {/* Post Image */}
+      {}
       <div className="relative">
         <img src={post.image} alt="Post content" className="w-full h-96 object-cover" loading="lazy" decoding="async" />
         <button
@@ -115,7 +113,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
         </button>
       </div>
 
-      {/* Shoppable Items */}
+      {}
       <AnimatePresence>
         {showShoppable && (
           <motion.div
@@ -138,7 +136,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
         )}
       </AnimatePresence>
 
-      {/* Post Actions */}
+      {}
       <div className="p-6 pt-4">
         <div className="flex items-center gap-6">
           <button
@@ -164,7 +162,6 @@ function SocialPost({ post, onLike, onComment, onShare }) {
   );
 }
 
-// Influencer Card Component
 function InfluencerCard({ influencer, onFollow }) {
   const [following, setFollowing] = useState(false);
 
@@ -212,7 +209,6 @@ function InfluencerCard({ influencer, onFollow }) {
   );
 }
 
-// Create Look Modal
 function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [lookTitle, setLookTitle] = useState('');
@@ -295,7 +291,7 @@ function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     {selectedItems.find(i => i.id === item.id) && (
                       <div className="absolute inset-0 bg-purple-600/20 flex items-center justify-center">
-                        <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs">✓</div>
+                        <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs">âœ“</div>
                       </div>
                     )}
                   </button>
@@ -322,7 +318,6 @@ function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
   );
 }
 
-// Main Social Fashion Platform Component
 export default function SocialFashionPlatform() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('feed');
@@ -332,7 +327,6 @@ export default function SocialFashionPlatform() {
   const [clothingItems, setClothingItems] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -346,8 +340,7 @@ export default function SocialFashionPlatform() {
           category: product.category
         }));
         setClothingItems(formattedProducts);
-        
-        // Update mock posts with real products
+
         if (formattedProducts.length > 0) {
           const updatedPosts = mockPosts.map((post, index) => ({
             ...post,
@@ -372,7 +365,7 @@ export default function SocialFashionPlatform() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Social Fashion Platform
@@ -382,7 +375,7 @@ export default function SocialFashionPlatform() {
           </p>
         </div>
 
-        {/* Navigation */}
+        {}
         <div className="flex justify-center gap-4 mb-8">
           {[
             { id: 'feed', name: 'Feed', icon: FaUsers },
@@ -407,7 +400,7 @@ export default function SocialFashionPlatform() {
           })}
         </div>
 
-        {/* Content */}
+        {}
         {activeTab === 'feed' && (
           <div className="max-w-2xl mx-auto">
             {posts.map(post => (
@@ -436,7 +429,7 @@ export default function SocialFashionPlatform() {
           </div>
         )}
 
-        {/* Create Look Modal */}
+        {}
         {showCreateLook && (
           <CreateLookModal
             isVisible={showCreateLook}

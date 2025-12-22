@@ -1,5 +1,5 @@
-// ⚡ REAL-TIME FEATURES SYSTEM
-// Features: Live try-on streaming, collaborative styling, real-time recommendations
+﻿
+
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +13,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 
-// WebRTC Connection Manager
 class WebRTCManager {
   constructor() {
     this.localStream = null;
@@ -47,7 +46,6 @@ class WebRTCManager {
     const connection = new RTCPeerConnection(config);
     this.connections.set(userId, connection);
 
-    // Add local stream
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
         connection.addTrack(track, this.localStream);
@@ -58,7 +56,7 @@ class WebRTCManager {
   }
 
   async startCollaborativeSession(participants) {
-    // Mock collaborative session start
+
     console.log('Starting collaborative session with:', participants);
     return { sessionId: Date.now().toString(), success: true };
   }
@@ -72,7 +70,6 @@ class WebRTCManager {
   }
 }
 
-// Real-time Recommendation Engine
 class RealTimeRecommendationEngine {
   constructor(clothingItems = []) {
     this.recommendations = [];
@@ -88,8 +85,7 @@ class RealTimeRecommendationEngine {
   startRealtimeRecommendations(userContext) {
     this.isActive = true;
     this.preferences = userContext;
-    
-    // Start real-time processing
+
     this.recommendationInterval = setInterval(() => {
       this.generateRecommendations();
     }, 5000);
@@ -97,8 +93,7 @@ class RealTimeRecommendationEngine {
 
   generateRecommendations() {
     if (this.clothingItems.length === 0) return [];
-    
-    // Mock AI recommendations based on current context
+
     const newRecommendations = [
       {
         id: Date.now(),
@@ -130,7 +125,6 @@ class RealTimeRecommendationEngine {
   }
 }
 
-// Live Stream Component
 function LiveStreamViewer({ stream, isHost = false, participants = [], onAction }) {
   const videoRef = useRef();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -168,7 +162,7 @@ function LiveStreamViewer({ stream, isHost = false, participants = [], onAction 
 
   return (
     <div className="relative bg-black rounded-2xl overflow-hidden">
-      {/* Video Stream */}
+      {}
       <video
         ref={videoRef}
         autoPlay
@@ -177,7 +171,7 @@ function LiveStreamViewer({ stream, isHost = false, participants = [], onAction 
         className="w-full h-96 object-cover"
       />
 
-      {/* Stream Controls */}
+      {}
       <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
@@ -208,7 +202,7 @@ function LiveStreamViewer({ stream, isHost = false, participants = [], onAction 
         </div>
       </div>
 
-      {/* Participant Avatars */}
+      {}
       <div className="absolute top-4 right-4 flex gap-2">
         {participants.slice(0, 5).map((participant, index) => (
           <img
@@ -226,7 +220,7 @@ function LiveStreamViewer({ stream, isHost = false, participants = [], onAction 
         )}
       </div>
 
-      {/* Live Chat */}
+      {}
       <AnimatePresence>
         {showChat && (
           <motion.div
@@ -276,7 +270,6 @@ function LiveStreamViewer({ stream, isHost = false, participants = [], onAction 
   );
 }
 
-// Real-time Recommendations Panel
 function RealTimeRecommendations({ recommendations, onTryOn, onAddToCart }) {
   return (
     <motion.div
@@ -347,7 +340,6 @@ function RealTimeRecommendations({ recommendations, onTryOn, onAddToCart }) {
   );
 }
 
-// Collaborative Styling Session
 function CollaborativeSession({ isActive, participants, onInvite, onEnd }) {
   const [sessionMode, setSessionMode] = useState('styling'); // styling, shopping, consultation
 
@@ -362,9 +354,9 @@ function CollaborativeSession({ isActive, participants, onInvite, onEnd }) {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {[
-            { id: 'styling', name: 'Style Together', icon: '👗', desc: 'Get help styling outfits' },
-            { id: 'shopping', name: 'Shop Together', icon: '🛍️', desc: 'Shop with friends' },
-            { id: 'consultation', name: 'Expert Consultation', icon: '👨‍💼', desc: 'Get professional advice' }
+            { id: 'styling', name: 'Style Together', icon: 'ðŸ‘—', desc: 'Get help styling outfits' },
+            { id: 'shopping', name: 'Shop Together', icon: 'ðŸ›ï¸', desc: 'Shop with friends' },
+            { id: 'consultation', name: 'Expert Consultation', icon: 'ðŸ‘¨â€ðŸ’¼', desc: 'Get professional advice' }
           ].map(mode => (
             <button
               key={mode.id}
@@ -431,7 +423,6 @@ function CollaborativeSession({ isActive, participants, onInvite, onEnd }) {
   );
 }
 
-// Main Real-time Features Component
 export default function RealTimeFeatures() {
   const { user } = useAuth();
   const [isStreaming, setIsStreaming] = useState(false);
@@ -440,14 +431,12 @@ export default function RealTimeFeatures() {
   const [streamingMode, setStreamingMode] = useState('tryOn'); // tryOn, styling, shopping
   const [clothingItems, setClothingItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Managers
+
   const [webRTC] = useState(() => new WebRTCManager());
   const [recsEngine] = useState(() => new RealTimeRecommendationEngine());
   
   const streamRef = useRef();
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -468,7 +457,6 @@ export default function RealTimeFeatures() {
     fetchProducts();
   }, []);
 
-  // Mock participants
   const mockParticipants = [
     {
       id: 1,
@@ -485,13 +473,12 @@ export default function RealTimeFeatures() {
   ];
 
   useEffect(() => {
-    // Initialize real-time recommendations
+
     recsEngine.startRealtimeRecommendations({
       userId: user?.uid,
       preferences: user?.fashionProfile || {}
     });
 
-    // Update recommendations periodically
     const interval = setInterval(() => {
       const newRecs = recsEngine.generateRecommendations();
       setRealTimeRecs(newRecs);
@@ -537,7 +524,7 @@ export default function RealTimeFeatures() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Real-time Fashion Experience
@@ -548,7 +535,7 @@ export default function RealTimeFeatures() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Live Streaming */}
+          {}
           <div className="lg:col-span-2 space-y-6">
             {!isStreaming ? (
               <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
@@ -560,9 +547,9 @@ export default function RealTimeFeatures() {
                 
                 <div className="flex justify-center gap-4 mb-6">
                   {[
-                    { id: 'tryOn', name: 'Try-On Stream', icon: '👗' },
-                    { id: 'styling', name: 'Styling Session', icon: '✨' },
-                    { id: 'shopping', name: 'Shopping Together', icon: '🛍️' }
+                    { id: 'tryOn', name: 'Try-On Stream', icon: 'ðŸ‘—' },
+                    { id: 'styling', name: 'Styling Session', icon: 'âœ¨' },
+                    { id: 'shopping', name: 'Shopping Together', icon: 'ðŸ›ï¸' }
                   ].map(mode => (
                     <button
                       key={mode.id}
@@ -607,7 +594,7 @@ export default function RealTimeFeatures() {
               </div>
             )}
 
-            {/* Collaborative Session */}
+            {}
             <CollaborativeSession
               isActive={collaborativeSession?.isActive}
               participants={collaborativeSession?.participants || []}
@@ -616,7 +603,7 @@ export default function RealTimeFeatures() {
             />
           </div>
 
-          {/* Real-time Recommendations */}
+          {}
           <div className="space-y-6">
             <RealTimeRecommendations
               recommendations={realTimeRecs}
@@ -624,7 +611,7 @@ export default function RealTimeFeatures() {
               onAddToCart={(item) => console.log('Add to cart:', item.name)}
             />
 
-            {/* Quick Actions */}
+            {}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">

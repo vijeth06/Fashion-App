@@ -1,13 +1,10 @@
-import { Pose } from '@mediapipe/pose';
+﻿import { Pose } from '@mediapipe/pose';
 import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
-/**
- * Advanced Pose Detection Service
- * Provides real-time human pose estimation using MediaPipe and TensorFlow.js
- */
+
 export class PoseDetectionService {
   constructor() {
     this.pose = null;
@@ -20,14 +17,12 @@ export class PoseDetectionService {
       onError: null,
       onFPSUpdate: null
     };
-    
-    // Performance tracking
+
     this.fps = 0;
     this.lastFrameTime = 0;
     this.frameCount = 0;
     this.fpsUpdateInterval = null;
-    
-    // Real-time optimization settings
+
     this.config = {
       runtime: 'mediapipe',
       solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/pose',
@@ -41,18 +36,14 @@ export class PoseDetectionService {
     };
   }
 
-  /**
-   * Initialize pose detection models
-   */
+  
   async initialize() {
     try {
       console.log('Initializing pose detection...');
-      
-      // Initialize TensorFlow.js backend
+
       await tf.ready();
       console.log('TensorFlow.js ready');
 
-      // Try MediaPipe first
       await this.initializeMediaPipe();
       
       this.isInitialized = true;
@@ -77,9 +68,7 @@ export class PoseDetectionService {
     }
   }
 
-  /**
-   * Initialize MediaPipe Pose with optimized settings for real-time performance
-   */
+  
   async initializeMediaPipe() {
     this.pose = new Pose({
       locateFile: (file) => {
@@ -87,7 +76,6 @@ export class PoseDetectionService {
       }
     });
 
-    // Optimized settings for real-time performance
     this.pose.setOptions({
       modelComplexity: 0, // Use fastest model (0 = lite, 1 = full, 2 = heavy)
       smoothLandmarks: true,
@@ -101,13 +89,10 @@ export class PoseDetectionService {
       this.processPoseResults(results);
     });
 
-    // Start FPS monitoring
     this.startFPSMonitoring();
   }
 
-  /**
-   * Initialize TensorFlow.js pose detection as fallback
-   */
+  
   async initializeTensorFlowJS() {
     const model = poseDetection.SupportedModels.PoseNet;
     this.detector = await poseDetection.createDetector(model, {
@@ -119,9 +104,7 @@ export class PoseDetectionService {
     });
   }
 
-  /**
-   * Start pose detection on video element
-   */
+  
   startDetection(videoElement) {
     console.log('PoseDetectionService: Starting detection...');
     
@@ -139,7 +122,7 @@ export class PoseDetectionService {
 
     if (this.pose) {
       console.log('PoseDetectionService: Using MediaPipe implementation');
-      // MediaPipe implementation
+
       this.camera = new Camera(videoElement, {
         onFrame: async () => {
           if (videoElement.readyState >= 2) {
@@ -153,7 +136,7 @@ export class PoseDetectionService {
       console.log('PoseDetectionService: MediaPipe camera started');
     } else if (this.detector) {
       console.log('PoseDetectionService: Using TensorFlow.js implementation');
-      // TensorFlow.js implementation
+
       this.startTensorFlowDetection(videoElement);
     } else {
       console.error('PoseDetectionService: No detection method available');
@@ -161,9 +144,7 @@ export class PoseDetectionService {
     }
   }
 
-  /**
-   * Start TensorFlow.js pose detection loop
-   */
+  
   async startTensorFlowDetection(videoElement) {
     const detectFrame = async () => {
       if (videoElement.readyState === 4) {
@@ -181,10 +162,7 @@ export class PoseDetectionService {
     detectFrame();
   }
 
-  /**
-   * Run pose detection on a static image (Image/Canvas/Video element)
-   * Useful for uploaded photos.
-   */
+  
   async detectOnImage(imageElement) {
     if (!this.isInitialized) {
       throw new Error('Pose detection not initialized. Call initialize() first.');
@@ -196,10 +174,10 @@ export class PoseDetectionService {
 
     try {
       if (this.pose) {
-        // MediaPipe will invoke onResults -> processPoseResults
+
         await this.pose.send({ image: imageElement });
       } else if (this.detector) {
-        // TensorFlow.js direct estimation
+
         const poses = await this.detector.estimatePoses(imageElement);
         if (poses && poses.length > 0) {
           this.processTensorFlowPose(poses[0]);
@@ -217,11 +195,9 @@ export class PoseDetectionService {
     }
   }
 
-  /**
-   * Process MediaPipe pose results with performance optimization
-   */
+  
   processPoseResults(results) {
-    // Check if we should process this frame (FPS throttling)
+
     if (!this.updateFrameCount()) {
       return;
     }
@@ -243,9 +219,7 @@ export class PoseDetectionService {
     }
   }
 
-  /**
-   * Process TensorFlow.js pose results
-   */
+  
   processTensorFlowPose(pose) {
     const convertedPose = this.convertTensorFlowPose(pose);
     this.currentPose = convertedPose;
@@ -255,22 +229,19 @@ export class PoseDetectionService {
     }
   }
 
-  /**
-   * Convert MediaPipe pose format to standardized format
-   */
+  
   convertMediaPipePose(results) {
     const landmarks = results.poseLandmarks;
     
     return {
       keypoints: {
-        // Head
+
         nose: landmarks[0],
         leftEye: landmarks[2],
         rightEye: landmarks[5],
         leftEar: landmarks[7],
         rightEar: landmarks[8],
-        
-        // Torso
+
         leftShoulder: landmarks[11],
         rightShoulder: landmarks[12],
         leftElbow: landmarks[13],
@@ -279,8 +250,7 @@ export class PoseDetectionService {
         rightWrist: landmarks[16],
         leftHip: landmarks[23],
         rightHip: landmarks[24],
-        
-        // Legs
+
         leftKnee: landmarks[25],
         rightKnee: landmarks[26],
         leftAnkle: landmarks[27],
@@ -293,13 +263,10 @@ export class PoseDetectionService {
     };
   }
 
-  /**
-   * Convert TensorFlow.js pose format to standardized format
-   */
+  
   convertTensorFlowPose(pose) {
     const keypoints = {};
-    
-    // Map TensorFlow.js keypoint names to our standard format
+
     const keypointMap = {
       'nose': 'nose',
       'left_eye': 'leftEye',
@@ -340,15 +307,12 @@ export class PoseDetectionService {
     };
   }
 
-  /**
-   * Calculate clothing anchor points for different garment types
-   */
+  
   calculateClothingAnchors(landmarks) {
     if (!landmarks || landmarks.length === 0) return null;
 
     const keypoints = Array.isArray(landmarks) ? landmarks : Object.values(landmarks);
-    
-    // Find key body landmarks
+
     const leftShoulder = this.findLandmark(keypoints, 'leftShoulder') || keypoints[11];
     const rightShoulder = this.findLandmark(keypoints, 'rightShoulder') || keypoints[12];
     const leftHip = this.findLandmark(keypoints, 'leftHip') || keypoints[23];
@@ -359,7 +323,7 @@ export class PoseDetectionService {
     }
 
     return {
-      // T-shirt/Top anchors
+
       shirt: {
         neckline: {
           x: (leftShoulder.x + rightShoulder.x) / 2,
@@ -374,8 +338,7 @@ export class PoseDetectionService {
           y: (leftShoulder.y + leftHip.y) * 0.7
         }
       },
-      
-      // Pants/Bottom anchors
+
       pants: {
         waist: {
           left: leftHip,
@@ -386,8 +349,7 @@ export class PoseDetectionService {
           }
         }
       },
-      
-      // Dress anchors
+
       dress: {
         neckline: {
           x: (leftShoulder.x + rightShoulder.x) / 2,
@@ -409,16 +371,12 @@ export class PoseDetectionService {
     };
   }
 
-  /**
-   * Find a specific landmark by name
-   */
+  
   findLandmark(landmarks, name) {
     return landmarks.find(lm => lm.name === name);
   }
 
-  /**
-   * Calculate bounding box from landmarks
-   */
+  
   calculateBoundingBox(landmarks) {
     if (!landmarks || landmarks.length === 0) return null;
 
@@ -439,17 +397,13 @@ export class PoseDetectionService {
     };
   }
 
-  /**
-   * Calculate bounding box from keypoints object
-   */
+  
   calculateBoundingBoxFromKeypoints(keypoints) {
     if (!keypoints || keypoints.length === 0) return null;
     return this.calculateBoundingBox(keypoints);
   }
 
-  /**
-   * Calculate average confidence score
-   */
+  
   calculateAverageConfidence(landmarks) {
     if (!landmarks || landmarks.length === 0) return 0;
     
@@ -463,23 +417,17 @@ export class PoseDetectionService {
     return totalConfidence / validLandmarks.length;
   }
 
-  /**
-   * Set callback for pose detection events
-   */
+  
   onPoseDetected(callback) {
     this.callbacks.onPoseDetected = callback;
   }
 
-  /**
-   * Set callback for error events
-   */
+  
   onError(callback) {
     this.callbacks.onError = callback;
   }
 
-  /**
-   * Start FPS monitoring for real-time performance tracking
-   */
+  
   startFPSMonitoring() {
     this.fpsUpdateInterval = setInterval(() => {
       this.fps = this.frameCount;
@@ -488,21 +436,17 @@ export class PoseDetectionService {
       if (this.callbacks.onFPSUpdate) {
         this.callbacks.onFPSUpdate(this.fps);
       }
-      
-      // Log performance warnings
+
       if (this.fps < 15) {
         console.warn(`Low FPS detected: ${this.fps}fps. Consider reducing quality settings.`);
       }
     }, 1000);
   }
 
-  /**
-   * Update frame count for FPS calculation
-   */
+  
   updateFrameCount() {
     this.frameCount++;
-    
-    // Throttle processing if needed for performance
+
     const currentTime = performance.now();
     if (currentTime - this.lastFrameTime < this.config.targetFrameTime) {
       return false; // Skip this frame
@@ -511,30 +455,23 @@ export class PoseDetectionService {
     return true; // Process this frame
   }
 
-  /**
-   * Set callback for FPS updates
-   */
+  
   onFPSUpdate(callback) {
     this.callbacks.onFPSUpdate = callback;
   }
 
-  /**
-   * Get current FPS
-   */
+  
   getFPS() {
     return this.fps;
   }
 
-  /**
-   * Stop pose detection
-   */
+  
   stopDetection() {
     if (this.camera) {
       this.camera.stop();
       this.camera = null;
     }
-    
-    // Stop FPS monitoring
+
     if (this.fpsUpdateInterval) {
       clearInterval(this.fpsUpdateInterval);
       this.fpsUpdateInterval = null;
@@ -543,16 +480,12 @@ export class PoseDetectionService {
     this.currentPose = null;
   }
 
-  /**
-   * Get the current pose data
-   */
+  
   getCurrentPose() {
     return this.currentPose;
   }
 
-  /**
-   * Cleanup resources
-   */
+  
   dispose() {
     this.stopDetection();
     if (this.pose) {

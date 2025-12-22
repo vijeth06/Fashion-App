@@ -1,6 +1,6 @@
-// Enhanced clothing data with realistic virtual try-on images
+﻿
 export const sampleClothingItems = [
-  // Shirts & Tops
+
   {
     id: 'shirt-001',
     name: 'White T-Shirt',
@@ -67,7 +67,6 @@ export const sampleClothingItems = [
     brand: 'ClassicJeans'
   },
 
-  // Dresses
   {
     id: 'dress-001',
     name: 'Red Evening Dress',
@@ -90,7 +89,6 @@ export const sampleClothingItems = [
     brand: 'Elegance'
   },
 
-  // Bottoms
   {
     id: 'pants-001',
     name: 'Blue Jeans',
@@ -133,7 +131,6 @@ export const sampleClothingItems = [
     brand: 'ModernStyle'
   },
 
-  // Accessories
   {
     id: 'hat-001',
     name: 'Black Beanie',
@@ -197,7 +194,6 @@ export const sampleClothingItems = [
   }
 ];
 
-// Clothing configurations for different body types
 export const clothingConfigurations = {
   shirt: {
     anchorPoints: ['leftShoulder', 'rightShoulder', 'waist'],
@@ -279,7 +275,6 @@ export const clothingConfigurations = {
   }
 };
 
-// Body measurement references for sizing
 export const bodyMeasurements = {
   shoulder: {
     small: { min: 35, max: 40 },
@@ -307,9 +302,8 @@ export const bodyMeasurements = {
   }
 };
 
-// Pose landmark indices for MediaPipe
 export const poseLandmarkIndices = {
-  // Face landmarks
+
   nose: 0,
   leftEyeInner: 1,
   leftEye: 2,
@@ -322,7 +316,6 @@ export const poseLandmarkIndices = {
   mouthLeft: 9,
   mouthRight: 10,
 
-  // Body landmarks
   leftShoulder: 11,
   rightShoulder: 12,
   leftElbow: 13,
@@ -347,38 +340,31 @@ export const poseLandmarkIndices = {
   rightFootIndex: 32
 };
 
-// Helper function to get clothing item by ID
 export const getClothingById = (id) => {
   return sampleClothingItems.find(item => item.id === id);
 };
 
-// Helper function to get clothing items by category
 export const getClothingByCategory = (category) => {
   return sampleClothingItems.filter(item => item.category === category);
 };
 
-// Helper function to get clothing items by type
 export const getClothingByType = (type) => {
   return sampleClothingItems.filter(item => item.type === type);
 };
 
-// Helper function to get clothing configuration
 export const getClothingConfiguration = (type) => {
   return clothingConfigurations[type] || clothingConfigurations.shirt;
 };
 
-// Helper function to estimate size based on measurements
 export const estimateSize = (measurements) => {
   const { shoulder, chest, waist, hip } = measurements;
-  
-  // Simple size estimation based on chest measurement
+
   if (chest < 90) return 'small';
   if (chest < 100) return 'medium';
   if (chest < 110) return 'large';
   return 'xlarge';
 };
 
-// Default export with all exports
 export default {
   sampleClothingItems,
   clothingConfigurations,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -28,8 +28,7 @@ const OrderTracking = () => {
   useEffect(() => {
     if (orderId) {
       loadTrackingData();
-      
-      // Subscribe to real-time updates
+
       const unsubscribe = orderTrackingService.subscribeToTracking(orderId, (data) => {
         if (data.success) {
           setTrackingData(data.data);
@@ -52,8 +51,7 @@ const OrderTracking = () => {
       const result = await orderTrackingService.getTrackingHistory(orderId);
       if (result.success) {
         setTrackingData(result.data);
-        
-        // Load order details from localStorage for demo
+
         const orders = JSON.parse(localStorage.getItem('orders') || '[]');
         const order = orders.find(o => o.orderId === orderId);
         setOrderDetails(order);
@@ -70,7 +68,7 @@ const OrderTracking = () => {
   const copyTrackingNumber = () => {
     if (trackingData?.trackingNumber) {
       navigator.clipboard.writeText(trackingData.trackingNumber);
-      // Show toast notification
+
     }
   };
 
@@ -129,7 +127,7 @@ const OrderTracking = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-      {/* Header */}
+      {}
       <div className="bg-white shadow-lg border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
@@ -172,9 +170,9 @@ const OrderTracking = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Tracking */}
+          {}
           <div className="lg:col-span-2 space-y-6">
-            {/* Current Status Card */}
+            {}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -195,7 +193,7 @@ const OrderTracking = () => {
                 </div>
               </div>
 
-              {/* Progress Bar */}
+              {}
               <div className="mb-6">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <motion.div
@@ -207,7 +205,7 @@ const OrderTracking = () => {
                 </div>
               </div>
 
-              {/* Estimated Delivery */}
+              {}
               {trackingData?.estimatedDelivery && (
                 <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
                   <FaClock className="w-5 h-5 text-green-600" />
@@ -226,7 +224,7 @@ const OrderTracking = () => {
               )}
             </motion.div>
 
-            {/* Tracking Timeline */}
+            {}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -284,9 +282,9 @@ const OrderTracking = () => {
             </motion.div>
           </div>
 
-          {/* Sidebar */}
+          {}
           <div className="space-y-6">
-            {/* Order Details */}
+            {}
             {orderDetails && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -301,7 +299,7 @@ const OrderTracking = () => {
                     <FaShoppingBag className="w-5 h-5 text-purple-600" />
                     <div>
                       <p className="font-medium text-gray-900">Order Value</p>
-                      <p className="text-gray-600">₹{orderDetails.totalAmount?.toLocaleString()}</p>
+                      <p className="text-gray-600">â‚¹{orderDetails.totalAmount?.toLocaleString()}</p>
                     </div>
                   </div>
                   
@@ -328,7 +326,7 @@ const OrderTracking = () => {
               </motion.div>
             )}
 
-            {/* Carrier Info */}
+            {}
             {trackingData?.carrier && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -360,7 +358,7 @@ const OrderTracking = () => {
               </motion.div>
             )}
 
-            {/* Support */}
+            {}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

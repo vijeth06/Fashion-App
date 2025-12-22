@@ -1,5 +1,5 @@
-// 🚀 REVOLUTIONARY FASHION DATABASE WITH AI METADATA & QUANTUM FABRIC PHYSICS
-// This is the most advanced fashion product database with features that don't exist in real world yet
+﻿
+
 
 export const advancedFashionItems = [
   {
@@ -12,8 +12,7 @@ export const advancedFashionItems = [
       demandFactor: 1.1,
       seasonalBoost: 0.95
     },
-    
-    // 🧠 AI METADATA
+
     aiMetadata: {
       styleVector: [0.8, 0.3, 0.9, 0.6, 0.4], // Fashion DNA encoding
       emotionalResonance: {
@@ -36,7 +35,6 @@ export const advancedFashionItems = [
       }
     },
 
-    // 🧬 QUANTUM FABRIC PHYSICS
     fabricPhysics: {
       material: 'bio-responsive-nanofiber',
       breathability: 0.89,
@@ -59,7 +57,6 @@ export const advancedFashionItems = [
       }
     },
 
-    // 🌱 SUSTAINABILITY METRICS
     sustainability: {
       carbonFootprint: 2.3, // kg CO2
       waterUsage: 145, // liters
@@ -72,7 +69,6 @@ export const advancedFashionItems = [
       repairability: 0.89
     },
 
-    // 📐 MULTI-DIMENSIONAL SIZING
     sizing: {
       traditional: ['XS', 'S', 'M', 'L', 'XL'],
       bodyMetrics: {
@@ -89,12 +85,11 @@ export const advancedFashionItems = [
       }
     },
 
-    // 🎨 VISUAL DATA
     visualData: {
       primaryImage: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
       images360: [
         'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
-        // More 360 view images would be here
+
       ],
       virtualModel: {
         meshFile: '/models/neural-jacket.glb',
@@ -109,14 +104,13 @@ export const advancedFashionItems = [
       ]
     },
 
-    // 🎯 STYLE COMPATIBILITY
     styleCompatibility: {
       occasions: ['casual', 'smart-casual', 'tech-wear', 'futuristic'],
       seasons: ['spring', 'fall', 'winter'],
       bodyTypes: ['athletic', 'slim', 'average', 'muscular'],
       stylePersonalities: ['minimalist', 'tech-enthusiast', 'urban', 'professional'],
       compatibilityMatrix: {
-        // Items that pair well with this jacket
+
         shirts: ['QF015', 'QF023', 'QF031'],
         pants: ['QF045', 'QF067'],
         shoes: ['QF089', 'QF123'],
@@ -350,7 +344,6 @@ export const advancedFashionItems = [
   }
 ];
 
-// 🎯 NEURAL STYLE CATEGORIES WITH AI CLASSIFICATION
 export const quantumCategories = {
   'quantum-wear': {
     description: 'Next-generation clothing with quantum properties',
@@ -378,10 +371,9 @@ export const quantumCategories = {
   }
 };
 
-// 🧠 AI OUTFIT GENERATION ALGORITHMS
 export const outfitCompatibilityEngine = {
   calculateStyleVector: (items) => {
-    // Neural network simulation for style compatibility
+
     return items.reduce((acc, item) => {
       return acc.map((val, idx) => val + item.aiMetadata.styleVector[idx]);
     }, [0, 0, 0, 0, 0]).map(sum => sum / items.length);
@@ -408,7 +400,6 @@ export const outfitCompatibilityEngine = {
   }
 };
 
-// 🌟 ADVANCED FILTERING & SEARCH
 export const advancedFilters = {
   sustainability: ['A+', 'A', 'B+', 'B', 'C+', 'C'],
   fabricTech: ['bio-responsive', 'temperature-adaptive', 'self-cleaning', 'memory-fabric'],

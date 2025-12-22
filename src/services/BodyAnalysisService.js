@@ -1,9 +1,4 @@
-/**
- * Body Analysis Service
- * Real implementation for body measurements and analysis
- * Uses MediaPipe Pose Detection
- * @version 1.0.0
- */
+﻿
 
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as tf from '@tensorflow/tfjs';
@@ -14,20 +9,17 @@ export class BodyAnalysisService {
     this.isInitialized = false;
   }
 
-  /**
-   * Initialize the pose detector
-   */
+  
   async initialize() {
     if (this.isInitialized) {
       return true;
     }
 
     try {
-      // Set TensorFlow backend
+
       await tf.ready();
       await tf.setBackend('webgl');
 
-      // Create detector with MoveNet model (faster and more accurate)
       const detectorConfig = {
         modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
       };
@@ -46,9 +38,7 @@ export class BodyAnalysisService {
     }
   }
 
-  /**
-   * Analyze body from image
-   */
+  
   async analyzeFromImage(imageElement) {
     if (!this.isInitialized) {
       await this.initialize();
@@ -86,9 +76,7 @@ export class BodyAnalysisService {
     }
   }
 
-  /**
-   * Calculate body measurements from pose keypoints
-   */
+  
   calculateMeasurements(pose) {
     const keypoints = pose.keypoints;
     const keypointMap = {};
@@ -97,7 +85,6 @@ export class BodyAnalysisService {
       keypointMap[kp.name] = kp;
     });
 
-    // Calculate distances using detected keypoints
     const shoulderWidth = this.calculateDistance(
       keypointMap['left_shoulder'],
       keypointMap['right_shoulder']
@@ -116,8 +103,6 @@ export class BodyAnalysisService {
       keypointMap['right_hip']
     );
 
-    // Estimate measurements with realistic human body proportions
-    // Apply proper scaling and validation
     const scaledShoulder = shoulderWidth ? this.validateMeasurement(shoulderWidth * 0.4, 'shoulder') : 0;
     const scaledChest = shoulderWidth ? this.validateMeasurement(shoulderWidth * 0.6, 'chest') : 0;
     const scaledWaist = hipWidth ? this.validateMeasurement(hipWidth * 0.5, 'waist') : 0;
@@ -141,9 +126,7 @@ export class BodyAnalysisService {
     };
   }
 
-  /**
-   * Validate and constrain measurements to realistic human ranges
-   */
+  
   validateMeasurement(value, type) {
     const ranges = {
       shoulder: { min: 35, max: 55 },
@@ -159,16 +142,14 @@ export class BodyAnalysisService {
     return Math.min(Math.max(value, range.min), range.max);
   }
 
-  /**
-   * Calculate measurement confidence based on realistic ranges
-   */
+  
   calculateMeasurementConfidence(measurements) {
     let totalConfidence = 0;
     let count = 0;
     
     Object.entries(measurements).forEach(([key, value]) => {
       if (value > 0) {
-        // Higher confidence for measurements in typical ranges
+
         const normalizedConfidence = key === 'chest' && value > 80 && value < 110 ? 0.9 :
                                     key === 'waist' && value > 70 && value < 95 ? 0.9 :
                                     key === 'hips' && value > 85 && value < 115 ? 0.9 : 0.7;
@@ -180,9 +161,7 @@ export class BodyAnalysisService {
     return count > 0 ? totalConfidence / count : 0.5;
   }
 
-  /**
-   * Calculate distance between two keypoints
-   */
+  
   calculateDistance(point1, point2) {
     if (!point1 || !point2 || point1.score < 0.3 || point2.score < 0.3) {
       return null;
@@ -193,9 +172,7 @@ export class BodyAnalysisService {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  /**
-   * Estimate total height from keypoints
-   */
+  
   estimateHeight(keypointMap) {
     const nose = keypointMap['nose'];
     const leftAnkle = keypointMap['left_ankle'];
@@ -210,16 +187,14 @@ export class BodyAnalysisService {
     if (!ankle) return 0;
 
     const heightInPixels = Math.abs(nose.y - ankle.y);
-    // More realistic height estimation with validation
+
     const estimatedHeight = heightInPixels * 0.35; // Adjusted scaling factor
-    // Validate height is within realistic human range (140-220 cm)
+
     const validatedHeight = Math.min(Math.max(estimatedHeight, 140), 220);
     return Math.round(validatedHeight);
   }
 
-  /**
-   * Determine body type from measurements
-   */
+  
   determineBodyType(measurements) {
     const { shoulderWidth, waistCircumference, hipCircumference } = measurements;
 
@@ -260,13 +235,10 @@ export class BodyAnalysisService {
     };
   }
 
-  /**
-   * Recommend clothing sizes
-   */
+  
   recommendSizes(measurements) {
     const { chestCircumference, waistCircumference, hipCircumference } = measurements;
 
-    // Standard size chart (simplified)
     const sizeChart = {
       XS: { chest: [81, 86], waist: [61, 66], hip: [86, 91] },
       S: { chest: [86, 91], waist: [66, 71], hip: [91, 96] },
@@ -301,9 +273,7 @@ export class BodyAnalysisService {
     };
   }
 
-  /**
-   * Calculate overall confidence
-   */
+  
   calculateConfidence(pose) {
     if (!pose || !pose.keypoints) return 0;
 
@@ -317,9 +287,7 @@ export class BodyAnalysisService {
     return Math.round(avgScore * 100) / 100;
   }
 
-  /**
-   * Cleanup
-   */
+  
   dispose() {
     if (this.detector) {
       this.detector.dispose();

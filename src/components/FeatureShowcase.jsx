@@ -1,4 +1,4 @@
-// 🚀 FEATURE SHOWCASE - Overview of all implemented features
+﻿
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -71,13 +71,13 @@ const features = [
   },
   {
     id: 'catalog',
-    title: '360° Digital Catalog',
-    description: 'Revolutionary product catalog with 360° views, AI search, and advanced filtering',
+    title: '360Â° Digital Catalog',
+    description: 'Revolutionary product catalog with 360Â° views, AI search, and advanced filtering',
     icon: FaPalette,
     path: '/catalog',
     color: 'from-teal-500 to-green-600',
     status: 'complete',
-    highlights: ['360° Views', 'AI Search', 'Smart Filters', '3D Visualization']
+    highlights: ['360Â° Views', 'AI Search', 'Smart Filters', '3D Visualization']
   },
   {
     id: 'try-on-items',
@@ -140,7 +140,7 @@ export default function FeatureShowcase() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,11 +172,11 @@ export default function FeatureShowcase() {
             transition={{ duration: 10, repeat: Infinity }}
             className="inline-block px-8 py-3 text-white rounded-2xl font-bold text-lg shadow-lg"
           >
-            ✨ Experience Virtual Fashion Try-On
+            âœ¨ Experience Virtual Fashion Try-On
           </motion.div>
         </motion.div>
 
-        {/* Features Grid */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <motion.div
@@ -190,7 +190,7 @@ export default function FeatureShowcase() {
           ))}
         </div>
 
-        {/* Technology Stack */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -217,7 +217,7 @@ export default function FeatureShowcase() {
           </div>
         </motion.div>
 
-        {/* Quick Navigation */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

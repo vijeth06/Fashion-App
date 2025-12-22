@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { testFirebaseConnection, testGoogleLogin } from '../utils/authDebug';
 
@@ -49,11 +49,11 @@ const AuthTestPanel = () => {
 
   return (
     <div className="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg p-4 shadow-lg max-w-sm z-50">
-      <h3 className="text-lg font-bold mb-3">🧪 Auth Test Panel</h3>
+      <h3 className="text-lg font-bold mb-3">ðŸ§ª Auth Test Panel</h3>
       
       {user ? (
         <div className="mb-3">
-          <p className="text-green-600">✅ User: {user.email}</p>
+          <p className="text-green-600">âœ… User: {user.email}</p>
           <button 
             onClick={signOut}
             className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm"
@@ -63,7 +63,7 @@ const AuthTestPanel = () => {
         </div>
       ) : (
         <div className="mb-3">
-          <p className="text-red-600">❌ No user signed in</p>
+          <p className="text-red-600">âŒ No user signed in</p>
           <div className="space-y-2 mt-2">
             <input
               type="email"

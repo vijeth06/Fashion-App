@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -59,7 +59,7 @@ const ModernNavBar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           
-          {/* Logo */}
+          {}
           <Link to="/" className="flex items-center space-x-3 group">
             <motion.div
               whileHover={{ rotate: 360, scale: 1.1 }}
@@ -86,7 +86,7 @@ const ModernNavBar = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {}
           <nav className="hidden lg:flex items-center space-x-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
@@ -115,7 +115,7 @@ const ModernNavBar = () => {
             })}
           </nav>
 
-          {/* User Section */}
+          {}
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="relative">
@@ -210,7 +210,7 @@ const ModernNavBar = () => {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
+            {}
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 text-slate-300 hover:text-white focus:outline-none"
@@ -243,7 +243,7 @@ const ModernNavBar = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div

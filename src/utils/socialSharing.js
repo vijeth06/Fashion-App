@@ -1,4 +1,4 @@
-// Social Sharing Utilities for Virtual Try-On
+﻿
 
 export const SOCIAL_PLATFORMS = {
   FACEBOOK: 'facebook',
@@ -11,7 +11,6 @@ export const SOCIAL_PLATFORMS = {
   COPY_LINK: 'copy'
 };
 
-// Generate sharing URLs for different platforms
 export function generateShareURL(platform, data) {
   const { url, title, description, imageUrl, hashtags = [] } = data;
   const encodedUrl = encodeURIComponent(url);
@@ -48,7 +47,6 @@ export function generateShareURL(platform, data) {
   }
 }
 
-// Share using Web Share API (native mobile sharing)
 export async function shareWithWebAPI(data) {
   if (!navigator.share) {
     throw new Error('Web Share API not supported');
@@ -63,21 +61,20 @@ export async function shareWithWebAPI(data) {
     return true;
   } catch (error) {
     if (error.name === 'AbortError') {
-      // User cancelled sharing
+
       return false;
     }
     throw error;
   }
 }
 
-// Copy to clipboard
 export async function copyToClipboard(text) {
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
       return true;
     } else {
-      // Fallback for older browsers
+
       const textArea = document.createElement('textarea');
       textArea.value = text;
       textArea.style.position = 'absolute';
@@ -99,7 +96,6 @@ export async function copyToClipboard(text) {
   }
 }
 
-// Generate share data for try-on looks
 export function generateTryOnShareData(lookData) {
   const { imageDataUrl, items, userName } = lookData;
   const itemNames = items.map(item => item.name).join(', ');
@@ -113,17 +109,15 @@ export function generateTryOnShareData(lookData) {
   };
 }
 
-// Analytics tracking for shares
 export function trackShare(platform, lookId, userId) {
-  // In a real app, this would send data to analytics service
+
   console.log('Share tracked:', {
     platform,
     lookId,
     userId,
     timestamp: new Date().toISOString()
   });
-  
-  // Store locally for demo
+
   const shareHistory = JSON.parse(localStorage.getItem('shareHistory') || '[]');
   shareHistory.push({
     platform,
@@ -134,7 +128,6 @@ export function trackShare(platform, lookId, userId) {
   localStorage.setItem('shareHistory', JSON.stringify(shareHistory.slice(-100))); // Keep last 100
 }
 
-// Get share analytics
 export function getShareAnalytics() {
   const shareHistory = JSON.parse(localStorage.getItem('shareHistory') || '[]');
   
@@ -153,65 +146,62 @@ export function getShareAnalytics() {
   };
 }
 
-// Social media platform configurations
 export const PLATFORM_CONFIGS = {
   [SOCIAL_PLATFORMS.FACEBOOK]: {
     name: 'Facebook',
-    icon: '📘',
+    icon: 'ðŸ“˜',
     color: '#1877F2',
     description: 'Share with friends'
   },
   [SOCIAL_PLATFORMS.TWITTER]: {
     name: 'Twitter',
-    icon: '🐦',
+    icon: 'ðŸ¦',
     color: '#1DA1F2',
     description: 'Tweet your look'
   },
   [SOCIAL_PLATFORMS.INSTAGRAM]: {
     name: 'Instagram',
-    icon: '📷',
+    icon: 'ðŸ“·',
     color: '#E4405F',
     description: 'Post to your story'
   },
   [SOCIAL_PLATFORMS.WHATSAPP]: {
     name: 'WhatsApp',
-    icon: '💬',
+    icon: 'ðŸ’¬',
     color: '#25D366',
     description: 'Send to contacts'
   },
   [SOCIAL_PLATFORMS.LINKEDIN]: {
     name: 'LinkedIn',
-    icon: '💼',
+    icon: 'ðŸ’¼',
     color: '#0A66C2',
     description: 'Share professionally'
   },
   [SOCIAL_PLATFORMS.PINTEREST]: {
     name: 'Pinterest',
-    icon: '📌',
+    icon: 'ðŸ“Œ',
     color: '#BD081C',
     description: 'Pin your style'
   },
   [SOCIAL_PLATFORMS.EMAIL]: {
     name: 'Email',
-    icon: '📧',
+    icon: 'ðŸ“§',
     color: '#34495e',
     description: 'Send via email'
   },
   [SOCIAL_PLATFORMS.COPY_LINK]: {
     name: 'Copy Link',
-    icon: '🔗',
+    icon: 'ðŸ”—',
     color: '#6c757d',
     description: 'Copy to clipboard'
   }
 };
 
-// Create shareable link for a look
 export function createShareableLink(lookId, userId) {
   const baseUrl = window.location.origin;
   return `${baseUrl}/looks/${lookId}?shared=true&ref=${userId}`;
 }
 
-// Share handler that works with any platform
 export async function handleShare(platform, data, options = {}) {
   const { trackAnalytics = true, lookId, userId } = options;
   
@@ -225,7 +215,7 @@ export async function handleShare(platform, data, options = {}) {
         return success;
       
       case SOCIAL_PLATFORMS.INSTAGRAM:
-        // Instagram doesn't support direct URL sharing, so we copy the link
+
         await copyToClipboard(data.url);
         alert('Link copied! Paste it in your Instagram post or story.');
         if (trackAnalytics) {
@@ -234,7 +224,7 @@ export async function handleShare(platform, data, options = {}) {
         return true;
       
       default:
-        // For other platforms, open in new window
+
         const shareUrl = generateShareURL(platform, data);
         const popup = window.open(
           shareUrl,
@@ -254,7 +244,6 @@ export async function handleShare(platform, data, options = {}) {
   }
 }
 
-// Get platform-specific sharing tips
 export function getSharingTips(platform) {
   const tips = {
     [SOCIAL_PLATFORMS.FACEBOOK]: [

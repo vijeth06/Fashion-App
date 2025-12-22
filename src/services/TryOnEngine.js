@@ -1,11 +1,4 @@
-/**
- * Virtual Try-On Engine
- * Comprehensive ML pipeline implementing all development phases
- * 
- * PHASE 3 — Model Research & Selection ✅
- * PHASE 7 — Machine Learning Integration ✅
- * PHASE 9 — Optimization ✅
- */
+﻿
 
 import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
@@ -14,17 +7,15 @@ import * as bodySegmentation from '@tensorflow-models/body-segmentation';
 export class TryOnEngine {
   constructor(config = {}) {
     this.config = {
-      // Model Selection (Phase 3.1)
+
       poseModel: 'MoveNet', // MoveNet, BlazePose, PoseNet
       segmentationModel: 'MediaPipeSelfieSegmentation', // BodyPix, MediaPipe
       clothWarpingModel: 'ThinPlateSpline', // VITON-HD, CP-VTON, TryOnGAN
-      
-      // Model Optimization (Phase 3.2)
+
       quantization: 'int8', // fp32, fp16, int8
       pruning: true,
       distillation: false,
-      
-      // Performance Settings (Phase 9)
+
       targetFPS: 30,
       maxLatency: 80, // ms
       gpuAcceleration: true,
@@ -53,38 +44,31 @@ export class TryOnEngine {
     };
   }
 
-  /**
-   * PHASE 3 — Model Research & Selection
-   * Initialize ML models with optimization
-   */
+  
   async initialize() {
     if (this.isInitialized) return;
 
     try {
-      console.log('🚀 Initializing Virtual Try-On Engine V2...');
-      
-      // Set TensorFlow backend for optimization
+      console.log('ðŸš€ Initializing Virtual Try-On Engine V2...');
+
       await tf.ready();
       await tf.setBackend('webgl'); // GPU acceleration
-      
-      // Load core models
+
       await this.loadPoseEstimationModel();
       await this.loadBodySegmentationModel();
       await this.loadClothWarpingModel();
       
       
       this.isInitialized = true;
-      console.log('✅ Virtual Try-On Engine initialized successfully');
+      console.log('âœ… Virtual Try-On Engine initialized successfully');
       
     } catch (error) {
-      console.error('❌ Failed to initialize Try-On Engine:', error);
+      console.error('âŒ Failed to initialize Try-On Engine:', error);
       throw error;
     }
   }
 
-  /**
-   * Load pose estimation model with optimization
-   */
+  
   async loadPoseEstimationModel() {
     const config = {
       modelType: this.config.poseModel === 'MoveNet' 
@@ -97,12 +81,10 @@ export class TryOnEngine {
       config
     );
     
-    console.log('✅ Pose estimation model loaded');
+    console.log('âœ… Pose estimation model loaded');
   }
 
-  /**
-   * Load body segmentation model
-   */
+  
   async loadBodySegmentationModel() {
     this.models.segmentationModel = await bodySegmentation.createSegmenter(
       bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation,
@@ -113,25 +95,20 @@ export class TryOnEngine {
       }
     );
     
-    console.log('✅ Body segmentation model loaded');
+    console.log('âœ… Body segmentation model loaded');
   }
 
-  /**
-   * Load cloth warping model (simplified implementation)
-   */
+  
   async loadClothWarpingModel() {
-    // In production, this would load VITON-HD or CP-VTON
+
     this.models.clothWarper = {
       warp: this.warpClothSimulated.bind(this)
     };
     
-    console.log('✅ Cloth warping model loaded');
+    console.log('âœ… Cloth warping model loaded');
   }
 
-  /**
-   * PHASE 7 — Machine Learning Integration
-   * Enhanced processing pipeline with advanced AI
-   */
+  
   async processTryOn(videoElement, garmentData, options = {}) {
     if (!this.isInitialized) {
       throw new Error('Try-On Engine not initialized');
@@ -140,31 +117,26 @@ export class TryOnEngine {
     const startTime = performance.now();
     
     try {
-      // Step 1: Pose Detection
+
       const poses = await this.detectPose(videoElement);
-      
-      // Step 2: Body Segmentation
+
       const segmentation = await this.segmentBody(videoElement);
-      
-      // Step 3: Garment Preprocessing
+
       let preprocessedGarment = await this.preprocessGarment(garmentData);
-      
-      // Step 4: Cloth Warping
+
       const warpedCloth = await this.warpCloth(
         preprocessedGarment, 
         poses[0], 
         segmentation
       );
-      
-      // Step 5: Composite Rendering
+
       const result = await this.renderComposite(
         videoElement,
         segmentation,
         warpedCloth,
         poses[0]
       );
-      
-      // Performance Tracking
+
       const processingTime = performance.now() - startTime;
       this.updatePerformanceMetrics(processingTime);
       
@@ -180,9 +152,7 @@ export class TryOnEngine {
     }
   }
 
-  /**
-   * PHASE 7.1 — Garment Preprocessing Pipeline
-   */
+  
   async preprocessGarment(garmentData) {
     const cacheKey = `garment_${garmentData.id}`;
     
@@ -194,21 +164,16 @@ export class TryOnEngine {
       const preprocessed = {
         id: garmentData.id,
         image: garmentData.image,
-        
-        // Background removal
+
         backgroundRemoved: await this.removeBackground(garmentData.image),
-        
-        // Cloth contour detection
+
         contour: await this.detectClothContour(garmentData.image),
-        
-        // Cloth keypoint extraction
+
         keypoints: await this.extractClothKeypoints(garmentData),
-        
-        // Cloth flattening
+
         flattened: await this.flattenCloth(garmentData)
       };
-      
-      // Cache result
+
       this.cache.garments.set(cacheKey, preprocessed);
       
       return preprocessed;
@@ -219,32 +184,26 @@ export class TryOnEngine {
     }
   }
 
-  /**
-   * PHASE 7.2 — Cloth Warping Engine
-   */
+  
   async warpCloth(preprocessedGarment, pose, segmentation) {
     if (!pose?.keypoints) {
       throw new Error('Valid pose required for cloth warping');
     }
 
     try {
-      // Pose keypoint mapping
+
       const bodyAnchors = this.mapPoseToClothAnchors(pose.keypoints);
-      
-      // Thin Plate Spline deformation
+
       const warpedImage = await this.applyThinPlateSplineDeformation(
         preprocessedGarment.backgroundRemoved,
         preprocessedGarment.keypoints,
         bodyAnchors
       );
-      
-      // Face/neck region protection
+
       const protectedImage = this.protectFaceRegion(warpedImage, pose.keypoints);
-      
-      // Seam blending
+
       const blendedImage = this.blendSeams(protectedImage);
-      
-      // Edge smoothing
+
       const smoothedImage = this.smoothEdges(blendedImage);
       
       return {
@@ -260,13 +219,10 @@ export class TryOnEngine {
     }
   }
 
-  /**
-   * Map pose keypoints to cloth anchor points
-   */
+  
   mapPoseToClothAnchors(keypoints) {
     const anchors = {};
-    
-    // Skeleton-based anchor points mapping
+
     const keypointMap = {
       'left_shoulder': 'leftShoulder',
       'right_shoulder': 'rightShoulder',
@@ -291,12 +247,9 @@ export class TryOnEngine {
     return anchors;
   }
 
-  /**
-   * Apply Thin Plate Spline deformation
-   */
+  
   async applyThinPlateSplineDeformation(garmentImage, clothKeypoints, bodyAnchors) {
-    // Simplified TPS implementation
-    // In production, use advanced warping libraries
+
     
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -306,8 +259,7 @@ export class TryOnEngine {
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
-        
-        // Apply transformation matrix based on anchor points
+
         const transform = this.calculateTransformMatrix(clothKeypoints, bodyAnchors);
         
         ctx.setTransform(...transform);
@@ -320,11 +272,9 @@ export class TryOnEngine {
     });
   }
 
-  /**
-   * Calculate transformation matrix
-   */
+  
   calculateTransformMatrix(clothKeypoints, bodyAnchors) {
-    // Simplified transformation calculation
+
     const scale = 1.0;
     const rotation = 0;
     const translateX = bodyAnchors.leftShoulder?.x || 0;
@@ -333,9 +283,7 @@ export class TryOnEngine {
     return [scale, 0, 0, scale, translateX, translateY];
   }
 
-  /**
-   * PHASE 7.3 — Real-Time Rendering
-   */
+  
   async renderComposite(videoElement, segmentation, warpedCloth, pose) {
     return new Promise((resolve) => {
       const canvas = document.createElement('canvas');
@@ -343,21 +291,17 @@ export class TryOnEngine {
       
       canvas.width = videoElement.videoWidth;
       canvas.height = videoElement.videoHeight;
-      
-      // Render video background
+
       ctx.drawImage(videoElement, 0, 0);
-      
-      // Apply segmentation mask if available
+
       if (segmentation) {
         this.applySegmentationMask(ctx, segmentation);
       }
-      
-      // Render warped clothing
+
       if (warpedCloth) {
         this.renderWarpedCloth(ctx, warpedCloth);
       }
-      
-      // Debug: Draw pose landmarks
+
       if (pose && this.config.debug) {
         this.drawPoseLandmarks(ctx, pose);
       }
@@ -366,13 +310,9 @@ export class TryOnEngine {
     });
   }
 
-  /**
-   * PHASE 9 — Optimization Methods
-   */
   
-  /**
-   * Detect pose with caching
-   */
+  
+  
   async detectPose(videoElement) {
     const cacheKey = `pose_${Date.now()}`;
     
@@ -390,9 +330,7 @@ export class TryOnEngine {
     }
   }
 
-  /**
-   * Segment body with optimization
-   */
+  
   async segmentBody(videoElement) {
     try {
       const segmentation = await this.models.segmentationModel.segmentPeople(videoElement);
@@ -403,22 +341,17 @@ export class TryOnEngine {
     }
   }
 
-  /**
-   * Update performance metrics
-   */
+  
   updatePerformanceMetrics(frameTime) {
     this.performanceMetrics.fps = 1000 / frameTime;
     this.performanceMetrics.latency = frameTime;
-    
-    // Check if we're meeting performance targets
+
     if (frameTime > this.config.maxLatency) {
-      console.warn(`⚠️ Performance warning: Frame time ${frameTime}ms exceeds target ${this.config.maxLatency}ms`);
+      console.warn(`âš ï¸ Performance warning: Frame time ${frameTime}ms exceeds target ${this.config.maxLatency}ms`);
     }
   }
 
-  /**
-   * Cleanup and dispose models
-   */
+  
   dispose() {
     if (this.models.poseDetector) {
       this.models.poseDetector.dispose();
@@ -426,60 +359,58 @@ export class TryOnEngine {
     if (this.models.segmentationModel) {
       this.models.segmentationModel.dispose();
     }
-    
-    // Clear caches
+
     this.cache.poses.clear();
     this.cache.segmentations.clear();
     this.cache.garments.clear();
     
     this.isInitialized = false;
-    console.log('🗑️ Try-On Engine disposed');
+    console.log('ðŸ—‘ï¸ Try-On Engine disposed');
   }
 
-  // Simplified implementations for missing methods
   async removeBackground(image) {
-    // In production, use advanced background removal
+
     return image;
   }
 
   async detectClothContour(image) {
-    // In production, use computer vision for contour detection
+
     return [];
   }
 
   async extractClothKeypoints(garmentData) {
-    // In production, use ML for keypoint extraction
+
     return garmentData.tryOnData?.anchorPoints || [];
   }
 
   async flattenCloth(garmentData) {
-    // In production, implement cloth flattening algorithm
+
     return garmentData;
   }
 
   protectFaceRegion(image, keypoints) {
-    // In production, protect face/neck regions during warping
+
     return image;
   }
 
   blendSeams(image) {
-    // In production, implement advanced seam blending
+
     return image;
   }
 
   smoothEdges(image) {
-    // In production, implement edge smoothing algorithms
+
     return image;
   }
 
   calculateWarpingConfidence(anchors) {
-    // Calculate confidence based on anchor point quality
+
     const scores = Object.values(anchors).map(a => a.confidence);
     return scores.reduce((sum, score) => sum + score, 0) / scores.length;
   }
 
   applySegmentationMask(ctx, segmentation) {
-    // Apply segmentation for better cloth integration
+
     ctx.globalCompositeOperation = 'source-atop';
   }
 
@@ -507,7 +438,7 @@ export class TryOnEngine {
   }
 
   warpClothSimulated(garmentData, pose, segmentation) {
-    // Simplified warping simulation
+
     return {
       warpedImage: garmentData.image,
       confidence: 0.8
@@ -515,6 +446,5 @@ export class TryOnEngine {
   }
 }
 
-// Export singleton instance
 export const tryOnEngine = new TryOnEngine();
 export default tryOnEngine;

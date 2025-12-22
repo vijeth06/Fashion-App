@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { clothingItems, categories } from '../data/clothingItems';
 import { FiSearch, FiFilter, FiX, FiArrowRight } from 'react-icons/fi';
@@ -9,8 +9,7 @@ const Catalog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  
-  // Get category from URL if provided
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const category = params.get('category');
@@ -74,7 +73,7 @@ const Catalog = () => {
         </div>
         
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Desktop Filters */}
+          {}
           <div className="hidden md:block w-64 flex-shrink-0">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <h3 className="font-semibold text-lg mb-4">Categories</h3>
@@ -131,9 +130,9 @@ const Catalog = () => {
             </div>
           </div>
         
-          {/* Main Content */}
+          {}
           <div className="flex-1">
-            {/* Active Filters */}
+            {}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               {(selectedCategory !== 'all' || searchQuery || priceRange[0] > 0 || priceRange[1] < 200) && (
                 <button
@@ -171,7 +170,7 @@ const Catalog = () => {
               )}
             </div>
             
-            {/* Clothing Items Grid */}
+            {}
             {filteredItems.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                 {filteredItems.map((item) => (
@@ -197,7 +196,7 @@ const Catalog = () => {
           </div>
         </div>
         
-        {/* Mobile Filter Sidebar */}
+        {}
         {isMobileFilterOpen && (
           <div className="fixed inset-0 z-50 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
@@ -304,7 +303,7 @@ const ClothingItemCard = ({ item }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSaved(!isSaved);
-    // Here you would typically update the user's saved items in your state/backend
+
   };
   
   return (

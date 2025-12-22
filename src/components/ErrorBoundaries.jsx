@@ -1,9 +1,8 @@
-// Enhanced Error Boundary Components
+﻿
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExclamationTriangle, FaRedo, FaHome, FaBug } from 'react-icons/fa';
 
-// Base Error Boundary Class
 class BaseErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +27,6 @@ class BaseErrorBoundary extends React.Component {
       errorId
     });
 
-    // Log error to monitoring service
     this.logError(error, errorInfo, errorId);
   }
 
@@ -45,18 +43,16 @@ class BaseErrorBoundary extends React.Component {
       feature: this.props.feature || 'unknown'
     };
 
-    // Log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Boundary Caught:', errorData);
     }
 
-    // Send to monitoring service (implement your monitoring solution)
     this.sendErrorToMonitoring(errorData);
   };
 
   sendErrorToMonitoring = async (errorData) => {
     try {
-      // Replace with your error monitoring service (Sentry, LogRocket, etc.)
+
       await fetch('/api/v1/errors/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,7 +143,6 @@ class BaseErrorBoundary extends React.Component {
   }
 }
 
-// Specific Error Boundaries for different features
 export class ARTryOnErrorBoundary extends BaseErrorBoundary {
   constructor(props) {
     super({

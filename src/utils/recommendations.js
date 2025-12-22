@@ -1,7 +1,6 @@
-// Smart Recommendations Engine
+﻿
 import { clothingItems } from '../data/clothingItems';
 
-// Style compatibility matrix
 const styleCompatibility = {
   'shirts': ['pants', 'jackets', 'accessories'],
   'pants': ['shirts', 'jackets', 'footwear', 'accessories'],
@@ -13,7 +12,6 @@ const styleCompatibility = {
   'swimwear': ['accessories']
 };
 
-// Color compatibility (simplified color theory)
 const colorCompatibility = {
   'white': ['black', 'blue', 'red', 'green', 'purple', 'yellow', 'brown'],
   'black': ['white', 'red', 'blue', 'yellow', 'pink'],
@@ -28,7 +26,6 @@ const colorCompatibility = {
   'orange': ['blue', 'brown', 'white']
 };
 
-// Occasion-based recommendations
 const occasionStyles = {
   'casual': ['shirts', 'pants', 'footwear', 'accessories'],
   'formal': ['shirts', 'pants', 'jackets', 'footwear'],
@@ -39,7 +36,6 @@ const occasionStyles = {
   'date': ['dresses', 'shirts', 'pants', 'accessories']
 };
 
-// Extract dominant color from item name (simplified)
 function extractColor(itemName) {
   const colorKeywords = {
     'white': ['white', 'cream', 'ivory'],
@@ -64,31 +60,26 @@ function extractColor(itemName) {
   return 'neutral';
 }
 
-// Calculate compatibility score between two items
 function calculateCompatibilityScore(item1, item2) {
   let score = 0;
-  
-  // Style compatibility (40% weight)
+
   const compatibleCategories = styleCompatibility[item1.category] || [];
   if (compatibleCategories.includes(item2.category)) {
     score += 40;
   }
-  
-  // Color compatibility (30% weight)
+
   const color1 = extractColor(item1.name);
   const color2 = extractColor(item2.name);
   const compatibleColors = colorCompatibility[color1] || [];
   if (color1 === color2 || compatibleColors.includes(color2)) {
     score += 30;
   }
-  
-  // Price range compatibility (20% weight)
+
   const priceDiff = Math.abs(item1.price - item2.price);
   if (priceDiff < 20) score += 20;
   else if (priceDiff < 40) score += 15;
   else if (priceDiff < 60) score += 10;
-  
-  // Category diversity bonus (10% weight)
+
   if (item1.category !== item2.category) {
     score += 10;
   }
@@ -96,41 +87,35 @@ function calculateCompatibilityScore(item1, item2) {
   return score;
 }
 
-// Get personalized recommendations based on user preferences
 export function getPersonalizedRecommendations(userProfile, viewedItems = [], purchaseHistory = []) {
-  // User preference analysis
+
   const preferredCategories = userProfile.preferredCategories || [];
   const preferredPriceRange = userProfile.priceRange || { min: 0, max: 1000 };
   const preferredSizes = userProfile.sizes || [];
   
   let recommendations = clothingItems.filter(item => {
-    // Filter by price range
+
     if (item.price < preferredPriceRange.min || item.price > preferredPriceRange.max) {
       return false;
     }
-    
-    // Exclude already viewed/purchased items
+
     if (viewedItems.includes(item.id) || purchaseHistory.includes(item.id)) {
       return false;
     }
     
     return true;
   });
-  
-  // Score and sort recommendations
+
   recommendations = recommendations.map(item => {
     let score = 0;
-    
-    // Preferred category bonus
+
     if (preferredCategories.includes(item.category)) {
       score += 30;
     }
-    
-    // Price preference score
+
     const priceScore = Math.max(0, 20 - Math.abs(item.price - (preferredPriceRange.min + preferredPriceRange.max) / 2) / 5);
     score += priceScore;
-    
-    // Popularity score (mock based on id - lower id = more popular)
+
     score += Math.max(0, 20 - item.id);
     
     return { ...item, recommendationScore: score };
@@ -141,7 +126,6 @@ export function getPersonalizedRecommendations(userProfile, viewedItems = [], pu
     .slice(0, 12);
 }
 
-// Get outfit suggestions for a specific item
 export function getOutfitSuggestions(baseItem, maxItems = 3) {
   const compatibleCategories = styleCompatibility[baseItem.category] || [];
   
@@ -149,14 +133,12 @@ export function getOutfitSuggestions(baseItem, maxItems = 3) {
     item.id !== baseItem.id && 
     compatibleCategories.includes(item.category)
   );
-  
-  // Calculate compatibility scores
+
   suggestions = suggestions.map(item => ({
     ...item,
     compatibilityScore: calculateCompatibilityScore(baseItem, item)
   }));
-  
-  // Group by category and get best item from each
+
   const byCategory = {};
   suggestions.forEach(item => {
     if (!byCategory[item.category] || 
@@ -170,19 +152,16 @@ export function getOutfitSuggestions(baseItem, maxItems = 3) {
     .slice(0, maxItems);
 }
 
-// Get recommendations for specific occasions
 export function getOccasionRecommendations(occasion, userProfile = {}) {
   const relevantCategories = occasionStyles[occasion] || [];
   
   let recommendations = clothingItems.filter(item => 
     relevantCategories.includes(item.category)
   );
-  
-  // Score based on occasion appropriateness
+
   recommendations = recommendations.map(item => {
     let score = 50; // Base score
-    
-    // Occasion-specific scoring
+
     switch (occasion) {
       case 'formal':
       case 'business':
@@ -204,8 +183,7 @@ export function getOccasionRecommendations(occasion, userProfile = {}) {
         }
         break;
     }
-    
-    // Price appropriateness for occasion
+
     if (occasion === 'formal' && item.price > 50) score += 10;
     if (occasion === 'casual' && item.price < 50) score += 10;
     
@@ -217,18 +195,15 @@ export function getOccasionRecommendations(occasion, userProfile = {}) {
     .slice(0, 8);
 }
 
-// Get trending items (mock trending based on various factors)
 export function getTrendingItems() {
   return clothingItems
     .map(item => {
       let trendScore = Math.random() * 50; // Random base trend
-      
-      // Boost score for certain categories
+
       if (['dresses', 'jackets', 'accessories'].includes(item.category)) {
         trendScore += 20;
       }
-      
-      // Boost score for mid-range pricing
+
       if (item.price >= 30 && item.price <= 80) {
         trendScore += 15;
       }
@@ -239,32 +214,27 @@ export function getTrendingItems() {
     .slice(0, 10);
 }
 
-// Get similar items based on a given item
 export function getSimilarItems(targetItem, count = 6) {
   return clothingItems
     .filter(item => item.id !== targetItem.id)
     .map(item => {
       let similarityScore = 0;
-      
-      // Same category gets high score
+
       if (item.category === targetItem.category) {
         similarityScore += 40;
       }
-      
-      // Similar price range
+
       const priceDiff = Math.abs(item.price - targetItem.price);
       if (priceDiff < 10) similarityScore += 30;
       else if (priceDiff < 20) similarityScore += 20;
       else if (priceDiff < 30) similarityScore += 10;
-      
-      // Color similarity
+
       const targetColor = extractColor(targetItem.name);
       const itemColor = extractColor(item.name);
       if (targetColor === itemColor) {
         similarityScore += 20;
       }
-      
-      // Name similarity (basic keyword matching)
+
       const targetWords = targetItem.name.toLowerCase().split(' ');
       const itemWords = item.name.toLowerCase().split(' ');
       const commonWords = targetWords.filter(word => itemWords.includes(word));
@@ -276,11 +246,9 @@ export function getSimilarItems(targetItem, count = 6) {
     .slice(0, count);
 }
 
-// Get complete outfit recommendations
 export function getCompleteOutfits(userProfile = {}, count = 3) {
   const outfits = [];
-  
-  // Start with different base items
+
   const baseItems = clothingItems.filter(item => 
     ['shirts', 'dresses'].includes(item.category)
   ).slice(0, count);
@@ -289,8 +257,7 @@ export function getCompleteOutfits(userProfile = {}, count = 3) {
     const outfitItems = [baseItem];
     const suggestions = getOutfitSuggestions(baseItem, 3);
     outfitItems.push(...suggestions);
-    
-    // Calculate total outfit score
+
     let outfitScore = 0;
     for (let i = 0; i < outfitItems.length; i++) {
       for (let j = i + 1; j < outfitItems.length; j++) {
@@ -311,7 +278,6 @@ export function getCompleteOutfits(userProfile = {}, count = 3) {
   return outfits.sort((a, b) => b.score - a.score);
 }
 
-// Analytics for recommendation performance (mock)
 export function getRecommendationAnalytics() {
   return {
     clickThroughRate: 0.15,

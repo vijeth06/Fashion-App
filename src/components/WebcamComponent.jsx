@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+﻿import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, 
@@ -12,10 +12,7 @@ import {
   FaDownload
 } from 'react-icons/fa';
 
-/**
- * Advanced Webcam Component
- * Provides webcam access with error handling, controls, and capture functionality
- */
+
 const WebcamComponent = ({
   onVideoReady,
   onCapture,
@@ -43,18 +40,16 @@ const WebcamComponent = ({
     frameRate: 30
   });
 
-  // Initialize camera
   const initializeCamera = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Stop existing stream
+
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
 
-      // Get user media
       const constraints = {
         video: {
           facingMode: settings.facingMode,
@@ -71,8 +66,7 @@ const WebcamComponent = ({
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        
-        // Wait for video to be ready
+
         videoRef.current.onloadedmetadata = () => {
           console.log('Video metadata loaded, calling onVideoReady');
           setIsActive(true);
@@ -82,7 +76,6 @@ const WebcamComponent = ({
           }
         };
 
-        // Also call onVideoReady when video starts playing
         videoRef.current.onplaying = () => {
           console.log('Video started playing');
           if (onVideoReady && videoRef.current.readyState >= 2) {
@@ -114,7 +107,6 @@ const WebcamComponent = ({
     }
   }, [settings, selectedDeviceId, onVideoReady, onError]);
 
-  // Get available devices
   const getDevices = useCallback(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
@@ -129,12 +121,10 @@ const WebcamComponent = ({
     }
   }, [selectedDeviceId]);
 
-  // Start camera
   const startCamera = useCallback(() => {
     initializeCamera();
   }, [initializeCamera]);
 
-  // Stop camera
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
@@ -148,7 +138,6 @@ const WebcamComponent = ({
     setIsActive(false);
   }, []);
 
-  // Switch camera (front/back)
   const switchCamera = useCallback(() => {
     setSettings(prev => ({
       ...prev,
@@ -156,12 +145,10 @@ const WebcamComponent = ({
     }));
   }, []);
 
-  // Toggle fullscreen
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(prev => !prev);
   }, []);
 
-  // Capture photo
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return null;
 
@@ -169,14 +156,11 @@ const WebcamComponent = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Set canvas size to video size
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Draw video frame to canvas
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Get image data
     const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
     
     if (onCapture) {
@@ -186,7 +170,6 @@ const WebcamComponent = ({
     return imageDataUrl;
   }, [onCapture]);
 
-  // Download captured image
   const downloadCapture = useCallback(() => {
     const imageData = capturePhoto();
     if (imageData) {
@@ -197,35 +180,31 @@ const WebcamComponent = ({
     }
   }, [capturePhoto]);
 
-  // Handle device change
   const handleDeviceChange = useCallback((deviceId) => {
     setSelectedDeviceId(deviceId);
   }, []);
 
-  // Initialize on mount
   useEffect(() => {
     getDevices();
-    // Auto-start camera on mount
+
     startCamera();
-    
-    // Cleanup on unmount
+
     return () => {
       stopCamera();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []); // Run only once on mount
 
-  // Re-initialize when settings change
   useEffect(() => {
     if (isActive) {
       initializeCamera();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [settings.facingMode, selectedDeviceId, isActive]);
 
   return (
     <div className={`relative ${isFullscreen ? 'fixed inset-0 z-50' : ''} ${className}`}>
-      {/* Video Element */}
+      {}
       <div className="relative bg-gray-900 rounded-lg overflow-hidden">
         <video
           ref={videoRef}
@@ -241,10 +220,10 @@ const WebcamComponent = ({
           }}
         />
 
-        {/* Hidden canvas for capturing */}
+        {}
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* Loading Overlay */}
+        {}
         <AnimatePresence>
           {isLoading && (
             <motion.div
@@ -266,7 +245,7 @@ const WebcamComponent = ({
           )}
         </AnimatePresence>
 
-        {/* Error Overlay */}
+        {}
         <AnimatePresence>
           {error && (
             <motion.div
@@ -293,7 +272,7 @@ const WebcamComponent = ({
           )}
         </AnimatePresence>
 
-        {/* No Video Placeholder */}
+        {}
         {!isActive && !isLoading && !error && (
           <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
             <div className="text-center text-gray-400">
@@ -311,11 +290,11 @@ const WebcamComponent = ({
           </div>
         )}
 
-        {/* Controls */}
+        {}
         {showControls && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
             <div className="flex items-center gap-3 bg-black/70 backdrop-blur-sm rounded-full px-4 py-2">
-              {/* Start/Stop Camera */}
+              {}
               <button
                 onClick={isActive ? stopCamera : startCamera}
                 className={`p-3 rounded-full transition-all ${
@@ -328,7 +307,7 @@ const WebcamComponent = ({
                 {isActive ? <FaVideoSlash /> : <FaVideo />}
               </button>
 
-              {/* Capture Photo */}
+              {}
               {isActive && (
                 <button
                   onClick={capturePhoto}
@@ -338,7 +317,7 @@ const WebcamComponent = ({
                 </button>
               )}
 
-              {/* Switch Camera */}
+              {}
               {isActive && devices.length > 1 && (
                 <button
                   onClick={switchCamera}
@@ -348,7 +327,7 @@ const WebcamComponent = ({
                 </button>
               )}
 
-              {/* Fullscreen Toggle */}
+              {}
               <button
                 onClick={toggleFullscreen}
                 className="p-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full transition-colors"
@@ -356,7 +335,7 @@ const WebcamComponent = ({
                 {isFullscreen ? <FaCompress /> : <FaExpand />}
               </button>
 
-              {/* Download Capture */}
+              {}
               {isActive && (
                 <button
                   onClick={downloadCapture}
@@ -369,7 +348,7 @@ const WebcamComponent = ({
           </div>
         )}
 
-        {/* Device Selector */}
+        {}
         {devices.length > 1 && showControls && (
           <div className="absolute top-4 right-4">
             <select
@@ -386,20 +365,20 @@ const WebcamComponent = ({
           </div>
         )}
 
-        {/* Settings Indicator */}
+        {}
         {isActive && (
           <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2 text-white text-xs">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
               <span>Live</span>
-              <span>•</span>
+              <span>â€¢</span>
               <span>{settings.width}x{settings.height}</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Fullscreen Close Button */}
+      {}
       {isFullscreen && (
         <button
           onClick={toggleFullscreen}

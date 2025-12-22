@@ -1,4 +1,4 @@
-// API Service for Backend Communication
+﻿
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 class ApiService {
@@ -6,7 +6,6 @@ class ApiService {
     this.baseURL = API_BASE_URL;
   }
 
-  // Helper method for making requests
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
@@ -32,14 +31,12 @@ class ApiService {
     }
   }
 
-  // GET request
   async get(endpoint, params = {}) {
     const queryString = new URLSearchParams(params).toString();
     const url = queryString ? `${endpoint}?${queryString}` : endpoint;
     return this.request(url, { method: 'GET' });
   }
 
-  // POST request
   async post(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'POST',
@@ -47,7 +44,6 @@ class ApiService {
     });
   }
 
-  // PUT request
   async put(endpoint, data = {}) {
     return this.request(endpoint, {
       method: 'PUT',
@@ -55,12 +51,10 @@ class ApiService {
     });
   }
 
-  // DELETE request
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   }
 
-  // Health check
   async healthCheck() {
     try {
       const response = await fetch(`${this.baseURL.replace('/api/v1', '')}/health`);
@@ -70,7 +64,6 @@ class ApiService {
     }
   }
 
-  // Test database connection
   async testDatabase() {
     try {
       const response = await fetch(`${this.baseURL.replace('/api/v1', '')}/api/test-db`);
@@ -80,7 +73,6 @@ class ApiService {
     }
   }
 
-  // Initialize database
   async initializeDatabase() {
     try {
       const response = await fetch(`${this.baseURL.replace('/api/v1', '')}/api/init-db`, {
@@ -92,7 +84,6 @@ class ApiService {
     }
   }
 
-  // Get database status
   async getDatabaseStatus() {
     try {
       const response = await fetch(`${this.baseURL.replace('/api/v1', '')}/api/db-status`);
@@ -102,7 +93,6 @@ class ApiService {
     }
   }
 
-  // Auth API
   async syncFirebaseUser(firebaseUser) {
     return this.post('/auth/sync-user', { firebaseUser });
   }
@@ -131,7 +121,6 @@ class ApiService {
     return this.delete(`/auth/account/${firebaseUid}`);
   }
 
-  // Products API
   async getProducts(params = {}) {
     return this.get('/products', params);
   }
@@ -160,7 +149,6 @@ class ApiService {
     return this.delete(`/products/${id}`);
   }
 
-  // Wishlist API
   async getWishlist(userId) {
     return this.get('/wishlist', { userId });
   }
@@ -173,7 +161,6 @@ class ApiService {
     return this.delete(`/wishlist/${userId}/${productId}`);
   }
 
-  // Looks API
   async getLooks(userId) {
     return this.get('/looks', { userId });
   }
@@ -186,7 +173,6 @@ class ApiService {
     return this.delete(`/looks/${lookId}`);
   }
 
-  // Try-On Sessions API
   async saveTryOnSession(sessionData) {
     return this.post('/try-on/sessions', sessionData);
   }
@@ -195,7 +181,6 @@ class ApiService {
     return this.get('/try-on/sessions', { userId });
   }
 
-  // Upload API
   async uploadImage(file, type = 'user-photo') {
     const formData = new FormData();
     formData.append('image', file);
@@ -214,12 +199,10 @@ class ApiService {
   }
 }
 
-// Create singleton instance
 const apiService = new ApiService();
 
 export default apiService;
 
-// Export individual methods for convenience
 export const {
   healthCheck,
   testDatabase,

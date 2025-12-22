@@ -1,5 +1,5 @@
-// 🚀 NEXT-GENERATION AI COMPUTER VISION ENGINE
-// Advanced features: Real-time body tracking, pose estimation, fashion analysis
+﻿
+
 
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
@@ -25,14 +25,12 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 🎯 Initialize All AI Models
   async initialize() {
     if (this.isInitialized) return;
 
     try {
-      console.log('🤖 Initializing Next-Gen Computer Vision Engine...');
-      
-      // Load all models in parallel for faster initialization
+      console.log('ðŸ¤– Initializing Next-Gen Computer Vision Engine...');
+
       await Promise.all([
         this.loadPoseEstimationModel(),
         this.loadBodySegmentationModel(),
@@ -43,14 +41,13 @@ export class NextGenComputerVisionEngine {
       ]);
 
       this.isInitialized = true;
-      console.log('✅ Computer Vision Engine initialized successfully');
+      console.log('âœ… Computer Vision Engine initialized successfully');
     } catch (error) {
-      console.error('❌ Failed to initialize Computer Vision Engine:', error);
+      console.error('âŒ Failed to initialize Computer Vision Engine:', error);
       throw new Error('Computer Vision initialization failed');
     }
   }
 
-  // 📸 Real-time Body Analysis
   async analyzeBodyRealTime(videoElement, options = {}) {
     await this.ensureInitialized();
 
@@ -74,7 +71,6 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 🏃 Advanced Pose Estimation with 3D Keypoints
   async estimatePoseRealTime(videoElement) {
     const poses = await this.models.poseNet.estimateMultiplePoses(videoElement, {
       flipHorizontal: false,
@@ -94,7 +90,6 @@ export class NextGenComputerVisionEngine {
     }));
   }
 
-  // 🎭 Advanced Body Segmentation
   async segmentBodyRealTime(videoElement) {
     const segmentation = await this.models.bodyPix.segmentPersonParts(videoElement, {
       flipHorizontal: false,
@@ -113,7 +108,6 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 👤 Advanced Face Analysis
   async detectFaceRealTime(videoElement) {
     const predictions = await this.models.faceMesh.estimateFaces(videoElement, {
       returnTensors: false,
@@ -133,7 +127,6 @@ export class NextGenComputerVisionEngine {
     }));
   }
 
-  // ✋ Advanced Hand Tracking
   async trackHandsRealTime(videoElement) {
     const predictions = await this.models.handPose.estimateHands(videoElement, {
       flipHorizontal: false
@@ -150,7 +143,6 @@ export class NextGenComputerVisionEngine {
     }));
   }
 
-  // 👗 Advanced Fashion Analysis
   async analyzeFashionRealTime(videoElement) {
     const fashionAnalysis = await this.models.fashionClassifier.analyze(videoElement);
 
@@ -167,7 +159,6 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 🎨 Neural Style Transfer for Fashion
   async transferFashionStyle(sourceImage, styleReference, options = {}) {
     await this.ensureInitialized();
 
@@ -191,7 +182,6 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 📊 Advanced Analytics and Insights
   generateAdvancedInsights(analysisData) {
     return {
       bodyAnalytics: this.generateBodyAnalytics(analysisData),
@@ -203,9 +193,8 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 🤖 Machine Learning Enhancement Methods
   enhance3DKeypoints(keypoints2D) {
-    // Convert 2D keypoints to 3D using depth estimation
+
     return keypoints2D.map(point => ({
       ...point,
       z: this.estimateDepth(point),
@@ -214,7 +203,7 @@ export class NextGenComputerVisionEngine {
   }
 
   extractBodyMeasurements(keypoints) {
-    // Extract precise body measurements from keypoints
+
     const measurements = {};
     
     measurements.height = this.calculateHeight(keypoints);
@@ -229,7 +218,7 @@ export class NextGenComputerVisionEngine {
   }
 
   analyzePosture(keypoints) {
-    // Analyze posture and body alignment
+
     return {
       spinalAlignment: this.calculateSpinalAlignment(keypoints),
       shoulderLevel: this.calculateShoulderLevel(keypoints),
@@ -241,11 +230,10 @@ export class NextGenComputerVisionEngine {
   }
 
   classifyFaceShape(landmarks) {
-    // AI-based face shape classification
+
     const features = this.extractFaceFeatures(landmarks);
     const shapes = ['oval', 'round', 'square', 'heart', 'diamond', 'oblong'];
-    
-    // Use ML model to classify face shape
+
     const probabilities = this.runFaceShapeClassifier(features);
     
     return {
@@ -259,7 +247,7 @@ export class NextGenComputerVisionEngine {
   }
 
   analyzeEmotions(faceLandmarks) {
-    // Real-time emotion recognition
+
     const emotionFeatures = this.extractEmotionFeatures(faceLandmarks);
     const emotions = ['happy', 'sad', 'angry', 'surprised', 'fear', 'disgust', 'neutral'];
     
@@ -277,7 +265,6 @@ export class NextGenComputerVisionEngine {
     };
   }
 
-  // 🎯 Model Loading Methods
   async loadPoseEstimationModel() {
     const modelUrl = 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4';
     this.models.poseNet = await tf.loadGraphModel(modelUrl);
@@ -299,16 +286,15 @@ export class NextGenComputerVisionEngine {
   }
 
   async loadFashionClassifierModel() {
-    // Custom fashion classification model
+
     this.models.fashionClassifier = await this.createFashionClassifier();
   }
 
   async loadStyleTransferModel() {
-    // Custom neural style transfer model
+
     this.models.styleTransfer = await this.createStyleTransferModel();
   }
 
-  // 🛠 Utility Methods
   async ensureInitialized() {
     if (!this.isInitialized) {
       await this.initialize();
@@ -326,25 +312,23 @@ export class NextGenComputerVisionEngine {
   }
 
   calculateFPS() {
-    // Calculate and return current processing FPS
+
     const now = performance.now();
     const fps = 1000 / (now - (this.lastFrameTime || now));
     this.lastFrameTime = now;
     return Math.round(fps);
   }
 
-  // 🎮 Performance Optimization
   optimizeForRealTime() {
-    // Enable optimizations for real-time processing
+
     tf.enableProdMode();
     tf.ENV.set('WEBGL_CPU_FORWARD', false);
     tf.ENV.set('WEBGL_PACK', true);
     tf.ENV.set('WEBGL_FORCE_F16_TEXTURES', true);
   }
 
-  // 📱 Mobile Optimization
   optimizeForMobile() {
-    // Specific optimizations for mobile devices
+
     this.mobileOptimized = true;
     this.processingResolution = 'medium';
     this.maxDetections = 2;

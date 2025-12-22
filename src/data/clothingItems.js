@@ -1,6 +1,6 @@
-// Enhanced clothing items data with more categories and items
+﻿
 export const clothingItems = [
-  // Shirts
+
   {
     id: 1,
     name: 'Classic White T-Shirt',
@@ -22,8 +22,7 @@ export const clothingItems = [
     price: 39.99,
     imageUrl: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Pants
+
   {
     id: 4,
     name: 'Slim Fit Jeans',
@@ -45,8 +44,7 @@ export const clothingItems = [
     price: 49.99,
     imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aacc8c9b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Dresses
+
   {
     id: 7,
     name: 'Floral Summer Dress',
@@ -68,8 +66,7 @@ export const clothingItems = [
     price: 54.99,
     imageUrl: 'https://images.unsplash.com/photo-1572804013427-0d4f3c9b9b3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Jackets & Outerwear
+
   {
     id: 10,
     name: 'Denim Jacket',
@@ -91,8 +88,7 @@ export const clothingItems = [
     price: 129.99,
     imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aacc8c9b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Accessories
+
   {
     id: 13,
     name: 'Leather Crossbody Bag',
@@ -121,8 +117,7 @@ export const clothingItems = [
     price: 24.99,
     imageUrl: 'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Footwear
+
   {
     id: 17,
     name: 'Classic White Sneakers',
@@ -144,8 +139,7 @@ export const clothingItems = [
     price: 89.99,
     imageUrl: 'https://images.unsplash.com/photo-1595341735239-0d8d9f8a4b5a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Activewear
+
   {
     id: 20,
     name: 'Yoga Pants',
@@ -167,8 +161,7 @@ export const clothingItems = [
     price: 29.99,
     imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aacc8c9b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
   },
-  
-  // Swimwear
+
   {
     id: 23,
     name: 'Bikini Set',
@@ -185,5 +178,4 @@ export const clothingItems = [
   }
 ];
 
-// Export unique categories
 export const categories = [...new Set(clothingItems.map(item => item.category))];

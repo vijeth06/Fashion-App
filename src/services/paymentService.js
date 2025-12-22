@@ -1,4 +1,4 @@
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+﻿import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
 class PaymentService {
@@ -8,7 +8,6 @@ class PaymentService {
     this.stripeLoaded = false;
   }
 
-  // Load Razorpay SDK
   async loadRazorpay() {
     if (this.razorpayLoaded) return true;
 
@@ -24,7 +23,6 @@ class PaymentService {
     });
   }
 
-  // Load Stripe SDK
   async loadStripe() {
     if (this.stripeLoaded) return true;
 
@@ -40,7 +38,6 @@ class PaymentService {
     });
   }
 
-  // Create order in Firebase
   async createOrder(orderData) {
     try {
       const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -70,7 +67,6 @@ class PaymentService {
     }
   }
 
-  // Process Razorpay payment
   async processRazorpayPayment(orderData) {
     try {
       const isLoaded = await this.loadRazorpay();
@@ -79,7 +75,7 @@ class PaymentService {
       }
 
       return new Promise(async (resolve) => {
-        // Create order in backend first
+
         const orderResult = await this.createOrder(orderData);
         if (!orderResult.success) {
           resolve(orderResult);
@@ -95,7 +91,7 @@ class PaymentService {
           image: '/logo.png',
           order_id: orderResult.orderId,
           handler: async (response) => {
-            // Payment successful
+
             const paymentResult = await this.verifyPayment({
               ...response,
               orderId: orderResult.orderId
@@ -140,7 +136,6 @@ class PaymentService {
     }
   }
 
-  // Process Stripe payment
   async processStripePayment(orderData) {
     try {
       const isLoaded = await this.loadStripe();
@@ -150,14 +145,11 @@ class PaymentService {
 
       const stripe = window.Stripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY || 'pk_test_demo');
 
-      // Create order in backend first
       const orderResult = await this.createOrder(orderData);
       if (!orderResult.success) {
         return orderResult;
       }
 
-      // In a real implementation, you would call your backend to create a PaymentIntent
-      // For demo purposes, we'll simulate the payment
       const { error } = await stripe.redirectToCheckout({
         mode: 'payment',
         lineItems: orderData.items.map(item => ({
@@ -199,7 +191,6 @@ class PaymentService {
     }
   }
 
-  // Process UPI payment (via Razorpay)
   async processUPIPayment(orderData, upiId) {
     try {
       const paymentData = {
@@ -217,7 +208,6 @@ class PaymentService {
     }
   }
 
-  // Process wallet payment
   async processWalletPayment(orderData, walletType) {
     try {
       const paymentData = {
@@ -235,11 +225,9 @@ class PaymentService {
     }
   }
 
-  // Verify payment after successful transaction
   async verifyPayment(paymentData) {
     try {
-      // In a real implementation, you would verify the payment signature on your backend
-      // For demo purposes, we'll assume the payment is successful
+
       
       const orderRef = doc(this.db, 'orders', paymentData.orderId);
       await updateDoc(orderRef, {
@@ -267,28 +255,26 @@ class PaymentService {
     }
   }
 
-  // Get supported payment methods
   getSupportedMethods() {
     return {
       india: [
-        { id: 'upi', name: 'UPI', icon: '💳', supported: true },
-        { id: 'card', name: 'Credit/Debit Card', icon: '💳', supported: true },
-        { id: 'netbanking', name: 'Net Banking', icon: '🏦', supported: true },
-        { id: 'paytm', name: 'Paytm Wallet', icon: '📱', supported: true },
-        { id: 'phonepe', name: 'PhonePe', icon: '📱', supported: true },
-        { id: 'googlepay', name: 'Google Pay', icon: '📱', supported: true },
-        { id: 'cod', name: 'Cash on Delivery', icon: '💵', supported: true }
+        { id: 'upi', name: 'UPI', icon: 'ðŸ’³', supported: true },
+        { id: 'card', name: 'Credit/Debit Card', icon: 'ðŸ’³', supported: true },
+        { id: 'netbanking', name: 'Net Banking', icon: 'ðŸ¦', supported: true },
+        { id: 'paytm', name: 'Paytm Wallet', icon: 'ðŸ“±', supported: true },
+        { id: 'phonepe', name: 'PhonePe', icon: 'ðŸ“±', supported: true },
+        { id: 'googlepay', name: 'Google Pay', icon: 'ðŸ“±', supported: true },
+        { id: 'cod', name: 'Cash on Delivery', icon: 'ðŸ’µ', supported: true }
       ],
       international: [
-        { id: 'stripe_card', name: 'Credit/Debit Card', icon: '💳', supported: true },
-        { id: 'paypal', name: 'PayPal', icon: '🅿️', supported: true },
-        { id: 'apple_pay', name: 'Apple Pay', icon: '🍎', supported: true },
-        { id: 'google_pay', name: 'Google Pay', icon: '📱', supported: true }
+        { id: 'stripe_card', name: 'Credit/Debit Card', icon: 'ðŸ’³', supported: true },
+        { id: 'paypal', name: 'PayPal', icon: 'ðŸ…¿ï¸', supported: true },
+        { id: 'apple_pay', name: 'Apple Pay', icon: 'ðŸŽ', supported: true },
+        { id: 'google_pay', name: 'Google Pay', icon: 'ðŸ“±', supported: true }
       ]
     };
   }
 
-  // Calculate payment processing fee
   calculateProcessingFee(amount, method) {
     const fees = {
       upi: 0, // Free for UPI
@@ -303,11 +289,9 @@ class PaymentService {
     return Math.round((fees[method] || 0) * 100) / 100;
   }
 
-  // Process refund
   async processRefund(orderId, amount, reason) {
     try {
-      // In a real implementation, you would call the payment gateway's refund API
-      // For demo purposes, we'll update the order status
+
       
       const orderRef = doc(this.db, 'orders', orderId);
       await updateDoc(orderRef, {
@@ -333,7 +317,6 @@ class PaymentService {
     }
   }
 
-  // Get order status
   async getOrderStatus(orderId) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -359,6 +342,5 @@ class PaymentService {
   }
 }
 
-// Export singleton instance
 const paymentService = new PaymentService();
 export default paymentService;

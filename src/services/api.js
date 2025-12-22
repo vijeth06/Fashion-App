@@ -1,5 +1,5 @@
-// 🚀 API SERVICE FOR DATABASE OPERATIONS
-// Handles all database interactions for the fashion app
+﻿
+
 
 const databaseService = require('./database.js');
 
@@ -9,23 +9,21 @@ class ApiService {
     this.isInitialized = false;
   }
 
-  // 🔌 Initialize API service
   async initialize() {
     if (!this.isInitialized) {
       await this.db.connect();
       this.isInitialized = true;
-      console.log('🚀 API Service initialized successfully');
+      console.log('ðŸš€ API Service initialized successfully');
     }
   }
 
-  // 👤 USER OPERATIONS
   async createUser(userData) {
     try {
       await this.initialize();
       const user = new this.db.User(userData);
       return await user.save();
     } catch (error) {
-      console.error('❌ Failed to create user:', error);
+      console.error('âŒ Failed to create user:', error);
       throw error;
     }
   }
@@ -35,7 +33,7 @@ class ApiService {
       await this.initialize();
       return await this.db.User.findOne({ uid });
     } catch (error) {
-      console.error('❌ Failed to get user:', error);
+      console.error('âŒ Failed to get user:', error);
       throw error;
     }
   }
@@ -49,7 +47,7 @@ class ApiService {
         { new: true, upsert: true }
       );
     } catch (error) {
-      console.error('❌ Failed to update user:', error);
+      console.error('âŒ Failed to update user:', error);
       throw error;
     }
   }
@@ -63,7 +61,7 @@ class ApiService {
         { new: true }
       );
     } catch (error) {
-      console.error('❌ Failed to update user biometrics:', error);
+      console.error('âŒ Failed to update user biometrics:', error);
       throw error;
     }
   }
@@ -77,19 +75,18 @@ class ApiService {
         { new: true }
       );
     } catch (error) {
-      console.error('❌ Failed to update style DNA:', error);
+      console.error('âŒ Failed to update style DNA:', error);
       throw error;
     }
   }
 
-  // 👔 PRODUCT OPERATIONS
   async createProduct(productData) {
     try {
       await this.initialize();
       const product = new this.db.Product(productData);
       return await product.save();
     } catch (error) {
-      console.error('❌ Failed to create product:', error);
+      console.error('âŒ Failed to create product:', error);
       throw error;
     }
   }
@@ -119,7 +116,7 @@ class ApiService {
         }
       };
     } catch (error) {
-      console.error('❌ Failed to get products:', error);
+      console.error('âŒ Failed to get products:', error);
       throw error;
     }
   }
@@ -130,14 +127,14 @@ class ApiService {
       const product = await this.db.Product.findById(productId);
       
       if (product) {
-        // Increment views
+
         product.views += 1;
         await product.save();
       }
       
       return product;
     } catch (error) {
-      console.error('❌ Failed to get product:', error);
+      console.error('âŒ Failed to get product:', error);
       throw error;
     }
   }
@@ -160,19 +157,18 @@ class ApiService {
 
       return await this.db.Product.find(searchQuery).limit(50);
     } catch (error) {
-      console.error('❌ Failed to search products:', error);
+      console.error('âŒ Failed to search products:', error);
       throw error;
     }
   }
 
-  // 👗 OUTFIT OPERATIONS
   async createOutfit(outfitData) {
     try {
       await this.initialize();
       const outfit = new this.db.Outfit(outfitData);
       return await outfit.save();
     } catch (error) {
-      console.error('❌ Failed to create outfit:', error);
+      console.error('âŒ Failed to create outfit:', error);
       throw error;
     }
   }
@@ -201,7 +197,7 @@ class ApiService {
         }
       };
     } catch (error) {
-      console.error('❌ Failed to get user outfits:', error);
+      console.error('âŒ Failed to get user outfits:', error);
       throw error;
     }
   }
@@ -217,19 +213,18 @@ class ApiService {
         .limit(limit)
         .sort({ likes: -1, createdAt: -1 });
     } catch (error) {
-      console.error('❌ Failed to get public outfits:', error);
+      console.error('âŒ Failed to get public outfits:', error);
       throw error;
     }
   }
 
-  // 📸 TRY-ON SESSION OPERATIONS
   async createTryOnSession(sessionData) {
     try {
       await this.initialize();
       const session = new this.db.TryOnSession(sessionData);
       return await session.save();
     } catch (error) {
-      console.error('❌ Failed to create try-on session:', error);
+      console.error('âŒ Failed to create try-on session:', error);
       throw error;
     }
   }
@@ -240,7 +235,7 @@ class ApiService {
       return await this.db.TryOnSession.findOne({ sessionId })
         .populate('itemsTried.productId');
     } catch (error) {
-      console.error('❌ Failed to get try-on session:', error);
+      console.error('âŒ Failed to get try-on session:', error);
       throw error;
     }
   }
@@ -254,19 +249,18 @@ class ApiService {
         { new: true }
       );
     } catch (error) {
-      console.error('❌ Failed to update try-on session:', error);
+      console.error('âŒ Failed to update try-on session:', error);
       throw error;
     }
   }
 
-  // 🤖 AI RECOMMENDATIONS
   async createAIRecommendation(recommendationData) {
     try {
       await this.initialize();
       const recommendation = new this.db.AIRecommendation(recommendationData);
       return await recommendation.save();
     } catch (error) {
-      console.error('❌ Failed to create AI recommendation:', error);
+      console.error('âŒ Failed to create AI recommendation:', error);
       throw error;
     }
   }
@@ -289,19 +283,18 @@ class ApiService {
         .sort({ generatedAt: -1 })
         .limit(5);
     } catch (error) {
-      console.error('❌ Failed to get AI recommendations:', error);
+      console.error('âŒ Failed to get AI recommendations:', error);
       throw error;
     }
   }
 
-  // 📱 SOCIAL FEED OPERATIONS
   async createSocialPost(postData) {
     try {
       await this.initialize();
       const post = new this.db.SocialFeed(postData);
       return await post.save();
     } catch (error) {
-      console.error('❌ Failed to create social post:', error);
+      console.error('âŒ Failed to create social post:', error);
       throw error;
     }
   }
@@ -318,7 +311,7 @@ class ApiService {
         .limit(limit)
         .sort({ createdAt: -1 });
     } catch (error) {
-      console.error('❌ Failed to get social feed:', error);
+      console.error('âŒ Failed to get social feed:', error);
       throw error;
     }
   }
@@ -335,28 +328,27 @@ class ApiService {
       const existingLike = post.likes.find(like => like.userId === userId);
       
       if (existingLike) {
-        // Unlike
+
         post.likes = post.likes.filter(like => like.userId !== userId);
       } else {
-        // Like
+
         post.likes.push({ userId, timestamp: new Date() });
       }
       
       return await post.save();
     } catch (error) {
-      console.error('❌ Failed to like/unlike post:', error);
+      console.error('âŒ Failed to like/unlike post:', error);
       throw error;
     }
   }
 
-  // 💎 NFT OPERATIONS
   async createNFT(nftData) {
     try {
       await this.initialize();
       const nft = new this.db.NFTItem(nftData);
       return await nft.save();
     } catch (error) {
-      console.error('❌ Failed to create NFT:', error);
+      console.error('âŒ Failed to create NFT:', error);
       throw error;
     }
   }
@@ -367,7 +359,7 @@ class ApiService {
       return await this.db.NFTItem.find({ ownerId })
         .sort({ createdAt: -1 });
     } catch (error) {
-      console.error('❌ Failed to get user NFTs:', error);
+      console.error('âŒ Failed to get user NFTs:', error);
       throw error;
     }
   }
@@ -382,12 +374,11 @@ class ApiService {
         .limit(limit)
         .sort({ listingPrice: 1 });
     } catch (error) {
-      console.error('❌ Failed to get NFT marketplace:', error);
+      console.error('âŒ Failed to get NFT marketplace:', error);
       throw error;
     }
   }
 
-  // 📊 ANALYTICS & INSIGHTS
   async getUserAnalytics(userId) {
     try {
       await this.initialize();
@@ -413,12 +404,11 @@ class ApiService {
         }
       };
     } catch (error) {
-      console.error('❌ Failed to get user analytics:', error);
+      console.error('âŒ Failed to get user analytics:', error);
       throw error;
     }
   }
 
-  // 🧬 LEARNING DATA
   async trackUserInteraction(userId, interactionData) {
     try {
       await this.initialize();
@@ -428,36 +418,31 @@ class ApiService {
         throw new Error('User not found');
       }
 
-      // Add interaction to history
       user.learningData.interactionHistory.push(interactionData);
-      
-      // Keep only last 1000 interactions
+
       if (user.learningData.interactionHistory.length > 1000) {
         user.learningData.interactionHistory = user.learningData.interactionHistory.slice(-1000);
       }
-      
-      // Increment adaptation level slightly
+
       user.learningData.adaptationLevel = Math.min(1.0, user.learningData.adaptationLevel + 0.001);
       user.lastActive = new Date();
       user.totalSessions += 1;
       
       return await user.save();
     } catch (error) {
-      console.error('❌ Failed to track user interaction:', error);
+      console.error('âŒ Failed to track user interaction:', error);
       throw error;
     }
   }
 
-  // 🔍 TESTING CONNECTION
   async testConnection() {
     try {
       await this.initialize();
       const isConnected = this.db.isConnectedToDatabase();
       
       if (isConnected) {
-        console.log('✅ Database connection test passed');
-        
-        // Test basic operations
+        console.log('âœ… Database connection test passed');
+
         const userCount = await this.db.User.countDocuments();
         const productCount = await this.db.Product.countDocuments();
         
@@ -472,12 +457,11 @@ class ApiService {
         throw new Error('Database not connected');
       }
     } catch (error) {
-      console.error('❌ Database connection test failed:', error);
+      console.error('âŒ Database connection test failed:', error);
       return { connected: false, error: error.message };
     }
   }
 }
 
-// Export singleton instance
 const apiService = new ApiService();
 module.exports = apiService;

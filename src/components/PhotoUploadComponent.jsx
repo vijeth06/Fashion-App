@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+﻿import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaUpload, 
@@ -10,10 +10,7 @@ import {
   FaExclamationTriangle 
 } from 'react-icons/fa';
 
-/**
- * Photo Upload Component
- * Handles image upload with preview, validation, and manipulation
- */
+
 const PhotoUploadComponent = ({
   onImageSelect,
   onImageClear,
@@ -33,7 +30,6 @@ const PhotoUploadComponent = ({
   const [dragActive, setDragActive] = useState(false);
   const [imageInfo, setImageInfo] = useState(null);
 
-  // Handle file selection
   const handleFileSelect = useCallback(async (file) => {
     if (!file) return;
 
@@ -41,22 +37,19 @@ const PhotoUploadComponent = ({
     setError(null);
 
     try {
-      // Validate file type
+
       if (!acceptedFormats.includes(file.type)) {
         throw new Error(`Invalid file type. Accepted formats: ${acceptedFormats.join(', ')}`);
       }
 
-      // Validate file size
       if (file.size > maxFileSize) {
         throw new Error(`File too large. Maximum size: ${(maxFileSize / 1024 / 1024).toFixed(1)}MB`);
       }
 
-      // Read file as data URL
       const reader = new FileReader();
       reader.onload = async (e) => {
         const dataUrl = e.target.result;
-        
-        // Create image element to get dimensions
+
         const img = new Image();
         img.onload = () => {
           const info = {
@@ -103,7 +96,6 @@ const PhotoUploadComponent = ({
     }
   }, [acceptedFormats, maxFileSize, onImageSelect, onError]);
 
-  // Handle input change
   const handleInputChange = useCallback((e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -111,7 +103,6 @@ const PhotoUploadComponent = ({
     }
   }, [handleFileSelect]);
 
-  // Clear selected image
   const clearImage = useCallback(() => {
     setSelectedImage(null);
     setImageData(null);
@@ -127,7 +118,6 @@ const PhotoUploadComponent = ({
     }
   }, [onImageClear]);
 
-  // Handle drag events
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -156,7 +146,6 @@ const PhotoUploadComponent = ({
     }
   }, [handleFileSelect]);
 
-  // Download current image
   const downloadImage = useCallback(() => {
     if (!imageData || !imageInfo) return;
 
@@ -166,7 +155,6 @@ const PhotoUploadComponent = ({
     link.click();
   }, [imageData, imageInfo]);
 
-  // Convert image to canvas for manipulation
   const getImageCanvas = useCallback(() => {
     if (!selectedImage || !canvasRef.current) return null;
 
@@ -187,7 +175,7 @@ const PhotoUploadComponent = ({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Upload Area */}
+      {}
       <div
         className={`
           relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
@@ -226,7 +214,7 @@ const PhotoUploadComponent = ({
             </p>
             {imageInfo && (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {imageInfo.name} • {imageInfo.width}×{imageInfo.height} • {(imageInfo.size / 1024 / 1024).toFixed(2)}MB
+                {imageInfo.name} â€¢ {imageInfo.width}Ã—{imageInfo.height} â€¢ {(imageInfo.size / 1024 / 1024).toFixed(2)}MB
               </p>
             )}
           </div>
@@ -237,14 +225,14 @@ const PhotoUploadComponent = ({
               Drop an image here or click to upload
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Supports: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} • 
+              Supports: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} â€¢ 
               Max size: {(maxFileSize / 1024 / 1024).toFixed(0)}MB
             </p>
           </div>
         )}
       </div>
 
-      {/* Error Display */}
+      {}
       <AnimatePresence>
         {error && (
           <motion.div
@@ -261,14 +249,14 @@ const PhotoUploadComponent = ({
         )}
       </AnimatePresence>
 
-      {/* Image Preview */}
+      {}
       {showPreview && selectedImage && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
-          {/* Preview Header */}
+          {}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               Image Preview
@@ -291,7 +279,7 @@ const PhotoUploadComponent = ({
             </div>
           </div>
 
-          {/* Preview Image */}
+          {}
           <div className="relative">
             <img
               src={selectedImage}
@@ -299,21 +287,21 @@ const PhotoUploadComponent = ({
               className="w-full max-h-96 object-contain bg-gray-50 dark:bg-gray-900"
             />
             
-            {/* Image Info Overlay */}
+            {}
             {imageInfo && (
               <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm backdrop-blur-sm">
                 <div className="flex items-center gap-4">
-                  <span>{imageInfo.width}×{imageInfo.height}</span>
-                  <span>•</span>
+                  <span>{imageInfo.width}Ã—{imageInfo.height}</span>
+                  <span>â€¢</span>
                   <span>{(imageInfo.size / 1024 / 1024).toFixed(2)}MB</span>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <span>Ratio: {imageInfo.aspectRatio.toFixed(2)}</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Quick Actions */}
+          {}
           <div className="p-4 bg-gray-50 dark:bg-gray-800/50">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -330,7 +318,7 @@ const PhotoUploadComponent = ({
         </motion.div>
       )}
 
-      {/* Hidden canvas for image manipulation */}
+      {}
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );

@@ -1,5 +1,5 @@
-// 👁️ AI BODY ANALYSIS SYSTEM WITH COMPUTER VISION & MEASUREMENT EXTRACTION
-// Features: Neural Pose Estimation, Biometric Analysis, 3D Body Reconstruction
+﻿
+
 
 export class AIBodyAnalysisSystem {
   constructor() {
@@ -10,7 +10,6 @@ export class AIBodyAnalysisSystem {
     this.biometricAnalyzer = new BiometricAnalyzer();
   }
 
-  // 📸 Analyze Body from Photos/Video
   async analyzeBodyFromMedia(mediaInput, analysisType = 'full') {
     const mediaData = await this.preprocessMedia(mediaInput);
     
@@ -40,7 +39,6 @@ export class AIBodyAnalysisSystem {
     };
   }
 
-  // 🖼️ Preprocess Media Input
   async preprocessMedia(mediaInput) {
     const processedData = {
       originalMedia: mediaInput,
@@ -60,7 +58,6 @@ export class AIBodyAnalysisSystem {
     return processedData;
   }
 
-  // 🎯 Normalize Images for AI Processing
   async normalizeImages(images) {
     return Promise.all(images.map(async (image) => {
       return {
@@ -73,7 +70,6 @@ export class AIBodyAnalysisSystem {
   }
 }
 
-// 🤖 COMPUTER VISION ENGINE
 export class ComputerVisionEngine {
   constructor() {
     this.modelConfigs = {
@@ -83,9 +79,8 @@ export class ComputerVisionEngine {
     };
   }
 
-  // 🔍 Detect Person in Image
   async segmentPerson(imageData) {
-    // Simulated person segmentation
+
     return {
       mask: this.generatePersonMask(imageData),
       boundingBox: this.calculateBoundingBox(imageData),
@@ -94,12 +89,10 @@ export class ComputerVisionEngine {
     };
   }
 
-  // 📍 Detect Body Landmarks
   async detectLandmarks(imageData) {
-    // Simulated landmark detection with 33 body keypoints
+
     const landmarks = [];
-    
-    // Generate realistic body landmarks
+
     for (let i = 0; i < 33; i++) {
       landmarks.push({
         id: i,
@@ -137,9 +130,9 @@ export class ComputerVisionEngine {
   }
 
   generatePersonMask(imageData) {
-    // Simulated binary mask for person segmentation
+
     const mask = new Array(imageData.width * imageData.height).fill(0);
-    // Simulate person-shaped mask in center
+
     const centerX = imageData.width / 2;
     const centerY = imageData.height / 2;
     
@@ -154,7 +147,6 @@ export class ComputerVisionEngine {
   }
 }
 
-// 🏃 NEURAL POSE ESTIMATOR
 export class NeuralPoseEstimator {
   constructor() {
     this.poseModel = this.initializePoseModel();
@@ -190,7 +182,7 @@ export class NeuralPoseEstimator {
   }
 
   async detectKeypoints(imageData) {
-    // Simulate 17 COCO pose keypoints
+
     const keypointNames = [
       'nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear',
       'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow',
@@ -210,7 +202,7 @@ export class NeuralPoseEstimator {
   }
 
   analyzePosture(keypoints) {
-    // Analyze posture quality and alignment
+
     const shoulderAlignment = this.calculateShoulderAlignment(keypoints);
     const spineAlignment = this.calculateSpineAlignment(keypoints);
     const hipAlignment = this.calculateHipAlignment(keypoints);
@@ -246,7 +238,6 @@ export class NeuralPoseEstimator {
   }
 }
 
-// 📏 MEASUREMENT EXTRACTOR
 export class MeasurementExtractor {
   constructor() {
     this.anthropometricRatios = this.initializeAnthropometricRatios();
@@ -328,7 +319,7 @@ export class MeasurementExtractor {
   }
 
   estimateCircumference(landmarks, mediaData) {
-    // Advanced circumference estimation using depth and contour analysis
+
     const contourPoints = this.extractContourPoints(landmarks, mediaData);
     const ellipseParams = this.fitEllipse(contourPoints);
     
@@ -351,7 +342,6 @@ export class MeasurementExtractor {
   }
 }
 
-// 🏗️ 3D BODY RECONSTRUCTOR
 export class Body3DReconstructor {
   constructor() {
     this.meshGenerator = new MeshGenerator();
@@ -374,7 +364,7 @@ export class Body3DReconstructor {
   }
 
   async generateBodyMesh(mediaData) {
-    // Generate 3D mesh using photogrammetry principles
+
     const vertices = await this.generateVertices(mediaData);
     const faces = await this.generateFaces(vertices);
     const normals = await this.calculateNormals(faces);
@@ -389,7 +379,7 @@ export class Body3DReconstructor {
   }
 
   async generateVertices(mediaData) {
-    // Simulated vertex generation for human body mesh
+
     const vertexCount = 5000; // Typical for mid-poly human model
     const vertices = [];
 
@@ -410,7 +400,6 @@ export class Body3DReconstructor {
   }
 }
 
-// 🧬 BIOMETRIC ANALYZER
 export class BiometricAnalyzer {
   async analyzeBiometrics(mediaData) {
     return {
@@ -425,11 +414,11 @@ atterns: await this.analyzeMovementPatterns(mediaData)
   }
 
   async analyzeBodyComposition(mediaData) {
-    // Advanced body composition analysis using computer vision
+
     return {
       muscleMass: Math.random() * 20 + 30, // kg
       fatPercentage: Math.random() * 15 + 10, // %
-      boneDensity: Math.random() * 0.5 + 1.0, // g/cm³
+      boneDensity: Math.random() * 0.5 + 1.0, // g/cmÂ³
       waterContent: Math.random() * 10 + 55, // %
       metabolicRate: Math.random() * 500 + 1200 // calories/day
     };
@@ -454,14 +443,12 @@ atterns: await this.analyzeMovementPatterns(mediaData)
   }
 }
 
-// Helper functions and classes
 class MeshGenerator {
-  // Implementation for 3D mesh generation
+
 }
 
 class TextureMapper {
-  // Implementation for texture mapping
+
 }
 
-// Export the main system
 export const aiBodyAnalysisSystem = new AIBodyAnalysisSystem();

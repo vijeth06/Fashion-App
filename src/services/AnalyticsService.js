@@ -1,10 +1,4 @@
-/**
- * Enhanced Frontend Analytics Service
- * 
- * Provides client-side analytics tracking, A/B testing, and user behavior insights
- * 
- * @version 2.0.0
- */
+﻿
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -19,28 +13,22 @@ export class AnalyticsService {
     this.pageStartTime = Date.now();
     this.baseUrl = API_URL;
     this.flushInterval = null;
-    
-    // Set up automatic flushing every 30 seconds
+
     this.flushInterval = setInterval(() => {
       this.flushEvents();
     }, 30000);
   }
 
-  /**
-   * Initialize analytics tracker
-   */
+  
   async initialize(userId = null) {
     try {
       this.userId = userId;
       this.isInitialized = true;
 
-      // Track page view
       await this.trackPageView();
 
-      // Set up automatic tracking
       this.setupAutomaticTracking();
 
-      // Process queued events
       await this.flushEventQueue();
 
       console.log('Enhanced Analytics tracker initialized successfully');
@@ -50,9 +38,7 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Track custom event
-   */
+  
   async trackEvent(eventName, properties = {}, context = {}) {
     if (!this.isInitialized) {
       this.eventQueue.push({ eventName, properties, context });
@@ -98,9 +84,7 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Track virtual try-on events
-   */
+  
   async trackTryOn(action, productId, aiMetrics = {}) {
     const properties = {
       productId,
@@ -115,15 +99,12 @@ export class AnalyticsService {
 
     await this.trackEvent('virtual_try_on', properties);
 
-    // Update product analytics
     if (action === 'start') {
       await this.updateProductAnalytics(productId, 'try_on', 1, {}, aiMetrics);
     }
   }
 
-  /**
-   * A/B Testing
-   */
+  
   async assignToTest(testName, forceVariant = null) {
     try {
       if (this.abTestVariants.has(testName)) {
@@ -161,9 +142,7 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Update product analytics
-   */
+  
   async updateProductAnalytics(productId, eventType, value = 1, userMetadata = {}, aiMetrics = {}) {
     try {
       await fetch(`${this.baseUrl}/api/analytics/product`, {
@@ -185,9 +164,7 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Track page view
-   */
+  
   async trackPageView() {
     const properties = {
       page: window.location.pathname,
@@ -199,17 +176,14 @@ export class AnalyticsService {
     await this.trackEvent('page_view', properties);
   }
 
-  /**
-   * Set up automatic tracking
-   */
+  
   setupAutomaticTracking() {
-    // Track page unload
+
     window.addEventListener('beforeunload', () => {
       const timeOnPage = Date.now() - this.pageStartTime;
       this.trackEvent('page_unload', { timeOnPage }, { sync: true });
     });
 
-    // Track clicks on important elements
     document.addEventListener('click', (event) => {
       const element = event.target;
       if (element.dataset.track) {
@@ -220,7 +194,6 @@ export class AnalyticsService {
       }
     });
 
-    // Track errors
     window.addEventListener('error', (event) => {
       this.trackEvent('javascript_error', {
         message: event.message,
@@ -231,9 +204,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Flush event queue
-   */
+  
   async flushEventQueue() {
     for (const event of this.eventQueue) {
       await this.trackEvent(event.eventName, event.properties, event.context);
@@ -241,16 +212,12 @@ export class AnalyticsService {
     this.eventQueue = [];
   }
 
-  /**
-   * Generate unique session ID
-   */
+  
   generateSessionId() {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Start session
-   */
+  
   startSession() {
     this.trackEvent('session_start', {
       timestamp: new Date().toISOString(),
@@ -260,9 +227,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track body analysis
-   */
+  
   trackBodyAnalysis(data) {
     this.trackEvent('body_analysis', {
       success: data.success,
@@ -272,9 +237,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track outfit recommendation
-   */
+  
   trackOutfitRecommendation(data) {
     this.trackEvent('outfit_recommendation', {
       itemsCount: data.itemsCount,
@@ -283,9 +246,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track product interaction
-   */
+  
   trackProductInteraction(action, productId, productData = {}) {
     this.trackEvent('product_interaction', {
       action, // view, wishlist_add, wishlist_remove, cart_add
@@ -294,9 +255,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track button click
-   */
+  
   trackButtonClick(buttonName, context = {}) {
     this.trackEvent('button_click', {
       buttonName,
@@ -304,9 +263,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track error
-   */
+  
   trackError(errorType, errorMessage, context = {}) {
     this.trackEvent('error', {
       errorType,
@@ -315,9 +272,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track performance metric
-   */
+  
   trackPerformance(metricName, value, unit = 'ms') {
     this.trackEvent('performance', {
       metricName,
@@ -326,9 +281,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Flush events to backend
-   */
+  
   async flushEvents(synchronous = false) {
     if (this.events.length === 0) {
       return;
@@ -349,16 +302,16 @@ export class AnalyticsService {
       };
 
       if (synchronous && navigator.sendBeacon) {
-        // Use sendBeacon for synchronous sending on page unload
+
         const blob = new Blob([options.body], { type: 'application/json' });
         navigator.sendBeacon(`${this.baseUrl}/api/analytics/events`, blob);
       } else {
-        // Regular fetch for async sending
+
         const response = await fetch(`${this.baseUrl}/api/analytics/events`, options);
         
         if (!response.ok) {
           console.error('Failed to send analytics:', response.statusText);
-          // Put events back in queue
+
           this.events.unshift(...eventsToSend);
         } else {
           console.log(`Flushed ${eventsToSend.length} analytics events`);
@@ -366,29 +319,23 @@ export class AnalyticsService {
       }
     } catch (error) {
       console.error('Analytics flush error:', error);
-      // Put events back in queue
+
       this.events.unshift(...eventsToSend);
     }
   }
 
-  /**
-   * Set user ID
-   */
+  
   setUserId(userId) {
     this.userId = userId;
     this.trackEvent('user_identified', { userId });
   }
 
-  /**
-   * Clear user ID
-   */
+  
   clearUserId() {
     this.userId = null;
   }
 
-  /**
-   * Get session summary
-   */
+  
   getSessionSummary() {
     return {
       sessionId: this.sessionId,
@@ -398,9 +345,7 @@ export class AnalyticsService {
     };
   }
 
-  /**
-   * Cleanup
-   */
+  
   dispose() {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
@@ -409,7 +354,6 @@ export class AnalyticsService {
   }
 }
 
-// Singleton instance
 let analyticsInstance = null;
 
 export const getAnalytics = () => {

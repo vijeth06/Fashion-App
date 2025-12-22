@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -36,7 +36,6 @@ const ModernLayout = () => {
     setMobileMenuOpen(false);
   }, [location]);
 
-  // Navigation items
   const mainNavItems = [
     { path: '/', label: 'Home', icon: FaHome },
     { path: '/catalog', label: 'Catalog', icon: FaSearch },
@@ -63,7 +62,7 @@ const ModernLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 relative overflow-hidden">
-      {/* Revolutionary Background Pattern */}
+      {}
       <div className="fixed inset-0 opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -75,7 +74,7 @@ const ModernLayout = () => {
         }}></div>
       </div>
       
-      {/* Dynamic Floating Elements */}
+      {}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div 
           className="absolute top-20 left-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
@@ -105,7 +104,7 @@ const ModernLayout = () => {
         />
       </div>
 
-      {/* Revolutionary Header */}
+      {}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
           ? 'bg-black/90 backdrop-blur-3xl border-b border-blue-500/30 shadow-2xl shadow-blue-500/10' 
@@ -113,7 +112,7 @@ const ModernLayout = () => {
       }`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            {/* Revolutionary Logo */}
+            {}
             <Link to="/" className="group flex items-center space-x-3">
               <motion.div 
                 className="relative"
@@ -151,9 +150,9 @@ const ModernLayout = () => {
               </div>
             </Link>
 
-            {/* Main Navigation */}
+            {}
             <nav className="hidden lg:flex items-center space-x-6">
-              {/* Main Nav Items */}
+              {}
               <div className="flex items-center space-x-4">
                 {mainNavItems.map((item) => {
                   const Icon = item.icon;
@@ -183,7 +182,7 @@ const ModernLayout = () => {
                 })}
               </div>
 
-              {/* Advanced Features Button */}
+              {}
               <div className="relative">
                 <motion.button
                   onClick={() => setShowAdvancedFeatures(!showAdvancedFeatures)}
@@ -241,7 +240,7 @@ const ModernLayout = () => {
                 </AnimatePresence>
               </div>
 
-              {/* User Navigation */}
+              {}
               {user && (
                 <div className="flex items-center space-x-2">
                   {userNavItems.slice(0, 3).map((item) => {
@@ -262,7 +261,7 @@ const ModernLayout = () => {
                 </div>
               )}
 
-              {/* User Profile & Auth */}
+              {}
               {user ? (
                 <div className="relative group">
                   <motion.button 
@@ -332,7 +331,7 @@ const ModernLayout = () => {
               )}
             </nav>
 
-            {/* Mobile Menu Button */}
+            {}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 text-gray-300 hover:text-white focus:outline-none"
@@ -342,7 +341,7 @@ const ModernLayout = () => {
           </div>
         </div>
         
-        {/* Mobile Menu */}
+        {}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -406,12 +405,12 @@ const ModernLayout = () => {
         </AnimatePresence>
       </header>
 
-      {/* Main Content */}
+      {}
       <main className="flex-grow pt-20 relative z-10">
         <Outlet />
       </main>
 
-      {/* Modern Footer */}
+      {}
       <footer className="relative z-10 bg-black/80 backdrop-blur-2xl border-t border-blue-500/20">
         <div className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -453,7 +452,7 @@ const ModernLayout = () => {
           
           <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-500 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} QUANTUM FASHION. All rights reserved.
+              Â© {new Date().getFullYear()} QUANTUM FASHION. All rights reserved.
             </div>
             <div className="flex items-center space-x-4 text-sm">
               <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">Privacy</a>
@@ -464,7 +463,7 @@ const ModernLayout = () => {
         </div>
       </footer>
       
-      {/* Auth Modal */}
+      {}
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}

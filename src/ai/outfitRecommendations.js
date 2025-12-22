@@ -1,18 +1,6 @@
-/**
- * Smart Outfit Recommendations Engine
- * 
- * Provides outfit suggestions based on:
- * - Color harmony
- * - Style compatibility
- * - Occasion matching
- * - Current clothing selection
- * 
- * @version 1.0.0
- */
+﻿
 
-/**
- * Color harmony rules
- */
+
 const COLOR_HARMONY = {
   complementary: {
     red: ['green', 'teal'],
@@ -33,9 +21,7 @@ const COLOR_HARMONY = {
   neutral: ['white', 'black', 'gray', 'beige', 'cream', 'brown']
 };
 
-/**
- * Style compatibility matrix
- */
+
 const STYLE_COMPATIBILITY = {
   casual: ['sporty', 'streetwear', 'relaxed'],
   formal: ['business', 'elegant', 'classic'],
@@ -45,9 +31,7 @@ const STYLE_COMPATIBILITY = {
   minimalist: ['modern', 'clean', 'simple']
 };
 
-/**
- * Occasion-based outfit rules
- */
+
 const OCCASION_RULES = {
   work: {
     required: ['professional', 'polished'],
@@ -76,9 +60,7 @@ const OCCASION_RULES = {
   }
 };
 
-/**
- * Extract dominant color from item
- */
+
 function extractDominantColor(item) {
   if (!item) return 'neutral';
   
@@ -86,9 +68,7 @@ function extractDominantColor(item) {
   return color.toLowerCase();
 }
 
-/**
- * Extract style from item
- */
+
 function extractStyle(item) {
   if (!item) return 'casual';
   
@@ -96,26 +76,21 @@ function extractStyle(item) {
   return style.toLowerCase();
 }
 
-/**
- * Check if two colors harmonize
- */
+
 function colorsHarmonize(color1, color2) {
-  // Neutrals go with everything
+
   if (COLOR_HARMONY.neutral.includes(color1) || COLOR_HARMONY.neutral.includes(color2)) {
     return true;
   }
 
-  // Same color family
   if (color1 === color2) {
     return true;
   }
 
-  // Check complementary colors
   if (COLOR_HARMONY.complementary[color1]?.includes(color2)) {
     return true;
   }
 
-  // Check analogous colors
   if (COLOR_HARMONY.analogous[color1]?.includes(color2)) {
     return true;
   }
@@ -123,9 +98,7 @@ function colorsHarmonize(color1, color2) {
   return false;
 }
 
-/**
- * Check if styles are compatible
- */
+
 function stylesCompatible(style1, style2) {
   if (style1 === style2) {
     return true;
@@ -138,9 +111,7 @@ function stylesCompatible(style1, style2) {
   return false;
 }
 
-/**
- * Calculate outfit compatibility score
- */
+
 export function calculateOutfitScore(items) {
   if (!items || items.length < 2) {
     return {
@@ -157,7 +128,6 @@ export function calculateOutfitScore(items) {
   const colors = items.map(extractDominantColor);
   const styles = items.map(extractStyle);
 
-  // Color harmony score
   let colorComparisons = 0;
   for (let i = 0; i < colors.length; i++) {
     for (let j = i + 1; j < colors.length; j++) {
@@ -169,7 +139,6 @@ export function calculateOutfitScore(items) {
   }
   colorScore = colorComparisons > 0 ? (colorScore / colorComparisons) * 100 : 0;
 
-  // Style compatibility score
   let styleComparisons = 0;
   for (let i = 0; i < styles.length; i++) {
     for (let j = i + 1; j < styles.length; j++) {
@@ -181,12 +150,10 @@ export function calculateOutfitScore(items) {
   }
   styleScore = styleComparisons > 0 ? (styleScore / styleComparisons) * 100 : 0;
 
-  // Variety score (not too many of same type)
   const types = items.map(item => item.type);
   const uniqueTypes = new Set(types);
   varietyScore = (uniqueTypes.size / types.length) * 100;
 
-  // Overall score
   const overallScore = (colorScore * 0.4 + styleScore * 0.4 + varietyScore * 0.2);
 
   return {
@@ -203,9 +170,7 @@ export function calculateOutfitScore(items) {
   };
 }
 
-/**
- * Generate improvement suggestions
- */
+
 function generateSuggestions(items, colorScore, styleScore, varietyScore) {
   const suggestions = [];
 
@@ -231,9 +196,7 @@ function generateSuggestions(items, colorScore, styleScore, varietyScore) {
   return suggestions;
 }
 
-/**
- * Recommend items to complete an outfit
- */
+
 export function recommendComplementaryItems(currentItems, availableItems, occasion = 'casual') {
   if (!currentItems || currentItems.length === 0) {
     return [];
@@ -245,7 +208,6 @@ export function recommendComplementaryItems(currentItems, availableItems, occasi
 
   const occasionRules = OCCASION_RULES[occasion] || OCCASION_RULES.casual;
 
-  // Score each available item
   const scoredItems = availableItems
     .filter(item => !currentTypes.includes(item.type)) // Don't suggest same type
     .map(item => {
@@ -254,15 +216,12 @@ export function recommendComplementaryItems(currentItems, availableItems, occasi
 
       let score = 0;
 
-      // Color harmony
       const colorMatches = currentColors.filter(c => colorsHarmonize(c, itemColor)).length;
       score += (colorMatches / currentColors.length) * 40;
 
-      // Style compatibility
       const styleMatches = currentStyles.filter(s => stylesCompatible(s, itemStyle)).length;
       score += (styleMatches / currentStyles.length) * 40;
 
-      // Occasion appropriateness
       if (occasionRules.colors === 'any' || occasionRules.colors.includes(itemColor)) {
         score += 20;
       }
@@ -280,9 +239,7 @@ export function recommendComplementaryItems(currentItems, availableItems, occasi
   return scoredItems;
 }
 
-/**
- * Generate reason for recommendation
- */
+
 function generateRecommendationReason(item, currentItems, colorMatch, styleMatch) {
   const reasons = [];
 
@@ -301,9 +258,7 @@ function generateRecommendationReason(item, currentItems, colorMatch, styleMatch
   return reasons.join(' and ');
 }
 
-/**
- * Get outfit suggestions for occasion
- */
+
 export function getOccasionOutfits(items, occasion) {
   const rules = OCCASION_RULES[occasion];
   
@@ -315,21 +270,17 @@ export function getOccasionOutfits(items, occasion) {
     };
   }
 
-  // Filter items appropriate for occasion
   const appropriateItems = items.filter(item => {
     const style = extractStyle(item);
     const color = extractDominantColor(item);
 
-    // Check if style is required or avoided
     const styleOk = !rules.avoid.some(avoidStyle => style.includes(avoidStyle));
-    
-    // Check color if specified
+
     const colorOk = rules.colors === 'any' || rules.colors.includes(color);
 
     return styleOk && colorOk;
   });
 
-  // Generate outfit combinations
   const outfits = generateOutfitCombinations(appropriateItems, 3);
 
   return {
@@ -343,20 +294,16 @@ export function getOccasionOutfits(items, occasion) {
   };
 }
 
-/**
- * Generate outfit combinations
- */
+
 function generateOutfitCombinations(items, maxItems = 3) {
   const combinations = [];
   const types = [...new Set(items.map(item => item.type))];
 
-  // Generate combinations of different types
   for (let i = 0; i < items.length; i++) {
     for (let j = i + 1; j < items.length; j++) {
       if (items[i].type !== items[j].type) {
         const combo = [items[i], items[j]];
-        
-        // Try to add a third item of different type
+
         for (let k = j + 1; k < items.length; k++) {
           if (items[k].type !== items[i].type && items[k].type !== items[j].type) {
             const fullCombo = [...combo, items[k]];
@@ -372,7 +319,6 @@ function generateOutfitCombinations(items, maxItems = 3) {
           }
         }
 
-        // Also consider 2-item combos
         const score = calculateOutfitScore(combo);
         if (score.score >= 70) {
           combinations.push({

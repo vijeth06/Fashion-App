@@ -1,8 +1,4 @@
-/**
- * Virtual Clothing Overlay System
- * Handles realistic placement and rendering of clothing items using pose detection
- * Optimized for real-time performance
- */
+﻿
 export class ClothingOverlaySystem {
   constructor(canvasElement) {
     this.canvas = canvasElement;
@@ -10,19 +6,16 @@ export class ClothingOverlaySystem {
     this.clothingItems = new Map();
     this.activeItems = [];
     this.poseData = null;
-    
-    // Performance optimization
+
     this.lastRenderTime = 0;
     this.targetFPS = 30;
     this.frameDelay = 1000 / this.targetFPS;
     this.imageCache = new Map();
     this.isRendering = false;
-    
-    // Canvas optimization
+
     this.ctx.imageSmoothingEnabled = true;
     this.ctx.imageSmoothingQuality = 'low'; // Fast rendering
-    
-    // Clothing type configurations
+
     this.clothingConfigs = {
       shirt: {
         anchorPoints: ['leftShoulder', 'rightShoulder', 'waist'],
@@ -67,17 +60,13 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Update pose data for clothing positioning
-   */
+  
   updatePose(poseData) {
     this.poseData = poseData;
     this.renderFrame();
   }
 
-  /**
-   * Add a clothing item to be rendered
-   */
+  
   addClothingItem(item) {
     const clothingItem = {
       id: item.id || Date.now(),
@@ -92,7 +81,6 @@ export class ClothingOverlaySystem {
       loaded: false
     };
 
-    // Load the clothing image
     this.loadClothingImage(clothingItem).then(() => {
       this.clothingItems.set(clothingItem.id, clothingItem);
       this.activeItems.push(clothingItem.id);
@@ -102,11 +90,9 @@ export class ClothingOverlaySystem {
     return clothingItem.id;
   }
 
-  /**
-   * Load clothing image with caching
-   */
+  
   async loadClothingImage(clothingItem) {
-    // Check cache first
+
     if (this.imageCache.has(clothingItem.imageUrl)) {
       clothingItem.image = this.imageCache.get(clothingItem.imageUrl);
       clothingItem.loaded = true;
@@ -118,7 +104,7 @@ export class ClothingOverlaySystem {
       img.crossOrigin = 'anonymous';
       
       img.onload = () => {
-        // Cache the image
+
         this.imageCache.set(clothingItem.imageUrl, img);
         clothingItem.image = img;
         clothingItem.loaded = true;
@@ -134,29 +120,23 @@ export class ClothingOverlaySystem {
     });
   }
 
-  /**
-   * Remove a clothing item
-   */
+  
   removeClothingItem(itemId) {
     this.clothingItems.delete(itemId);
     this.activeItems = this.activeItems.filter(id => id !== itemId);
     this.renderFrame();
   }
 
-  /**
-   * Clear all clothing items
-   */
+  
   clearAllItems() {
     this.clothingItems.clear();
     this.activeItems = [];
     this.renderFrame();
   }
 
-  /**
-   * Main rendering function with performance optimization
-   */
+  
   renderFrame() {
-    // Performance throttling for real-time rendering
+
     const currentTime = performance.now();
     if (currentTime - this.lastRenderTime < this.frameDelay) {
       return; // Skip frame if too soon
@@ -174,13 +154,11 @@ export class ClothingOverlaySystem {
       return;
     }
 
-    // Use requestAnimationFrame for smooth rendering
     requestAnimationFrame(() => {
       try {
-        // Clear canvas efficiently
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Render each active clothing item
         this.activeItems.forEach(itemId => {
           const item = this.clothingItems.get(itemId);
           if (item && item.loaded) {
@@ -193,9 +171,7 @@ export class ClothingOverlaySystem {
     });
   }
 
-  /**
-   * Optimized real-time rendering loop
-   */
+  
   startRealTimeRendering() {
     const renderLoop = () => {
       this.renderFrame();
@@ -204,9 +180,7 @@ export class ClothingOverlaySystem {
     renderLoop();
   }
 
-  /**
-   * Render individual clothing item
-   */
+  
   renderClothingItem(item) {
     const config = this.clothingConfigs[item.type];
     if (!config) {
@@ -214,24 +188,19 @@ export class ClothingOverlaySystem {
       return;
     }
 
-    // Calculate positioning based on pose keypoints
     const positioning = this.calculateClothingPosition(item, config);
     if (!positioning) return;
 
     this.ctx.save();
 
-    // Set opacity
     this.ctx.globalAlpha = item.opacity;
 
-    // Apply transformations
     this.ctx.translate(positioning.centerX, positioning.centerY);
     this.ctx.rotate((item.rotation * Math.PI) / 180);
     this.ctx.scale(item.scale, item.scale);
 
-    // Apply additional offset
     this.ctx.translate(item.offset.x, item.offset.y);
 
-    // Draw the clothing item
     this.ctx.drawImage(
       item.image,
       -positioning.width / 2,
@@ -243,14 +212,11 @@ export class ClothingOverlaySystem {
     this.ctx.restore();
   }
 
-  /**
-   * Calculate clothing position and size based on pose keypoints
-   */
+  
   calculateClothingPosition(item, config) {
     const keypoints = this.poseData.keypoints;
     const anchorPoints = config.anchorPoints;
 
-    // Get required anchor points
     const anchors = {};
     let validAnchors = 0;
 
@@ -261,13 +227,11 @@ export class ClothingOverlaySystem {
       }
     });
 
-    // Need at least 2 anchor points for positioning
     if (validAnchors < 2) {
       console.warn(`Insufficient anchor points for ${item.type}: ${validAnchors}/${anchorPoints.length}`);
       return null;
     }
 
-    // Calculate position based on clothing type
     switch (item.type) {
       case 'shirt':
       case 'jacket':
@@ -283,24 +247,19 @@ export class ClothingOverlaySystem {
     }
   }
 
-  /**
-   * Calculate position for torso clothing (shirts, jackets)
-   */
+  
   calculateTorsoClothingPosition(anchors, config) {
     const { leftShoulder, rightShoulder } = anchors;
     
     if (!leftShoulder || !rightShoulder) return null;
 
-    // Calculate shoulder span and center
     const shoulderSpan = Math.abs(rightShoulder.x - leftShoulder.x);
     const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2;
     const shoulderCenterY = (leftShoulder.y + rightShoulder.y) / 2;
 
-    // Calculate clothing dimensions
     const width = shoulderSpan * config.scaling.widthRatio;
     const height = shoulderSpan * config.scaling.heightRatio;
 
-    // Position slightly above shoulder center for neckline
     const centerX = shoulderCenterX;
     const centerY = shoulderCenterY + config.scaling.offsetY;
 
@@ -312,9 +271,7 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Calculate position for dresses
-   */
+  
   calculateDressPosition(anchors, config) {
     const { leftShoulder, rightShoulder, leftHip, rightHip } = anchors;
     
@@ -324,7 +281,6 @@ export class ClothingOverlaySystem {
     const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2;
     const shoulderCenterY = (leftShoulder.y + rightShoulder.y) / 2;
 
-    // If hips are available, use them for height calculation
     let height = shoulderSpan * config.scaling.heightRatio;
     if (leftHip && rightHip) {
       const hipCenterY = (leftHip.y + rightHip.y) / 2;
@@ -343,9 +299,7 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Calculate position for pants
-   */
+  
   calculatePantsPosition(anchors, config) {
     const { leftHip, rightHip, leftKnee, rightKnee } = anchors;
     
@@ -355,7 +309,6 @@ export class ClothingOverlaySystem {
     const hipCenterX = (leftHip.x + rightHip.x) / 2;
     const hipCenterY = (leftHip.y + rightHip.y) / 2;
 
-    // Calculate height to knees if available
     let height = hipSpan * config.scaling.heightRatio;
     if (leftKnee && rightKnee) {
       const kneeCenterY = (leftKnee.y + rightKnee.y) / 2;
@@ -374,9 +327,7 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Calculate position for skirts
-   */
+  
   calculateSkirtPosition(anchors, config) {
     const { leftHip, rightHip } = anchors;
     
@@ -400,11 +351,9 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Default position calculation
-   */
+  
   calculateDefaultPosition(anchors, config) {
-    // Use first two available anchor points
+
     const anchorArray = Object.values(anchors);
     if (anchorArray.length < 2) return null;
 
@@ -426,9 +375,7 @@ export class ClothingOverlaySystem {
     };
   }
 
-  /**
-   * Check if keypoint is valid and visible
-   */
+  
   isValidKeypoint(keypoint) {
     return keypoint && 
            typeof keypoint.x === 'number' && 
@@ -436,9 +383,7 @@ export class ClothingOverlaySystem {
            (keypoint.visibility === undefined || keypoint.visibility > 0.3);
   }
 
-  /**
-   * Update item properties
-   */
+  
   updateItemProperties(itemId, properties) {
     const item = this.clothingItems.get(itemId);
     if (item) {
@@ -447,39 +392,29 @@ export class ClothingOverlaySystem {
     }
   }
 
-  /**
-   * Get item by ID
-   */
+  
   getItem(itemId) {
     return this.clothingItems.get(itemId);
   }
 
-  /**
-   * Get all active items
-   */
+  
   getActiveItems() {
     return this.activeItems.map(id => this.clothingItems.get(id));
   }
 
-  /**
-   * Set canvas size
-   */
+  
   setCanvasSize(width, height) {
     this.canvas.width = width;
     this.canvas.height = height;
     this.renderFrame();
   }
 
-  /**
-   * Export current frame as image
-   */
+  
   exportFrame(format = 'image/png', quality = 0.9) {
     return this.canvas.toDataURL(format, quality);
   }
 
-  /**
-   * Dispose of resources
-   */
+  
   dispose() {
     this.clothingItems.clear();
     this.activeItems = [];

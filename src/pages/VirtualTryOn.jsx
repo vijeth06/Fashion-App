@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, FaVideo, FaDownload, FaShare, FaExpand, FaCompress,
@@ -7,18 +7,14 @@ import {
   FaRuler, FaUsers, FaStar, FaChartLine, FaRobot, FaCube
 } from 'react-icons/fa';
 
-// Advanced AI and Computer Vision imports
 import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as bodySegmentation from '@tensorflow-models/body-segmentation';
 
-// Analytics Service
 import { getAnalytics } from '../services/AnalyticsService';
 
-// Initialize analytics
 const analytics = getAnalytics();
 
-// Enhanced AI Services
 class AdvancedPoseEngine {
   constructor() {
     this.detector = null;
@@ -47,7 +43,7 @@ class AdvancedPoseEngine {
 
   async initialize() {
     try {
-      // Initialize advanced pose detection with higher accuracy
+
       this.detector = await poseDetection.createDetector(
         poseDetection.SupportedModels.MoveNet,
         {
@@ -59,7 +55,6 @@ class AdvancedPoseEngine {
         }
       );
 
-      // Initialize body segmentation with landscape model for better accuracy
       this.segmenter = await bodySegmentation.createSegmenter(
         bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation,
         {
@@ -72,7 +67,7 @@ class AdvancedPoseEngine {
       console.log('Enhanced Pose Engine initialized with high accuracy settings');
     } catch (error) {
       console.error('Pose Engine initialization failed:', error);
-      // Fallback to lighter model
+
       try {
         this.detector = await poseDetection.createDetector(
           poseDetection.SupportedModels.MoveNet,
@@ -96,14 +91,11 @@ class AdvancedPoseEngine {
       const poses = await this.detector.estimatePoses(videoElement);
       if (poses.length > 0) {
         const pose = poses[0];
-        
-        // Add pose to history for stability analysis
+
         this.addToHistory(pose);
-        
-        // Calculate advanced body measurements with temporal smoothing
+
         this.calculateAdvancedBodyMeasurements(pose);
-        
-        // Get body segmentation for better fitting
+
         const segmentation = await this.getBodySegmentation(videoElement);
         
         return this.enhancePoseData(pose, segmentation);
@@ -142,12 +134,11 @@ class AdvancedPoseEngine {
 
     const keypoints = pose.keypoints;
     const getKeypoint = (name) => keypoints.find(kp => kp.name === name);
-    
-    // Apply temporal smoothing using pose history
+
     const smoothedKeypoints = this.applySmoothingToKeypoints(keypoints);
 
     try {
-      // Core body landmarks
+
       const nose = getKeypoint('nose');
       const leftEye = getKeypoint('left_eye');
       const rightEye = getKeypoint('right_eye');
@@ -164,7 +155,6 @@ class AdvancedPoseEngine {
       const leftAnkle = getKeypoint('left_ankle');
       const rightAnkle = getKeypoint('right_ankle');
 
-      // Enhanced measurements with confidence checks
       if (this.areKeyPointsVisible([leftShoulder, rightShoulder], 0.6)) {
         const shoulderWidth = this.calculateDistance(leftShoulder, rightShoulder);
         this.bodyMeasurements.shoulderWidth = this.applyTemporalSmoothing('shoulderWidth', shoulderWidth);
@@ -175,13 +165,11 @@ class AdvancedPoseEngine {
         this.bodyMeasurements.waistWidth = this.applyTemporalSmoothing('waistWidth', waistWidth);
       }
 
-      // Chest width estimation (between shoulders and hips)
       if (this.areKeyPointsVisible([leftShoulder, rightShoulder, leftHip, rightHip], 0.5)) {
         const chestWidth = (this.bodyMeasurements.shoulderWidth + this.bodyMeasurements.waistWidth) / 2;
         this.bodyMeasurements.chestWidth = this.applyTemporalSmoothing('chestWidth', chestWidth);
       }
 
-      // Height calculation with multiple reference points
       if (nose && this.areKeyPointsVisible([leftAnkle, rightAnkle], 0.5)) {
         const avgAnkle = {
           x: (leftAnkle.x + rightAnkle.x) / 2,
@@ -191,7 +179,6 @@ class AdvancedPoseEngine {
         this.bodyMeasurements.height = this.applyTemporalSmoothing('height', height);
       }
 
-      // Arm length calculation
       if (this.areKeyPointsVisible([leftShoulder, leftElbow, leftWrist], 0.6)) {
         const leftArmLength = this.calculateDistance(leftShoulder, leftElbow) + 
                              this.calculateDistance(leftElbow, leftWrist);
@@ -202,7 +189,6 @@ class AdvancedPoseEngine {
         this.bodyMeasurements.armLength = this.applyTemporalSmoothing('armLength', rightArmLength);
       }
 
-      // Leg length calculation
       if (this.areKeyPointsVisible([leftHip, leftKnee, leftAnkle], 0.6)) {
         const leftLegLength = this.calculateDistance(leftHip, leftKnee) + 
                              this.calculateDistance(leftKnee, leftAnkle);
@@ -213,7 +199,6 @@ class AdvancedPoseEngine {
         this.bodyMeasurements.legLength = this.applyTemporalSmoothing('legLength', rightLegLength);
       }
 
-      // Torso length calculation
       if (this.areKeyPointsVisible([leftShoulder, rightShoulder, leftHip, rightHip], 0.5)) {
         const shoulderCenter = {
           x: (leftShoulder.x + rightShoulder.x) / 2,
@@ -227,7 +212,6 @@ class AdvancedPoseEngine {
         this.bodyMeasurements.torsoLength = this.applyTemporalSmoothing('torsoLength', torsoLength);
       }
 
-      // Calculate overall confidence and stability
       const avgConfidence = keypoints.reduce((sum, kp) => sum + (kp.score || 0), 0) / keypoints.length;
       this.bodyMeasurements.confidence = avgConfidence;
       this.bodyMeasurements.stability = this.calculatePoseStability();
@@ -254,7 +238,7 @@ class AdvancedPoseEngine {
   }
 
   applySmoothingToKeypoints(keypoints) {
-    // Simple implementation - in production would use Kalman filtering
+
     if (this.poseHistory.length < 3) return keypoints;
     
     return keypoints.map((kp, index) => {
@@ -322,13 +306,12 @@ class AdvancedPoseEngine {
       const leftAnkle = getKeypoint('leftAnkle');
 
       if (leftShoulder && rightShoulder && leftHip && rightHip) {
-        // Calculate measurements in pixels (would need calibration for real measurements)
+
         const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
         const bodyHeight = nose && leftAnkle ? Math.abs(leftAnkle.y - nose.y) : 0;
         const chestWidth = shoulderWidth * 0.8; // Approximate
         const waistWidth = Math.abs(rightHip.x - leftHip.x);
 
-        // Calculate confidence based on keypoint visibility
         const avgConfidence = keypoints.reduce((sum, kp) => sum + (kp.score || 0), 0) / keypoints.length;
 
         this.bodyMeasurements = {
@@ -376,8 +359,7 @@ class AdvancedPoseEngine {
 
   calculateFittingScore(pose) {
     if (!pose.keypoints || !this.bodyMeasurements.confidence) return 0;
-    
-    // Advanced fitting algorithm considering pose quality, measurements, and stability
+
     const poseStability = this.calculatePoseStability(pose);
     const measurementAccuracy = this.bodyMeasurements.confidence;
     const keyPointVisibility = pose.keypoints.filter(kp => kp.score > 0.5).length / pose.keypoints.length;
@@ -386,7 +368,7 @@ class AdvancedPoseEngine {
   }
 
   calculatePoseStability(pose) {
-    // Simple stability measure - in production, this would track pose over time
+
     const avgConfidence = pose.keypoints.reduce((sum, kp) => sum + (kp.score || 0), 0) / pose.keypoints.length;
     return Math.min(1.0, avgConfidence * 1.2);
   }
@@ -404,7 +386,6 @@ class AdvancedPoseEngine {
   }
 }
 
-// Enhanced Cloth Warping Engine
 class ClothWarpingEngine {
   constructor() {
     this.fabricPhysics = {
@@ -426,7 +407,6 @@ class ClothWarpingEngine {
   warpClothingToBody(clothingImage, pose, bodySegmentation, fabricType = 'cotton') {
     if (!pose || !pose.clothingAnchorPoints) return null;
 
-    // Enhanced cloth warping with physics simulation
     const warpedClothing = this.applyAdvancedWarping({
       image: clothingImage,
       anchorPoints: pose.clothingAnchorPoints,
@@ -472,19 +452,15 @@ class ClothWarpingEngine {
   }
 
   applyAdvancedWarping(config) {
-    // Create detailed mesh grid for cloth simulation
+
     const clothMesh = this.createClothMesh(config.image, this.meshResolution);
-    
-    // Apply body-aware deformation
+
     const deformedMesh = this.deformMeshToBody(clothMesh, config);
-    
-    // Apply physics-based cloth simulation
+
     const simulatedMesh = this.simulateClothPhysics(deformedMesh, config);
-    
-    // Apply lighting and material effects
+
     const shadedMesh = this.applyLightingEffects(simulatedMesh, config);
-    
-    // Generate final warped image
+
     const warpedImage = this.renderWarpedImage(shadedMesh, config);
     
     return {
@@ -519,8 +495,7 @@ class ClothWarpingEngine {
 
   deformMeshToBody(mesh, config) {
     const { anchorPoints, bodyMeasurements, fabricProperties } = config;
-    
-    // Apply anchor point constraints
+
     anchorPoints.forEach(anchor => {
       const meshPoint = this.findNearestMeshPoint(mesh, anchor.position);
       if (meshPoint) {
@@ -531,7 +506,6 @@ class ClothWarpingEngine {
       }
     });
 
-    // Apply smooth deformation across the mesh
     return this.applySmoothDeformation(mesh, config);
   }
 
@@ -540,16 +514,13 @@ class ClothWarpingEngine {
     const iterations = 5; // Physics solver iterations
     
     for (let iter = 0; iter < iterations; iter++) {
-      // Apply spring constraints between mesh points
+
       this.applySpringConstraints(mesh, fabricProperties);
-      
-      // Apply gravity and external forces
+
       this.applyGravityAndForces(mesh, fabricProperties);
-      
-      // Apply collision detection with body
+
       this.applyBodyCollision(mesh, config);
-      
-      // Update positions based on velocities
+
       this.updateMeshPositions(mesh);
     }
     
@@ -565,11 +536,9 @@ class ClothWarpingEngine {
         const current = mesh[i][j];
         const right = mesh[i + 1][j];
         const down = mesh[i][j + 1];
-        
-        // Apply spring force to right neighbor
+
         this.applySpringForce(current, right, restLength, springStrength);
-        
-        // Apply spring force to down neighbor
+
         this.applySpringForce(current, down, restLength, springStrength);
       }
     }
@@ -602,10 +571,9 @@ class ClothWarpingEngine {
     mesh.forEach(row => {
       row.forEach(point => {
         if (!point.pinned) {
-          // Apply gravity
+
           point.velocity.y += gravity;
-          
-          // Apply damping
+
           point.velocity.x *= damping;
           point.velocity.y *= damping;
         }
@@ -620,10 +588,10 @@ class ClothWarpingEngine {
     mesh.forEach(row => {
       row.forEach(point => {
         if (!point.pinned) {
-          // Check collision with body contour
+
           const collision = this.checkPointBodyCollision(point, bodyContour);
           if (collision) {
-            // Push point outside body
+
             point.x = collision.correctedX;
             point.y = collision.correctedY;
             point.velocity.x *= 0.5; // Reduce velocity on collision
@@ -636,9 +604,7 @@ class ClothWarpingEngine {
 
   extractBodyContour(bodySegmentation) {
     if (!bodySegmentation || !bodySegmentation.mask) return null;
-    
-    // Extract contour points from segmentation mask
-    // This is a simplified implementation
+
     return {
       points: [], // Would contain actual contour points
       bounds: { minX: 0, maxX: 640, minY: 0, maxY: 480 }
@@ -647,18 +613,15 @@ class ClothWarpingEngine {
 
   calculateWarpingConfidence(config) {
     let confidence = 0.8; // Base confidence
-    
-    // Boost confidence based on pose quality
+
     if (config.anchorPoints && config.anchorPoints.length >= 6) {
       confidence += 0.1;
     }
-    
-    // Boost confidence based on body measurements accuracy
+
     if (config.bodyMeasurements && config.bodyMeasurements.confidence > 0.7) {
       confidence += config.bodyMeasurements.confidence * 0.15;
     }
-    
-    // Reduce confidence if lighting is poor
+
     if (config.lightingConditions && config.lightingConditions.quality < 0.5) {
       confidence -= 0.1;
     }
@@ -688,7 +651,7 @@ class ClothWarpingEngine {
   }
 
   generateWrinkles(anchorPoints, fabricProps) {
-    // Wrinkle generation based on anchor point stress
+
     return anchorPoints.map(point => ({
       x: point.x + Math.random() * 10 - 5,
       y: point.y + Math.random() * 10 - 5,
@@ -761,12 +724,11 @@ class ClothWarpingEngine {
   }
 
   calculateMovementVector(pose) {
-    // In production, this would track pose changes over time
+
     return { x: 0, y: 0, velocity: 0 };
   }
 }
 
-// Enhanced Real-time Camera Component with AI-Powered Virtual Try-On
 const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurementUpdate }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -794,7 +756,6 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   });
   const [isRecording, setIsRecording] = useState(false);
 
-  // Capture image function using useCallback for better performance
   const captureImage = useCallback(() => {
     if (canvasRef.current && videoRef.current) {
       const canvas = canvasRef.current;
@@ -815,7 +776,6 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     }
   }, [onCapture, currentPose, aiMetrics]);
 
-  // Initialize AI engines
   useEffect(() => {
     initializeAI();
     return () => cleanup();
@@ -876,21 +836,18 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       try {
         frameCount++;
         const currentTime = Date.now();
-        
-        // Calculate FPS
+
         if (frameCount % 30 === 0) {
           const fps = 30000 / (currentTime - lastTime);
           setAiMetrics(prev => ({ ...prev, processingFPS: Math.round(fps) }));
           lastTime = currentTime;
         }
 
-        // Advanced pose detection
         const pose = await poseEngineRef.current.detectPose(videoRef.current);
         
         if (pose) {
           setCurrentPose(pose);
-          
-          // Update poses for visualization
+
           if (pose.keypoints) {
             setPoses(pose.keypoints.map(kp => ({
               x: kp.x,
@@ -898,27 +855,23 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
               score: kp.score
             })));
           }
-          
-          // Update AI metrics
+
           setAiMetrics(prev => ({
             ...prev,
             fittingScore: Math.round(pose.fittingScore * 100),
             poseStability: Math.round(pose.bodyMeasurements.confidence * 100),
             measurementAccuracy: Math.round(pose.bodyMeasurements.confidence * 100)
           }));
-          
-          // Update parent with measurements
+
           if (onMeasurementUpdate) {
             onMeasurementUpdate(pose.bodyMeasurements);
           }
-          
-          // Body segmentation for more accurate fitting
+
           if (frameCount % 10 === 0) { // Run segmentation every 10 frames for performance
             const segmentation = await poseEngineRef.current.segmentBody(videoRef.current);
             setBodySegmentation(segmentation);
           }
-          
-          // Apply virtual clothing if product is selected
+
           if (selectedProduct && clothWarpEngineRef.current) {
             const warpedClothing = clothWarpEngineRef.current.warpClothingToBody(
               selectedProduct.image,
@@ -928,15 +881,13 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
             );
             setVirtualClothing(warpedClothing);
           }
-          
-          // Render AR overlay
+
           renderAROverlay(pose, virtualClothing);
         }
       } catch (error) {
         console.error('AI processing frame error:', error);
       }
-      
-      // Continue processing
+
       if (isActive) {
         requestAnimationFrame(processFrame);
       }
@@ -954,24 +905,19 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     const ctx = overlayCanvas.getContext('2d');
     overlayCanvas.width = video.videoWidth;
     overlayCanvas.height = video.videoHeight;
-    
-    // Clear previous overlay
+
     ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-    
-    // Draw pose skeleton (for debugging/calibration)
+
     if (calibrationMode && pose.clothingAnchorPoints) {
       drawPoseSkeleton(ctx, pose.clothingAnchorPoints);
     }
-    
-    // Draw body measurements overlay
+
     drawBodyMeasurements(ctx, pose.bodyMeasurements);
-    
-    // Draw virtual clothing
+
     if (clothing && selectedProduct) {
       drawVirtualClothing(ctx, clothing, pose);
     }
-    
-    // Draw AI confidence indicators
+
     drawAIIndicators(ctx, pose);
   }, [calibrationMode, selectedProduct]);
 
@@ -979,23 +925,20 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     ctx.strokeStyle = '#00ff41';
     ctx.lineWidth = 3;
     ctx.fillStyle = '#00ff41';
-    
-    // Draw anchor points
+
     anchorPoints.forEach(point => {
       if (point.x && point.y && point.score > 0.5) {
         ctx.beginPath();
         ctx.arc(point.x, point.y, 6 * point.weight, 0, 2 * Math.PI);
         ctx.fill();
-        
-        // Draw point label
+
         ctx.fillStyle = '#ffffff';
         ctx.font = '12px Arial';
         ctx.fillText(point.type.split('_')[1], point.x + 10, point.y - 5);
         ctx.fillStyle = '#00ff41';
       }
     });
-    
-    // Draw connections
+
     const connections = [
       ['shoulder_left', 'shoulder_right'],
       ['shoulder_left', 'elbow_left'],
@@ -1041,23 +984,19 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     if (!clothing || !clothing.warpedImage || !pose.clothingAnchorPoints) return;
     
     try {
-      // Apply advanced rendering with shadows and highlights
+
       ctx.globalCompositeOperation = 'source-over';
-      
-      // Draw shadows first
+
       if (clothing.shadowsAndHighlights) {
         drawClothingShadows(ctx, clothing.shadowsAndHighlights, pose);
       }
-      
-      // Draw the main clothing with warping
+
       drawWarpedClothing(ctx, clothing, pose);
-      
-      // Draw highlights and fabric details
+
       if (clothing.fabricBehavior) {
         drawFabricDetails(ctx, clothing.fabricBehavior, pose);
       }
-      
-      // Reset composite operation
+
       ctx.globalCompositeOperation = 'source-over';
     } catch (error) {
       console.error('Virtual clothing rendering error:', error);
@@ -1085,8 +1024,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   };
 
   const drawWarpedClothing = (ctx, clothing, pose) => {
-    // Simplified warped clothing rendering
-    // In production, this would use advanced mesh warping
+
     const anchorPoints = pose.clothingAnchorPoints;
     
     if (anchorPoints.length >= 4) {
@@ -1096,7 +1034,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       const rightHip = anchorPoints.find(p => p.type === 'hip_right');
       
       if (leftShoulder && rightShoulder && leftHip && rightHip) {
-        // Draw clothing outline based on body shape
+
         ctx.strokeStyle = selectedProduct?.color || '#4f46e5';
         ctx.fillStyle = `${selectedProduct?.color || '#4f46e5'}40`;
         ctx.lineWidth = 3;
@@ -1109,8 +1047,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        
-        // Add fabric texture simulation
+
         drawFabricTexture(ctx, leftShoulder, rightShoulder, leftHip, rightHip);
       }
     }
@@ -1118,11 +1055,10 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
 
   const drawFabricTexture = (ctx, leftShoulder, rightShoulder, leftHip, rightHip) => {
     const fabricType = selectedProduct?.fabric || 'cotton';
-    
-    // Simple fabric texture based on type
+
     switch (fabricType) {
       case 'silk':
-        // Smooth, shiny texture
+
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
         ctx.lineWidth = 1;
         for (let i = 0; i < 5; i++) {
@@ -1135,7 +1071,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         break;
         
       case 'denim':
-        // Rough, textured appearance
+
         ctx.strokeStyle = 'rgba(0, 0, 100, 0.2)';
         ctx.lineWidth = 2;
         for (let i = 0; i < 3; i++) {
@@ -1148,7 +1084,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         break;
         
       default:
-        // Cotton - subtle weave pattern
+
         ctx.strokeStyle = 'rgba(200, 200, 200, 0.1)';
         ctx.lineWidth = 1;
         for (let i = 0; i < 10; i++) {
@@ -1162,7 +1098,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   };
 
   const drawFabricDetails = (ctx, fabricBehavior, pose) => {
-    // Draw wrinkles
+
     if (fabricBehavior.wrinkles) {
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.lineWidth = 1;
@@ -1179,18 +1115,16 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   };
 
   const drawAIIndicators = (ctx, pose) => {
-    // Draw AI confidence indicator
+
     const indicatorSize = 100;
     const x = ctx.canvas.width - indicatorSize - 20;
     const y = 20;
-    
-    // Background circle
+
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.beginPath();
     ctx.arc(x + indicatorSize/2, y + indicatorSize/2, indicatorSize/2, 0, 2 * Math.PI);
     ctx.fill();
-    
-    // Confidence arc
+
     const confidence = pose.fittingScore || 0;
     ctx.strokeStyle = confidence > 0.7 ? '#00ff41' : confidence > 0.4 ? '#ffaa00' : '#ff4444';
     ctx.lineWidth = 8;
@@ -1203,8 +1137,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       -Math.PI/2 + (confidence * 2 * Math.PI)
     );
     ctx.stroke();
-    
-    // Confidence text
+
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
@@ -1226,17 +1159,14 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     const ctx = canvas.getContext('2d');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
-    // Draw high-quality frame
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Composite overlay
+
     if (overlayCanvas) {
       ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(overlayCanvas, 0, 0, canvas.width, canvas.height);
     }
-    
-    // Apply filters
+
     if (filters) {
       applyAdvancedFilters(ctx, filters);
     }
@@ -1279,27 +1209,22 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
 
   const applyVirtualClothing = (ctx, width, height) => {
     if (!selectedProduct) return;
-    
-    // Save current state
+
     ctx.save();
-    
-    // Apply blend mode for realistic overlay
+
     ctx.globalCompositeOperation = overlayStyle.blend;
     ctx.globalAlpha = overlayStyle.opacity;
-    
-    // Create clothing overlay based on pose
+
     const centerX = width * 0.5;
     const centerY = height * 0.4;
     const clothWidth = width * 0.35;
     const clothHeight = height * 0.45;
-    
-    // Create gradient for clothing effect
+
     const gradient = ctx.createLinearGradient(
       centerX - clothWidth/2, centerY,
       centerX + clothWidth/2, centerY + clothHeight
     );
-    
-    // Dynamic color based on product
+
     const productColors = {
       shirt: ['#3B82F6', '#1E40AF'],
       dress: ['#EC4899', '#BE185D'],
@@ -1312,8 +1237,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     gradient.addColorStop(1, colors[1]);
     
     ctx.fillStyle = gradient;
-    
-    // Draw clothing shape with pose-based adjustments
+
     ctx.beginPath();
     ctx.roundRect(
       centerX - clothWidth/2,
@@ -1323,8 +1247,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       20
     );
     ctx.fill();
-    
-    // Add fabric texture simulation
+
     ctx.globalCompositeOperation = 'overlay';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     
@@ -1333,14 +1256,13 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       const y = centerY + Math.random() * clothHeight;
       ctx.fillRect(x, y, 2, 2);
     }
-    
-    // Restore state
+
     ctx.restore();
   };
 
   return (
     <div className="relative bg-black rounded-2xl overflow-hidden h-full">
-      {/* Video Feed */}
+      {}
       <video
         ref={videoRef}
         autoPlay
@@ -1349,10 +1271,10 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         className="w-full h-full object-cover"
       />
       
-      {/* Hidden canvas for image processing */}
+      {}
       <canvas ref={canvasRef} className="hidden" />
       
-      {/* Pose Detection Overlay */}
+      {}
       <div className="absolute inset-0 pointer-events-none">
         {poses.map((pose, index) => (
           <motion.div
@@ -1374,7 +1296,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
           />
         ))}
         
-        {/* Body outline simulation */}
+        {}
         {poses.length >= 6 && (
           <svg className="absolute inset-0 w-full h-full">
             <path
@@ -1394,7 +1316,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         )}
       </div>
       
-      {/* Status Indicators */}
+      {}
       <div className="absolute top-4 left-4 space-y-2">
         <motion.div 
           className="bg-black/50 backdrop-blur rounded-full px-3 py-1 text-white text-sm flex items-center space-x-2"
@@ -1416,7 +1338,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         </div>
       </div>
       
-      {/* Camera Controls */}
+      {}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
         <div className="flex items-center space-x-4">
           <motion.button
@@ -1456,7 +1378,6 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   );
 };
 
-// Product Selection Component
 const ProductGrid = ({ products, selectedProduct, onSelect }) => {
   const [category, setCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -1473,7 +1394,7 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
     <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
       <h3 className="text-xl font-bold text-white mb-4">Choose Your Style</h3>
       
-      {/* Search */}
+      {}
       <div className="mb-4">
         <input
           type="text"
@@ -1484,7 +1405,7 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
         />
       </div>
       
-      {/* Categories */}
+      {}
       <div className="flex flex-wrap gap-2 mb-4">
         {categories.map(cat => (
           <motion.button
@@ -1503,7 +1424,7 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
         ))}
       </div>
       
-      {/* Product Grid */}
+      {}
       <div className="grid grid-cols-2 gap-3 max-h-80 overflow-y-auto">
         {filteredProducts.map(product => (
           <motion.div
@@ -1544,14 +1465,13 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
   );
 };
 
-// AR Settings Panel
 const SettingsPanel = ({ settings, onUpdate }) => {
   return (
     <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
       <h3 className="text-xl font-bold text-white mb-4">AR Settings</h3>
       
       <div className="space-y-6">
-        {/* Overlay Opacity */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2 text-sm">Overlay Opacity</label>
           <input
@@ -1566,7 +1486,7 @@ const SettingsPanel = ({ settings, onUpdate }) => {
           <span className="text-gray-400 text-xs">{Math.round(settings.opacity * 100)}%</span>
         </div>
         
-        {/* Blend Mode */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2 text-sm">Blend Mode</label>
           <select
@@ -1581,7 +1501,7 @@ const SettingsPanel = ({ settings, onUpdate }) => {
           </select>
         </div>
         
-        {/* Fit Adjustment */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2 text-sm">Fit</label>
           <div className="grid grid-cols-3 gap-2">
@@ -1603,7 +1523,7 @@ const SettingsPanel = ({ settings, onUpdate }) => {
           </div>
         </div>
         
-        {/* Filters */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2 text-sm">Filters</label>
           <div className="space-y-2">
@@ -1632,7 +1552,6 @@ const SettingsPanel = ({ settings, onUpdate }) => {
   );
 };
 
-// Main Virtual Try-On Component
 const VirtualTryOn = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [capturedImages, setCapturedImages] = useState([]);
@@ -1653,7 +1572,6 @@ const VirtualTryOn = () => {
     beauty: false
   });
 
-  // Initialize analytics on component mount
   useEffect(() => {
     analytics.initialize();
     analytics.trackEvent('virtual_tryon_page_loaded', {
@@ -1667,7 +1585,6 @@ const VirtualTryOn = () => {
     };
   }, []);
 
-  // Track product selection
   useEffect(() => {
     if (selectedProduct) {
       analytics.trackEvent('product_selected', {
@@ -1677,7 +1594,6 @@ const VirtualTryOn = () => {
         brand: selectedProduct.brand
       });
 
-      // Start try-on session tracking
       analytics.trackTryOn('start', selectedProduct.id, {
         fittingScore: 0,
         poseStability: 0,
@@ -1686,7 +1602,6 @@ const VirtualTryOn = () => {
     }
   }, [selectedProduct]);
 
-  // Sample Products
   const products = [
     { id: 1, name: 'Classic T-Shirt', category: 'tshirt', brand: 'StyleCo', price: '$29.99' },
     { id: 2, name: 'Elegant Dress', category: 'dress', brand: 'Fashion Plus', price: '$79.99' },
@@ -1696,11 +1611,9 @@ const VirtualTryOn = () => {
     { id: 6, name: 'Summer Dress', category: 'dress', brand: 'Beach Vibes', price: '$55.99' },
   ];
 
-  // Enhanced product selection with analytics
   const handleProductSelect = useCallback((product) => {
     setSelectedProduct(product);
 
-    // Track product view analytics
     analytics.trackEvent('product_view', {
       productId: product.id,
       productName: product.name,
@@ -1709,7 +1622,6 @@ const VirtualTryOn = () => {
       price: product.price
     });
 
-    // Update product analytics for view
     analytics.updateProductAnalytics(product.id, 'view', 1, {
       timestamp: new Date().toISOString()
     });
@@ -1728,7 +1640,6 @@ const VirtualTryOn = () => {
     };
     setCapturedImages(prev => [newCapture, ...prev]);
 
-    // Track capture event with analytics
     analytics.trackEvent('virtual_tryon_capture', {
       productId: selectedProduct?.id,
       captureId: newCapture.id,
@@ -1737,7 +1648,6 @@ const VirtualTryOn = () => {
       settings: settings
     });
 
-    // Track AI performance metrics if available
     if (captureData.aiMetrics) {
       analytics.trackEvent('ai_performance', {
         fittingScore: captureData.aiMetrics.fittingScore,
@@ -1746,7 +1656,6 @@ const VirtualTryOn = () => {
         confidence: captureData.aiMetrics.confidence || captureData.aiMetrics.fittingScore
       });
 
-      // Update try-on analytics
       analytics.trackTryOn('success', selectedProduct?.id, captureData.aiMetrics);
     }
   };
@@ -1771,7 +1680,7 @@ const VirtualTryOn = () => {
         console.error('Share failed:', error);
       }
     } else {
-      // Fallback: download image
+
       const link = document.createElement('a');
       link.download = 'virtual-tryon.png';
       link.href = imageData;
@@ -1793,7 +1702,7 @@ const VirtualTryOn = () => {
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 ${isFullscreen ? 'p-0' : 'p-6'}`}>
-      {/* Header */}
+      {}
       {!isFullscreen && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -1810,11 +1719,11 @@ const VirtualTryOn = () => {
         </motion.div>
       )}
 
-      {/* Main Content */}
+      {}
       <div className={`${isFullscreen ? 'h-screen' : 'max-w-7xl mx-auto'}`}>
         <div className={`grid ${isFullscreen ? 'grid-cols-1 h-full' : 'grid-cols-1 lg:grid-cols-4 gap-6 h-[600px]'}`}>
           
-          {/* Camera View */}
+          {}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -1827,7 +1736,7 @@ const VirtualTryOn = () => {
               onMeasurementUpdate={handleMeasurementUpdate}
             />
             
-            {/* Fullscreen Toggle */}
+            {}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -1838,21 +1747,21 @@ const VirtualTryOn = () => {
             </motion.button>
           </motion.div>
 
-          {/* Side Panel */}
+          {}
           {!isFullscreen && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6 overflow-y-auto"
             >
-              {/* Product Selection */}
+              {}
               <ProductGrid
                 products={products}
                 selectedProduct={selectedProduct}
                 onSelect={handleProductSelect}
               />
 
-              {/* Settings Panel */}
+              {}
               <SettingsPanel
                 settings={settings}
                 onUpdate={setSettings}
@@ -1861,7 +1770,7 @@ const VirtualTryOn = () => {
           )}
         </div>
 
-        {/* Action Buttons */}
+        {}
         {selectedProduct && !isFullscreen && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1889,7 +1798,7 @@ const VirtualTryOn = () => {
         )}
       </div>
 
-      {/* Captured Images Gallery */}
+      {}
       {capturedImages.length > 0 && !isFullscreen && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1942,7 +1851,7 @@ const VirtualTryOn = () => {
         </motion.div>
       )}
 
-      {/* Features Showcase */}
+      {}
       {!isFullscreen && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

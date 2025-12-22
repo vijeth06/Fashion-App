@@ -1,4 +1,4 @@
-// Lightweight mock for node-canvas used during tests
+﻿
 class CanvasMock {
   constructor() { this.width = 0; this.height = 0; }
   getContext() { return { getImageData: () => ({ data: new Uint8ClampedArray() }), putImageData: () => {} }; }

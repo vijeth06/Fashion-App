@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BiometricValidator } from '../data/biometricProfile';
 import { 
@@ -11,31 +11,27 @@ import {
   FaHistory
 } from 'react-icons/fa';
 
-/**
- * Measurement Validation Component
- * Shows realistic vs unrealistic measurements with validation
- */
+
 const MeasurementValidation = () => {
   const [measurements, setMeasurements] = useState({});
   const [validationResults, setValidationResults] = useState({});
   const [showRealistic, setShowRealistic] = useState(false);
 
   useEffect(() => {
-    // Show the problematic measurements you encountered
+
     const problematicMeasurements = {
       chest: 104497, // Your original problematic value
       waist: 55489,  // Your original problematic value
       hips: 63416    // Your original problematic value
     };
 
-    // Generate realistic measurements for comparison
     const realisticMeasurements = BiometricValidator.generateRealisticMockMeasurements();
 
     setMeasurements(showRealistic ? realisticMeasurements : problematicMeasurements);
   }, [showRealistic]);
 
   useEffect(() => {
-    // Validate all measurements
+
     const results = {};
     Object.entries(measurements).forEach(([type, value]) => {
       if (value !== undefined && value !== null) {
@@ -59,7 +55,7 @@ const MeasurementValidation = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 p-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">
             Measurement Validation Demo
@@ -69,7 +65,7 @@ const MeasurementValidation = () => {
           </p>
         </div>
 
-        {/* Toggle Switch */}
+        {}
         <div className="flex items-center justify-center mb-8">
           <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-4 border border-gray-700">
             <div className="flex items-center space-x-4">
@@ -95,7 +91,7 @@ const MeasurementValidation = () => {
           </div>
         </div>
 
-        {/* Measurements Display */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {Object.entries(measurements).map(([type, value]) => {
             const result = validationResults[type];
@@ -155,7 +151,7 @@ const MeasurementValidation = () => {
           })}
         </div>
 
-        {/* Summary */}
+        {}
         <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-gray-700">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
             <FaHistory className="mr-2" />
@@ -164,24 +160,24 @@ const MeasurementValidation = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-semibold text-red-400 mb-3">❌ Previous Issues:</h3>
+              <h3 className="text-lg font-semibold text-red-400 mb-3">âŒ Previous Issues:</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>• Chest: 104,497 cm (over 1 kilometer!)</li>
-                <li>• Waist: 55,489 cm (555 meters)</li>
-                <li>• Hips: 63,416 cm (634 meters)</li>
-                <li>• No validation or range checking</li>
-                <li>• Arbitrary pixel multipliers (×100, ×150)</li>
+                <li>â€¢ Chest: 104,497 cm (over 1 kilometer!)</li>
+                <li>â€¢ Waist: 55,489 cm (555 meters)</li>
+                <li>â€¢ Hips: 63,416 cm (634 meters)</li>
+                <li>â€¢ No validation or range checking</li>
+                <li>â€¢ Arbitrary pixel multipliers (Ã—100, Ã—150)</li>
               </ul>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-green-400 mb-3">✅ Fixed Implementation:</h3>
+              <h3 className="text-lg font-semibold text-green-400 mb-3">âœ… Fixed Implementation:</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>• Realistic measurement ranges (70-130 cm chest)</li>
-                <li>• Proper validation and error detection</li>
-                <li>• Scaled pixel calculations (×0.4-0.8 factors)</li>
-                <li>• Confidence scoring based on realistic ranges</li>
-                <li>• Protection against corrupted/incorrect data</li>
+                <li>â€¢ Realistic measurement ranges (70-130 cm chest)</li>
+                <li>â€¢ Proper validation and error detection</li>
+                <li>â€¢ Scaled pixel calculations (Ã—0.4-0.8 factors)</li>
+                <li>â€¢ Confidence scoring based on realistic ranges</li>
+                <li>â€¢ Protection against corrupted/incorrect data</li>
               </ul>
             </div>
           </div>

@@ -1,4 +1,4 @@
-// Comprehensive Error Monitoring and Analytics System
+﻿
 class ErrorMonitoringService {
   constructor() {
     this.errorQueue = [];
@@ -18,14 +18,12 @@ class ErrorMonitoringService {
   }
 
   initializeMonitoring() {
-    // Global error handler
+
     window.addEventListener('error', this.handleGlobalError.bind(this));
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection.bind(this));
-    
-    // Performance monitoring
+
     this.setupPerformanceMonitoring();
-    
-    // Start periodic flush
+
     setInterval(() => this.flushErrors(), this.config.flushInterval);
   }
 
@@ -59,7 +57,7 @@ class ErrorMonitoringService {
   }
 
   logError(errorData) {
-    // Enhance error with additional context
+
     const enhancedError = {
       ...errorData,
       sessionId: this.getSessionId(),
@@ -71,23 +69,18 @@ class ErrorMonitoringService {
       deviceInfo: this.getDeviceInfo()
     };
 
-    // Add to queue
     this.errorQueue.push(enhancedError);
-    
-    // Update analytics
+
     this.updateErrorAnalytics(enhancedError);
-    
-    // Console log in development
+
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Logged:', enhancedError);
     }
-    
-    // Immediate flush for critical errors
+
     if (this.isCriticalError(enhancedError)) {
       this.flushErrors();
     }
-    
-    // Maintain queue size
+
     if (this.errorQueue.length > this.config.maxQueueSize) {
       this.errorQueue.shift();
     }
@@ -101,7 +94,7 @@ class ErrorMonitoringService {
     try {
       await this.sendErrorBatch(batch);
     } catch (error) {
-      // Put failed batch back in queue
+
       this.errorQueue.unshift(...batch);
       console.error('Failed to send error batch:', error);
     }
@@ -134,7 +127,7 @@ class ErrorMonitoringService {
       return await response.json();
     } catch (error) {
       if (attempt < this.config.retryAttempts) {
-        // Exponential backoff
+
         const delay = Math.pow(2, attempt) * 1000;
         setTimeout(() => {
           this.sendErrorBatch(errors, attempt + 1);
@@ -146,7 +139,7 @@ class ErrorMonitoringService {
   }
 
   setupPerformanceMonitoring() {
-    // Monitor page load performance
+
     window.addEventListener('load', () => {
       setTimeout(() => {
         const perfData = performance.getEntriesByType('navigation')[0];
@@ -159,7 +152,6 @@ class ErrorMonitoringService {
       }, 0);
     });
 
-    // Monitor resource loading
     new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
         if (entry.duration > 2000) { // Log slow resources
@@ -213,8 +205,7 @@ class ErrorMonitoringService {
     
     this.analytics.errors[errorType].count++;
     this.analytics.errors[errorType].lastSeen = error.timestamp;
-    
-    // Keep sample errors
+
     if (this.analytics.errors[errorType].samples.length < 5) {
       this.analytics.errors[errorType].samples.push(error);
     }
@@ -245,7 +236,7 @@ class ErrorMonitoringService {
   }
 
   getCurrentUserId() {
-    // Get from your auth context or localStorage
+
     return localStorage.getItem('userId') || 'anonymous';
   }
 
@@ -304,7 +295,6 @@ class ErrorMonitoringService {
     };
   }
 
-  // Public methods for manual error reporting
   reportError(error, context = {}) {
     this.logError({
       type: 'manual_report',
@@ -328,7 +318,6 @@ class ErrorMonitoringService {
     });
   }
 
-  // Get analytics data for dashboard
   getAnalytics() {
     return {
       ...this.analytics,
@@ -338,7 +327,6 @@ class ErrorMonitoringService {
   }
 }
 
-// React Hook for error monitoring
 export const useErrorMonitoring = () => {
   const reportError = (error, context) => {
     errorMonitoringService.reportError(error, context);
@@ -359,7 +347,6 @@ export const useErrorMonitoring = () => {
   };
 };
 
-// Initialize global instance
 const errorMonitoringService = new ErrorMonitoringService();
 
 export default errorMonitoringService;

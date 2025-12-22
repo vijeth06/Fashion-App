@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import userService from '../services/userService';
@@ -13,7 +13,6 @@ export default function Cart() {
   const [discount, setDiscount] = useState(0);
   const [showPromoInput, setShowPromoInput] = useState(false);
 
-  // Fetch cart data from backend
   useEffect(() => {
     async function fetchCart() {
       if (!user?.uid) {
@@ -24,7 +23,7 @@ export default function Cart() {
         setLoading(true);
         setError(null);
         const cartData = await userService.getCart(user.uid);
-        // Fetch product details for each cart item
+
         const itemsWithDetails = await Promise.all(
           (cartData.cart || []).map(async (item) => {
             try {
@@ -68,7 +67,6 @@ export default function Cart() {
     try {
       const item = cartItems.find(i => i.id === itemId);
 
-      // Check inventory before updating
       const inventoryResponse = await fetch(
         `${process.env.REACT_APP_API_URL}/api/v1/products/${item.productId}/inventory?size=${item.size}`
       );
@@ -79,10 +77,8 @@ export default function Cart() {
         return;
       }
 
-      // Save old state for rollback
       const oldCartItems = [...cartItems];
 
-      // Optimistically update UI
       setCartItems(prev =>
         prev.map(i =>
           i.id === itemId
@@ -91,7 +87,6 @@ export default function Cart() {
         )
       );
 
-      // Sync with backend
       const response = await userService.updateCartItem(
         user.uid,
         item.productId,
@@ -99,13 +94,12 @@ export default function Cart() {
       );
 
       if (!response.success) {
-        // Rollback if backend fails
+
         setCartItems(oldCartItems);
         alert('Failed to update cart. Reverted to previous state.');
         return;
       }
 
-      // Verify backend state
       const cartResponse = await userService.getCart(user.uid);
       setCartItems(cartResponse.cart.map(cartItem => ({
         ...cartItem,
@@ -115,7 +109,7 @@ export default function Cart() {
     } catch (err) {
       console.error('Error updating quantity:', err);
       alert('Failed to update quantity. Please try again.');
-      // Fetch fresh cart to ensure consistency
+
       try {
         const freshCart = await userService.getCart(user.uid);
         setCartItems(freshCart.cart.map(cartItem => ({
@@ -148,7 +142,6 @@ export default function Cart() {
     try {
       setLoading(true);
 
-      // Validate coupon with backend
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/v1/coupons/validate`,
         {
@@ -169,10 +162,9 @@ export default function Cart() {
         return;
       }
 
-      // Coupon valid - set discount
       setDiscount(data.coupon.discountAmount / subtotal);
       alert(
-        `Coupon applied! ₹${data.coupon.discountAmount} discount`
+        `Coupon applied! â‚¹${data.coupon.discountAmount} discount`
       );
       setShowPromoInput(false);
 
@@ -186,7 +178,7 @@ export default function Cart() {
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const discountAmount = subtotal * discount;
-  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above â‚¹2000
   const gst = (subtotal - discountAmount) * 0.18; // 18% GST
   const total = subtotal - discountAmount + shipping + gst;
 
@@ -194,7 +186,7 @@ export default function Cart() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🛒</div>
+          <div className="text-6xl mb-4">ðŸ›’</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign in to view your cart</h2>
           <p className="text-gray-600 mb-6">You need to be logged in to access your shopping cart.</p>
           <Link to="/login" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
@@ -236,16 +228,16 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
           <p className="text-gray-600">Review your items before checkout</p>
         </div>
 
         {cartItems.length === 0 ? (
-          /* Empty Cart */
+          
           <div className="text-center py-16">
-            <div className="text-8xl mb-6">🛒</div>
+            <div className="text-8xl mb-6">ðŸ›’</div>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-8 text-lg">Looks like you haven't added any items to your cart yet.</p>
             <div className="space-y-4">
@@ -257,19 +249,19 @@ export default function Cart() {
               </Link>
               <div className="text-center">
                 <Link to="/try-on" className="text-purple-600 hover:text-purple-700 font-medium">
-                  Or try our Virtual Try-On →
+                  Or try our Virtual Try-On â†’
                 </Link>
               </div>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
+            {}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <div key={item.id} className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
                   <div className="flex flex-col sm:flex-row gap-6">
-                    {/* Product Image & Try-On Preview */}
+                    {}
                     <div className="flex gap-4">
                       <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         <img 
@@ -292,12 +284,12 @@ export default function Cart() {
                       )}
                     </div>
 
-                    {/* Product Details */}
+                    {}
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                          <p className="text-gray-600 capitalize text-sm">{item.category} • Size: {item.size}</p>
+                          <p className="text-gray-600 capitalize text-sm">{item.category} â€¢ Size: {item.size}</p>
                         </div>
                         <button 
                           onClick={() => removeItem(item.id)}
@@ -334,26 +326,26 @@ export default function Cart() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-semibold text-gray-900">
-                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                            â‚¹{(item.price * item.quantity).toLocaleString('en-IN')}
                           </div>
                           <div className="text-sm text-gray-500">
-                            ₹{item.price.toLocaleString('en-IN')} each
+                            â‚¹{item.price.toLocaleString('en-IN')} each
                           </div>
                           {item.mrp && item.mrp > item.price && (
                             <div className="text-xs text-green-600">
-                              Save ₹{((item.mrp - item.price) * item.quantity).toLocaleString('en-IN')}
+                              Save â‚¹{((item.mrp - item.price) * item.quantity).toLocaleString('en-IN')}
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {/* Try-On Again Button */}
+                      {}
                       <div className="mt-4 flex gap-2">
                         <Link 
                           to="/try-on"
                           className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center gap-1"
                         >
-                          <span>✨</span>
+                          <span>âœ¨</span>
                           Try On Again
                         </Link>
                         <Link 
@@ -368,56 +360,56 @@ export default function Cart() {
                 </div>
               ))}
 
-              {/* Continue Shopping */}
+              {}
               <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
                 <p className="text-gray-600 mb-4">Need more items?</p>
                 <Link 
                   to="/catalog"
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  Continue Shopping →
+                  Continue Shopping â†’
                 </Link>
               </div>
             </div>
 
-            {/* Order Summary */}
+            {}
             <div className="space-y-6">
-              {/* Summary Card */}
+              {}
               <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
                 
                 <div className="space-y-4">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                    <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                    <span>â‚¹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Discount ({(discount * 100).toFixed(0)}%)</span>
-                      <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
+                      <span>-â‚¹{discountAmount.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`}</span>
+                    <span>{shipping === 0 ? 'FREE' : `â‚¹${shipping.toLocaleString('en-IN')}`}</span>
                   </div>
                   
                   <div className="flex justify-between text-gray-600">
                     <span>GST (18%)</span>
-                    <span>₹{gst.toLocaleString('en-IN')}</span>
+                    <span>â‚¹{gst.toLocaleString('en-IN')}</span>
                   </div>
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
                       <span>Total</span>
-                      <span>₹{Math.round(total).toLocaleString('en-IN')}</span>
+                      <span>â‚¹{Math.round(total).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Promo Code */}
+                {}
                 <div className="mt-6">
                   {!showPromoInput ? (
                     <button
@@ -449,16 +441,16 @@ export default function Cart() {
                   )}
                 </div>
 
-                {/* Free Shipping Notice */}
+                {}
                 {subtotal < 2000 && subtotal > 0 && (
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      💡 Add ₹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping!
+                      ðŸ’¡ Add â‚¹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping!
                     </p>
                   </div>
                 )}
 
-                {/* Checkout Button */}
+                {}
                 <Link
                   to="/checkout"
                   className="w-full mt-6 bg-purple-600 text-white py-4 px-6 rounded-xl font-semibold text-center block hover:bg-purple-700 transition-colors"
@@ -466,7 +458,7 @@ export default function Cart() {
                   Proceed to Checkout
                 </Link>
 
-                {/* Security Note */}
+                {}
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -475,7 +467,7 @@ export default function Cart() {
                 </div>
               </div>
 
-              {/* Recommendations */}
+              {}
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Complete Your Look</h3>
                 <p className="text-sm text-gray-500">Product recommendations will appear here</p>

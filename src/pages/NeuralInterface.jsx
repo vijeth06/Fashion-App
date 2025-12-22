@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -18,14 +18,13 @@ import {
   FaMicrochip
 } from 'react-icons/fa';
 
-// Neural Network Visualization Component
 const NeuralNetworkViz = () => {
   const canvasRef = useRef(null);
   const [nodes, setNodes] = useState([]);
   const [connections, setConnections] = useState([]);
 
   useEffect(() => {
-    // Generate neural network nodes
+
     const newNodes = [];
     const layers = [8, 12, 16, 12, 6];
     let nodeId = 0;
@@ -42,7 +41,6 @@ const NeuralNetworkViz = () => {
       }
     });
 
-    // Generate connections
     const newConnections = [];
     newNodes.forEach(node => {
       if (node.layer < layers.length - 1) {
@@ -67,7 +65,7 @@ const NeuralNetworkViz = () => {
   return (
     <div className="relative w-full h-64 bg-black/20 rounded-xl overflow-hidden">
       <svg className="w-full h-full">
-        {/* Render connections */}
+        {}
         {connections.map((conn, index) => (
           <motion.line
             key={index}
@@ -84,7 +82,7 @@ const NeuralNetworkViz = () => {
           />
         ))}
         
-        {/* Render nodes */}
+        {}
         {nodes.map((node, index) => (
           <motion.circle
             key={node.id}
@@ -113,7 +111,6 @@ const NeuralNetworkViz = () => {
   );
 };
 
-// Brain Activity Monitor
 const BrainActivityMonitor = () => {
   const [activity, setActivity] = useState([]);
 
@@ -145,7 +142,6 @@ const BrainActivityMonitor = () => {
   );
 };
 
-// Learning Progress Component
 const LearningProgress = ({ userProfile }) => {
   const [progress, setProgress] = useState(0);
   
@@ -190,7 +186,6 @@ const LearningProgress = ({ userProfile }) => {
   );
 };
 
-// AI Insights Panel
 const AIInsights = () => {
   const [insights, setInsights] = useState([]);
 
@@ -260,7 +255,6 @@ const AIInsights = () => {
   );
 };
 
-// Main Neural Interface Component
 const NeuralInterface = () => {
   const { user, userProfile } = useAuth();
   const [activeSection, setActiveSection] = useState('overview');
@@ -281,7 +275,7 @@ const NeuralInterface = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950">
-      {/* Header */}
+      {}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20" />
@@ -330,7 +324,7 @@ const NeuralInterface = () => {
         </div>
       </div>
 
-      {/* Navigation */}
+      {}
       <div className="container mx-auto px-6">
         <div className="flex justify-center mb-8">
           <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-2 border border-gray-700">
@@ -353,7 +347,7 @@ const NeuralInterface = () => {
           </div>
         </div>
 
-        {/* Content Sections */}
+        {}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}

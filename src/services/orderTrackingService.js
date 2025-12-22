@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   doc, 
   getDoc, 
   getDocs,
@@ -21,13 +21,12 @@ class OrderTrackingService {
     this.listeners = new Map();
   }
 
-  // Order status flow
   getOrderStatuses() {
     return {
       'pending': {
         label: 'Order Placed',
         description: 'Your order has been received and is being processed',
-        icon: '📋',
+        icon: 'ðŸ“‹',
         color: 'text-yellow-600',
         bgColor: 'bg-yellow-100',
         progress: 10
@@ -35,7 +34,7 @@ class OrderTrackingService {
       'confirmed': {
         label: 'Order Confirmed',
         description: 'Your order has been confirmed and payment received',
-        icon: '✅',
+        icon: 'âœ…',
         color: 'text-green-600',
         bgColor: 'bg-green-100',
         progress: 25
@@ -43,7 +42,7 @@ class OrderTrackingService {
       'processing': {
         label: 'Processing',
         description: 'Your order is being prepared for shipment',
-        icon: '⚙️',
+        icon: 'âš™ï¸',
         color: 'text-blue-600',
         bgColor: 'bg-blue-100',
         progress: 40
@@ -51,7 +50,7 @@ class OrderTrackingService {
       'packed': {
         label: 'Packed',
         description: 'Your order has been packed and ready for dispatch',
-        icon: '📦',
+        icon: 'ðŸ“¦',
         color: 'text-purple-600',
         bgColor: 'bg-purple-100',
         progress: 60
@@ -59,7 +58,7 @@ class OrderTrackingService {
       'shipped': {
         label: 'Shipped',
         description: 'Your order is on its way to you',
-        icon: '🚚',
+        icon: 'ðŸšš',
         color: 'text-indigo-600',
         bgColor: 'bg-indigo-100',
         progress: 80
@@ -67,7 +66,7 @@ class OrderTrackingService {
       'out_for_delivery': {
         label: 'Out for Delivery',
         description: 'Your order is out for delivery and will arrive soon',
-        icon: '🏃‍♂️',
+        icon: 'ðŸƒâ€â™‚ï¸',
         color: 'text-orange-600',
         bgColor: 'bg-orange-100',
         progress: 90
@@ -75,7 +74,7 @@ class OrderTrackingService {
       'delivered': {
         label: 'Delivered',
         description: 'Your order has been delivered successfully',
-        icon: '🎉',
+        icon: 'ðŸŽ‰',
         color: 'text-green-600',
         bgColor: 'bg-green-100',
         progress: 100
@@ -83,7 +82,7 @@ class OrderTrackingService {
       'cancelled': {
         label: 'Cancelled',
         description: 'Your order has been cancelled',
-        icon: '❌',
+        icon: 'âŒ',
         color: 'text-red-600',
         bgColor: 'bg-red-100',
         progress: 0
@@ -91,7 +90,7 @@ class OrderTrackingService {
       'returned': {
         label: 'Returned',
         description: 'Your order has been returned',
-        icon: '↩️',
+        icon: 'â†©ï¸',
         color: 'text-gray-600',
         bgColor: 'bg-gray-100',
         progress: 0
@@ -99,7 +98,7 @@ class OrderTrackingService {
       'refunded': {
         label: 'Refunded',
         description: 'Your order has been refunded',
-        icon: '💰',
+        icon: 'ðŸ’°',
         color: 'text-green-600',
         bgColor: 'bg-green-100',
         progress: 0
@@ -107,7 +106,6 @@ class OrderTrackingService {
     };
   }
 
-  // Update order status
   async updateOrderStatus(orderId, newStatus, updateData = {}) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -130,7 +128,6 @@ class OrderTrackingService {
         };
       }
 
-      // Create tracking entry
       const trackingEntry = {
         status: newStatus,
         timestamp: serverTimestamp(),
@@ -141,7 +138,6 @@ class OrderTrackingService {
         carrier: updateData.carrier || currentOrder.carrier || ''
       };
 
-      // Update order
       await updateDoc(orderRef, {
         status: newStatus,
         ...updateData,
@@ -149,7 +145,6 @@ class OrderTrackingService {
         trackingHistory: [...(currentOrder.trackingHistory || []), trackingEntry]
       });
 
-      // Add tracking update
       await this.addTrackingUpdate(orderId, trackingEntry);
 
       return {
@@ -164,7 +159,6 @@ class OrderTrackingService {
     }
   }
 
-  // Add tracking update
   async addTrackingUpdate(orderId, trackingData) {
     try {
       const trackingRef = collection(this.db, 'tracking');
@@ -185,7 +179,6 @@ class OrderTrackingService {
     }
   }
 
-  // Get order tracking history
   async getTrackingHistory(orderId) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -200,8 +193,7 @@ class OrderTrackingService {
 
       const orderData = orderSnap.data();
       const trackingHistory = orderData.trackingHistory || [];
-      
-      // Sort by timestamp
+
       trackingHistory.sort((a, b) => {
         if (a.timestamp && b.timestamp) {
           return a.timestamp.toDate() - b.timestamp.toDate();
@@ -228,7 +220,6 @@ class OrderTrackingService {
     }
   }
 
-  // Get real-time tracking updates
   subscribeToTracking(orderId, callback) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -255,7 +246,6 @@ class OrderTrackingService {
         }
       });
 
-      // Store the listener
       this.listeners.set(orderId, unsubscribe);
       
       return unsubscribe;
@@ -268,7 +258,6 @@ class OrderTrackingService {
     }
   }
 
-  // Unsubscribe from tracking updates
   unsubscribeFromTracking(orderId) {
     const unsubscribe = this.listeners.get(orderId);
     if (unsubscribe) {
@@ -277,7 +266,6 @@ class OrderTrackingService {
     }
   }
 
-  // Get user's orders
   async getUserOrders(userId, limit = 20) {
     try {
       const ordersRef = collection(this.db, 'orders');
@@ -309,7 +297,6 @@ class OrderTrackingService {
     }
   }
 
-  // Calculate estimated delivery date
   calculateEstimatedDelivery(shippingMethod, location) {
     const baseDays = {
       'standard': 5,
@@ -335,7 +322,6 @@ class OrderTrackingService {
     return estimatedDate;
   }
 
-  // Generate tracking number
   generateTrackingNumber(orderId) {
     const prefix = 'VFT'; // Virtual Fashion Tracking
     const timestamp = Date.now().toString().slice(-8);
@@ -343,55 +329,53 @@ class OrderTrackingService {
     return `${prefix}${timestamp}${random}`;
   }
 
-  // Get shipping carriers
   getShippingCarriers() {
     return [
       {
         id: 'fedex',
         name: 'FedEx',
         trackingUrl: 'https://www.fedex.com/en-us/tracking.html?trknbr=',
-        logo: '📦',
+        logo: 'ðŸ“¦',
         estimatedDays: '3-5'
       },
       {
         id: 'dhl',
         name: 'DHL',
         trackingUrl: 'https://www.dhl.com/en/express/tracking.html?AWB=',
-        logo: '🚚',
+        logo: 'ðŸšš',
         estimatedDays: '2-4'
       },
       {
         id: 'bluedart',
         name: 'Blue Dart',
         trackingUrl: 'https://www.bluedart.com/web/guest/trackdartresult?trackFor=0&trackNo=',
-        logo: '💙',
+        logo: 'ðŸ’™',
         estimatedDays: '2-3'
       },
       {
         id: 'dtdc',
         name: 'DTDC',
         trackingUrl: 'https://www.dtdc.in/tracking/tracking_results.asp?Strno=',
-        logo: '📮',
+        logo: 'ðŸ“®',
         estimatedDays: '3-5'
       },
       {
         id: 'indiapost',
         name: 'India Post',
         trackingUrl: 'https://www.indiapost.gov.in/VAS/Pages/IndiaPostHome.aspx?trackid=',
-        logo: '📫',
+        logo: 'ðŸ“«',
         estimatedDays: '5-7'
       },
       {
         id: 'ecom',
         name: 'Ecom Express',
         trackingUrl: 'https://ecomexpress.in/tracking/?awb_field=',
-        logo: '📦',
+        logo: 'ðŸ“¦',
         estimatedDays: '3-4'
       }
     ];
   }
 
-  // Track order via carrier
   async trackViaCarrier(trackingNumber, carrier) {
     try {
       const carriers = this.getShippingCarriers();
@@ -404,8 +388,6 @@ class OrderTrackingService {
         };
       }
 
-      // In a real implementation, you would call the carrier's API
-      // For demo purposes, we'll return mock data
       return {
         success: true,
         data: {
@@ -425,7 +407,6 @@ class OrderTrackingService {
     }
   }
 
-  // Cancel order
   async cancelOrder(orderId, reason) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -439,8 +420,7 @@ class OrderTrackingService {
       }
 
       const orderData = orderSnap.data();
-      
-      // Check if order can be cancelled
+
       const cancellableStatuses = ['pending', 'confirmed', 'processing'];
       if (!cancellableStatuses.includes(orderData.status)) {
         return {
@@ -449,7 +429,6 @@ class OrderTrackingService {
         };
       }
 
-      // Update order status
       await updateDoc(orderRef, {
         status: 'cancelled',
         cancellationReason: reason,
@@ -457,7 +436,6 @@ class OrderTrackingService {
         updatedAt: serverTimestamp()
       });
 
-      // Add tracking update
       await this.addTrackingUpdate(orderId, {
         status: 'cancelled',
         timestamp: serverTimestamp(),
@@ -476,7 +454,6 @@ class OrderTrackingService {
     }
   }
 
-  // Return order
   async initiateReturn(orderId, items, reason) {
     try {
       const orderRef = doc(this.db, 'orders', orderId);
@@ -490,8 +467,7 @@ class OrderTrackingService {
       }
 
       const orderData = orderSnap.data();
-      
-      // Check if order can be returned
+
       if (orderData.status !== 'delivered') {
         return {
           success: false,
@@ -500,8 +476,7 @@ class OrderTrackingService {
       }
 
       const returnId = `return_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Create return request
+
       const returnRef = doc(this.db, 'returns', returnId);
       await setDoc(returnRef, {
         returnId,
@@ -527,7 +502,6 @@ class OrderTrackingService {
     }
   }
 
-  // Clear all listeners
   clearAllListeners() {
     this.listeners.forEach((unsubscribe) => {
       unsubscribe();
@@ -536,6 +510,5 @@ class OrderTrackingService {
   }
 }
 
-// Export singleton instance
 const orderTrackingService = new OrderTrackingService();
 export default orderTrackingService;

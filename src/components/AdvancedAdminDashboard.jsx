@@ -1,5 +1,5 @@
-// 🔧 ADVANCED ADMIN DASHBOARD
-// Features: Analytics, inventory management, user insights, trend tracking, sales reporting
+﻿
+
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -23,7 +23,6 @@ import {
   ArcElement
 } from 'chart.js';
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,7 +35,6 @@ ChartJS.register(
   ArcElement
 );
 
-// Mock data for dashboard
 const mockAnalytics = {
   overview: {
     totalUsers: 25847,
@@ -86,7 +84,6 @@ const mockAnalytics = {
   }
 };
 
-// Stat Card Component
 function StatCard({ title, value, change, icon: Icon, color = 'blue' }) {
   const isPositive = change > 0;
   const colorClasses = {
@@ -130,7 +127,6 @@ function StatCard({ title, value, change, icon: Icon, color = 'blue' }) {
   );
 }
 
-// Chart configurations
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -146,7 +142,6 @@ const chartOptions = {
   },
 };
 
-// Analytics Overview
 function AnalyticsOverview({ data }) {
   const salesData = {
     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
@@ -191,7 +186,6 @@ function AnalyticsOverview({ data }) {
   );
 }
 
-// Demographics Panel
 function DemographicsPanel({ data }) {
   const ageData = {
     labels: Object.keys(data.ageGroups),
@@ -262,7 +256,6 @@ function DemographicsPanel({ data }) {
   );
 }
 
-// Inventory Management
 function InventoryManagement({ data }) {
   const inventoryStats = [
     { label: 'Total Products', value: data.totalProducts, color: 'blue', icon: FaBox },
@@ -296,7 +289,7 @@ function InventoryManagement({ data }) {
         ))}
       </div>
 
-      {/* Top Selling Products */}
+      {}
       <div>
         <h4 className="font-bold text-gray-900 mb-4">Top Selling Products</h4>
         <div className="space-y-3">
@@ -323,7 +316,6 @@ function InventoryManagement({ data }) {
   );
 }
 
-// User Insights Panel
 function UserInsights({ data }) {
   const engagementMetrics = [
     { label: 'Avg. Session Duration', value: '8m 32s', change: 15.2, icon: FaEye },
@@ -350,7 +342,7 @@ function UserInsights({ data }) {
         ))}
       </div>
 
-      {/* User Activity Timeline */}
+      {}
       <div>
         <h4 className="font-bold text-gray-900 mb-4">Recent User Activity</h4>
         <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -382,7 +374,6 @@ function UserInsights({ data }) {
   );
 }
 
-// Main Admin Dashboard Component
 export default function AdvancedAdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('7days');
@@ -399,7 +390,7 @@ export default function AdvancedAdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
@@ -424,7 +415,7 @@ export default function AdvancedAdminDashboard() {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
+        {}
         <div className="flex flex-wrap gap-2 mb-8">
           {tabs.map(tab => {
             const Icon = tab.icon;
@@ -445,12 +436,12 @@ export default function AdvancedAdminDashboard() {
           })}
         </div>
 
-        {/* Dashboard Content */}
+        {}
         <div className="space-y-8">
-          {/* Overview Tab */}
+          {}
           {activeTab === 'overview' && (
             <>
-              {/* Key Metrics */}
+              {}
               <div className="grid grid-cols-2 lg:grid-cols-6 gap-6">
                 <StatCard 
                   title="Total Users" 
@@ -500,12 +491,12 @@ export default function AdvancedAdminDashboard() {
             </>
           )}
 
-          {/* Analytics Tab */}
+          {}
           {activeTab === 'analytics' && (
             <AnalyticsOverview data={data} />
           )}
 
-          {/* Users Tab */}
+          {}
           {activeTab === 'users' && (
             <>
               <DemographicsPanel data={data.demographics} />
@@ -513,12 +504,12 @@ export default function AdvancedAdminDashboard() {
             </>
           )}
 
-          {/* Inventory Tab */}
+          {}
           {activeTab === 'inventory' && (
             <InventoryManagement data={{ ...data.products.inventory, parent: data.products }} />
           )}
 
-          {/* Insights Tab */}
+          {}
           {activeTab === 'insights' && (
             <UserInsights data={data} />
           )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -35,23 +35,23 @@ const Wishlist = () => {
     setLoading(true);
     try {
       if (currentUser && currentUser.uid) {
-        // Authenticated user: fetch from backend
+
         const result = await wishlistService.getWishlist(currentUser.uid);
         if (result.success) {
           setWishlistItems(result.data.items || []);
-          // Sync to local storage for offline capability
+
           localStorage.setItem(`wishlist_${currentUser.uid}`, JSON.stringify(result.data.items));
         } else {
           throw new Error('Failed to load wishlist from server');
         }
       } else {
-        // Guest user: use local storage
+
         const localItems = wishlistService.getLocalWishlist();
         setWishlistItems(localItems);
       }
     } catch (error) {
       console.error('Error loading wishlist:', error);
-      // Fallback to cached wishlist
+
       if (currentUser && currentUser.uid) {
         const cachedItems = JSON.parse(localStorage.getItem(`wishlist_${currentUser.uid}`) || '[]');
         setWishlistItems(cachedItems);
@@ -78,7 +78,7 @@ const Wishlist = () => {
   const addToCart = async (item) => {
     try {
       if (currentUser && currentUser.uid) {
-        // Authenticated user: add to backend cart
+
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/api/v1/users/${currentUser.uid}/cart`,
           {
@@ -98,7 +98,6 @@ const Wishlist = () => {
           throw new Error(data.message || 'Failed to add to cart');
         }
 
-        // Also update local cart for consistency
         const cartItems = JSON.parse(localStorage.getItem(`cart_${currentUser.uid}`) || '[]');
         const existingItem = cartItems.find(
           ci => ci.productId === item.productId &&
@@ -123,7 +122,7 @@ const Wishlist = () => {
         alert('Added to cart!');
 
       } else {
-        // Guest user: add to local cart
+
         const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
         const existingItem = cartItems.find(
           ci => ci.id === item.productId &&
@@ -190,20 +189,20 @@ const Wishlist = () => {
     try {
       const shareData = {
         title: `Check out this amazing ${item.name}!`,
-        text: `I found this on Virtual Fashion: ${item.name} - ₹${item.price ? item.price.toLocaleString() : '0'}`,
+        text: `I found this on Virtual Fashion: ${item.name} - â‚¹${item.price ? item.price.toLocaleString() : '0'}`,
         url: `${window.location.origin}/product/${item.productId}`
       };
 
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
-        // Fallback: copy to clipboard
+
         const shareText = `${shareData.title} ${shareData.text} ${shareData.url}`;
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(shareText);
           console.log('Share link copied to clipboard!');
         } else {
-          // Further fallback: open in new window
+
           window.open(
             `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`,
             '_blank',
@@ -213,12 +212,11 @@ const Wishlist = () => {
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // Fallback to opening product page
+
       window.open(`/product/${item.productId}`, '_blank');
     }
   };
 
-  // Filter and sort items
   const filteredAndSortedItems = wishlistItems
     .filter(item => {
       const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -261,7 +259,7 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-zinc-900 relative overflow-hidden">
-      {/* Luxury Background Pattern */}
+      {}
       <div className="fixed inset-0 opacity-15">
         <div className="absolute inset-0" style={{
           backgroundImage: `
@@ -273,7 +271,7 @@ const Wishlist = () => {
           backgroundSize: '400px 400px, 300px 300px, 50px 50px, 50px 50px'
         }}></div>
         
-        {/* Floating luxury crystals */}
+        {}
         {[...Array(10)].map((_, i) => (
           <motion.div
             key={i}
@@ -307,7 +305,7 @@ const Wishlist = () => {
           />
         ))}
         
-        {/* Luxury sparkles */}
+        {}
         {[...Array(25)].map((_, i) => (
           <motion.div
             key={i}
@@ -330,7 +328,7 @@ const Wishlist = () => {
         ))}
       </div>
       
-      {/* Luxury Header Section */}
+      {}
       <div className="relative z-10 bg-black/40 backdrop-blur-2xl border-b border-amber-500/30">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
@@ -354,7 +352,7 @@ const Wishlist = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {}
             {wishlistItems.length > 0 && (
               <div className="flex flex-wrap gap-4">
                 <button
@@ -386,7 +384,7 @@ const Wishlist = () => {
             )}
           </div>
 
-          {/* Filters */}
+          {}
           <AnimatePresence>
             {showFilters && wishlistItems.length > 0 && (
               <motion.div
@@ -396,7 +394,7 @@ const Wishlist = () => {
                 className="mt-6 p-4 bg-gray-50 rounded-lg border"
               >
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Search */}
+                  {}
                   <div className="relative">
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
@@ -408,7 +406,7 @@ const Wishlist = () => {
                     />
                   </div>
 
-                  {/* Category Filter */}
+                  {}
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value)}
@@ -420,7 +418,7 @@ const Wishlist = () => {
                     ))}
                   </select>
 
-                  {/* Sort */}
+                  {}
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
@@ -433,7 +431,7 @@ const Wishlist = () => {
                     <option value="name">Name: A to Z</option>
                   </select>
 
-                  {/* View Mode */}
+                  {}
                   <div className="flex bg-white rounded-lg border border-gray-300 overflow-hidden">
                     <button
                       onClick={() => setViewMode('grid')}
@@ -461,7 +459,7 @@ const Wishlist = () => {
         </div>
       </div>
 
-      {/* Luxury Content Area */}
+      {}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {filteredAndSortedItems.length === 0 ? (
           <motion.div
@@ -507,7 +505,7 @@ const Wishlist = () => {
                     viewMode === 'list' ? 'flex' : ''
                   }`}
                 >
-                  {/* Checkbox for selection */}
+                  {}
                   <div className="absolute top-4 left-4 z-10">
                     <input
                       type="checkbox"
@@ -517,7 +515,7 @@ const Wishlist = () => {
                     />
                   </div>
 
-                  {/* Image */}
+                  {}
                   <div className={`relative overflow-hidden ${
                     viewMode === 'list' ? 'w-48 h-48' : 'aspect-square'
                   }`}>
@@ -527,7 +525,7 @@ const Wishlist = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     
-                    {/* Quick Actions Overlay */}
+                    {}
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <div className="flex gap-3">
                         <Link
@@ -551,7 +549,7 @@ const Wishlist = () => {
                       </div>
                     </div>
 
-                    {/* Remove from wishlist */}
+                    {}
                     <button
                       onClick={() => removeFromWishlist(item.productId)}
                       className="absolute top-4 right-4 p-2 bg-white text-red-500 rounded-full shadow-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
@@ -560,7 +558,7 @@ const Wishlist = () => {
                     </button>
                   </div>
 
-                  {/* Content */}
+                  {}
                   <div className="p-6 flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <div>
@@ -576,11 +574,11 @@ const Wishlist = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl font-bold text-purple-600">
-                          ₹{item.price ? item.price.toLocaleString() : '0'}
+                          â‚¹{item.price ? item.price.toLocaleString() : '0'}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
                           <span className="text-sm text-gray-500 line-through">
-                            ₹{item.originalPrice ? item.originalPrice.toLocaleString() : '0'}
+                            â‚¹{item.originalPrice ? item.originalPrice.toLocaleString() : '0'}
                           </span>
                         )}
                       </div>
@@ -591,7 +589,7 @@ const Wishlist = () => {
                       )}
                     </div>
 
-                    {/* Variations */}
+                    {}
                     <div className="space-y-2 mb-4">
                       {item.selectedSize && (
                         <div className="flex items-center gap-2">
@@ -615,12 +613,12 @@ const Wishlist = () => {
                       )}
                     </div>
 
-                    {/* Added date */}
+                    {}
                     <p className="text-xs text-gray-400 mb-4">
                       Added {new Date(item.addedAt).toLocaleDateString()}
                     </p>
 
-                    {/* Actions */}
+                    {}
                     <div className="flex gap-2">
                       <button
                         onClick={() => addToCart(item)}

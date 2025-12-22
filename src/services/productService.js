@@ -1,21 +1,13 @@
-/**
- * Product Service
- * Handles all product-related API calls to the backend
- */
+﻿
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 class ProductService {
-  /**
-   * Get all products with optional filters
-   * @param {Object} filters - Filter options
-   * @returns {Promise<Object>} - Products data with pagination
-   */
+  
   async getAllProducts(filters = {}) {
     try {
       const queryParams = new URLSearchParams();
-      
-      // Add filters to query params
+
       Object.keys(filters).forEach(key => {
         if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
           queryParams.append(key, filters[key]);
@@ -37,10 +29,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get featured products
-   * @returns {Promise<Array>} - Featured products
-   */
+  
   async getFeaturedProducts() {
     try {
       const response = await fetch(`${API_BASE_URL}/products/featured`);
@@ -57,10 +46,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get bestselling products
-   * @returns {Promise<Array>} - Bestselling products
-   */
+  
   async getBestsellers() {
     try {
       const response = await fetch(`${API_BASE_URL}/products/bestsellers`);
@@ -77,10 +63,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get new arrivals
-   * @returns {Promise<Array>} - New arrival products
-   */
+  
   async getNewArrivals() {
     try {
       const response = await fetch(`${API_BASE_URL}/products/new-arrivals`);
@@ -97,11 +80,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get product by ID
-   * @param {string} productId - Product ID
-   * @returns {Promise<Object>} - Product details
-   */
+  
   async getProductById(productId) {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${productId}`);
@@ -118,11 +97,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Search products
-   * @param {string} searchTerm - Search query
-   * @returns {Promise<Array>} - Matching products
-   */
+  
   async searchProducts(searchTerm) {
     try {
       const response = await fetch(`${API_BASE_URL}/products/search?q=${encodeURIComponent(searchTerm)}`);
@@ -139,12 +114,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get products by category
-   * @param {string} category - Category name
-   * @param {Object} filters - Additional filters
-   * @returns {Promise<Object>} - Products in category
-   */
+  
   async getProductsByCategory(category, filters = {}) {
     try {
       const queryParams = new URLSearchParams();
@@ -171,10 +141,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get all categories
-   * @returns {Promise<Array>} - Available categories
-   */
+  
   async getCategories() {
     try {
       const response = await fetch(`${API_BASE_URL}/products/categories`);
@@ -191,11 +158,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Get similar products
-   * @param {string} productId - Product ID
-   * @returns {Promise<Array>} - Similar products
-   */
+  
   async getSimilarProducts(productId) {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${productId}/similar`);
@@ -212,12 +175,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Add review to product
-   * @param {string} productId - Product ID
-   * @param {Object} reviewData - Review details
-   * @returns {Promise<Object>} - Updated product
-   */
+  
   async addReview(productId, reviewData) {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${productId}/reviews`, {
@@ -240,11 +198,7 @@ class ProductService {
     }
   }
 
-  /**
-   * Format product data for try-on compatibility
-   * @param {Object} product - Backend product object
-   * @returns {Object} - Formatted product for try-on
-   */
+  
   formatForTryOn(product) {
     return {
       id: product.productId,
@@ -263,19 +217,13 @@ class ProductService {
     };
   }
 
-  /**
-   * Format multiple products for try-on
-   * @param {Array} products - Array of backend products
-   * @returns {Array} - Formatted products
-   */
+  
   formatManyForTryOn(products) {
     return products.map(product => this.formatForTryOn(product));
   }
 }
 
-// Export singleton instance
 const productService = new ProductService();
 export default productService;
 
-// Named exports
 export { ProductService };

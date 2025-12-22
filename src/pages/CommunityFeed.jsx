@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -24,7 +24,6 @@ import { useAuth } from '../context/AuthContext';
 import communityService from '../services/communityService';
 import productService from '../services/productService';
 
-// Memoized UserCard to avoid re-rendering individual cards too often
 const UserCard = React.memo(function UserCard({ user, index, isFollowing, onToggleFollow, onShowDetails }) {
   return (
     <motion.div
@@ -35,7 +34,7 @@ const UserCard = React.memo(function UserCard({ user, index, isFollowing, onTogg
       transition={{ delay: index * 0.05 }}
       className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
     >
-      {/* User Header */}
+      {}
       <div className="relative h-32 bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400">
         <div className="absolute -bottom-12 left-6">
           <div className="relative">
@@ -55,7 +54,7 @@ const UserCard = React.memo(function UserCard({ user, index, isFollowing, onTogg
         </div>
       </div>
 
-      {/* User Info */}
+      {}
       <div className="pt-16 px-6 pb-6">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
@@ -91,7 +90,7 @@ const UserCard = React.memo(function UserCard({ user, index, isFollowing, onTogg
           {user.location}
         </div>
 
-        {/* Stats & Actions */}
+        {}
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="text-center">
             <div className="text-lg font-bold text-gray-900">{user.stats.followers}</div>
@@ -134,7 +133,6 @@ const CommunityFeed = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
 
-  // Fetch users from database
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -153,7 +151,6 @@ const CommunityFeed = () => {
     fetchUsers();
   }, []);
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -176,13 +173,11 @@ const CommunityFeed = () => {
     fetchProducts();
   }, []);
 
-  // Load following list from localStorage
   useEffect(() => {
     const savedFollowing = JSON.parse(localStorage.getItem('userFollowing') || '[]');
     setFollowingSet(new Set(savedFollowing));
   }, []);
 
-  // Handle search with real API
   useEffect(() => {
     async function performSearch() {
       if (searchQuery.trim()) {
@@ -205,12 +200,10 @@ const CommunityFeed = () => {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery, users]);
 
-  // Filter by following
   const displayUsers = activeTab === 'following' 
     ? filteredUsers.filter(u => followingSet.has(u.id))
     : filteredUsers;
 
-  // Handle follow/unfollow with real API
   async function toggleFollow(userId) {
     if (!currentUser?.uid) {
       alert('Please log in to follow users');
@@ -232,7 +225,6 @@ const CommunityFeed = () => {
       setFollowingSet(newFollowing);
       localStorage.setItem('userFollowing', JSON.stringify([...newFollowing]));
 
-      // Update user stats in UI
       setUsers(users.map(u => {
         if (u.id === userId) {
           return {
@@ -251,15 +243,11 @@ const CommunityFeed = () => {
     }
   }
 
-  // Show user details
   function showUserDetails(user) {
     setSelectedUser(user);
     setShowUserModal(true);
   }
 
-  
-
-  // Get items from wishlist/favorites
   const getUserItems = (itemIds) => {
     return itemIds.map(id => clothingItems.find(item => item.id === id)).filter(Boolean);
   };
@@ -267,7 +255,7 @@ const CommunityFeed = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -292,7 +280,7 @@ const CommunityFeed = () => {
             </div>
           </div>
 
-          {/* Search and Filters */}
+          {}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -331,7 +319,7 @@ const CommunityFeed = () => {
           </div>
         </motion.div>
 
-        {/* Loading State */}
+        {}
         {usersLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-600"></div>
@@ -355,7 +343,7 @@ const CommunityFeed = () => {
                   onToggleFollow={toggleFollow}
                   onShowDetails={showUserDetails}
                 >
-                {/* User Header */}
+                {}
                 <div className="relative h-32 bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400">
                   <div className="absolute -bottom-12 left-6">
                     <div className="relative">
@@ -375,7 +363,7 @@ const CommunityFeed = () => {
                   </div>
                 </div>
 
-                {/* User Info */}
+                {}
                 <div className="pt-16 px-6 pb-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -413,7 +401,7 @@ const CommunityFeed = () => {
                     {user.location}
                   </div>
 
-                  {/* Stats */}
+                  {}
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     <div className="text-center">
                       <div className="text-lg font-bold text-gray-900">{user.stats.followers}</div>
@@ -429,7 +417,7 @@ const CommunityFeed = () => {
                     </div>
                   </div>
 
-                  {/* Style Tags */}
+                  {}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {user.style.slice(0, 3).map((style, idx) => (
                       <span
@@ -441,7 +429,7 @@ const CommunityFeed = () => {
                     ))}
                   </div>
 
-                  {/* Actions */}
+                  {}
                   <div className="flex gap-2">
                     <button
                       onClick={() => showUserDetails(user)}
@@ -458,7 +446,7 @@ const CommunityFeed = () => {
           </div>
         )}
 
-        {/* User Detail Modal */}
+        {}
         <AnimatePresence>
           {showUserModal && selectedUser && (
             <motion.div
@@ -475,7 +463,7 @@ const CommunityFeed = () => {
                 onClick={(e) => e.stopPropagation()}
                 className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
               >
-                {/* Modal Header */}
+                {}
                 <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <img
@@ -497,15 +485,15 @@ const CommunityFeed = () => {
                     onClick={() => setShowUserModal(false)}
                     className="text-gray-500 hover:text-gray-700 text-2xl"
                   >
-                    ×
+                    Ã—
                   </button>
                 </div>
 
-                {/* Modal Content */}
+                {}
                 <div className="p-6">
                   <p className="text-gray-700 mb-6">{selectedUser.bio}</p>
 
-                  {/* Stats */}
+                  {}
                   <div className="grid grid-cols-4 gap-4 mb-8">
                     <div className="text-center p-4 bg-purple-50 rounded-xl">
                       <div className="text-2xl font-bold text-purple-600">{selectedUser.stats.followers}</div>
@@ -525,7 +513,7 @@ const CommunityFeed = () => {
                     </div>
                   </div>
 
-                  {/* Wishlist */}
+                  {}
                   <div className="mb-8">
                     <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <FaStar className="text-yellow-500" />
@@ -544,7 +532,7 @@ const CommunityFeed = () => {
                     </div>
                   </div>
 
-                  {/* Favorites */}
+                  {}
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <FaHeart className="text-red-500" />
@@ -563,7 +551,7 @@ const CommunityFeed = () => {
                     </div>
                   </div>
 
-                  {/* Follow Button */}
+                  {}
                   <div className="mt-8 flex gap-4">
                     <button
                       onClick={() => toggleFollow(selectedUser.id)}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaRocket, 
@@ -25,7 +25,6 @@ import {
 import productService from '../services/productService';
 import { useAuth } from '../context/AuthContext';
 
-// Real-time AR Camera Component with ML Pipeline
 const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSegmentationUpdate, onPerformanceUpdate }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -44,7 +43,7 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
   const lastTimeRef = useRef(Date.now());
 
   useEffect(() => {
-    // Defer camera and processing loop initialization
+
     const timeoutId = setTimeout(() => {
       initializeCamera();
       startProcessingLoop();
@@ -90,39 +89,30 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
 
       try {
         const startTime = performance.now();
-        
-        // Draw video to canvas
+
         const ctx = canvas.getContext('2d');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0);
-        
-        // Get image data for pose detection
+
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        // Simple pose estimation using basic body proportions
-        // In a real app, you'd use TensorFlow.js pose detection
+
         const estimatedPose = estimatePoseFromFrame(canvas.width, canvas.height);
         setPoses(estimatedPose);
         onPoseUpdate?.(estimatedPose);
-        
-        // Apply body segmentation mask (simplified)
+
         const mask = createBodySegmentationMask(canvas.width, canvas.height, estimatedPose);
         setSegmentationMask(mask);
         onSegmentationUpdate?.(mask);
-        
-        // Apply segmentation mask to canvas
+
         applySegmentationMask(ctx, canvas.width, canvas.height, mask);
-        
-        // Apply garment overlay with pose anchoring
+
         if (selectedProduct) {
           applyGarmentOverlay(ctx, canvas.width, canvas.height, estimatedPose, selectedProduct, settings);
         }
-        
-        // Draw pose landmarks
+
         drawPoseLandmarks(ctx, estimatedPose, canvas.width, canvas.height);
-        
-        // Calculate real performance metrics
+
         const latency = performance.now() - startTime;
         frameCountRef.current++;
         
@@ -146,10 +136,8 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     animationFrameId = requestAnimationFrame(processFrame);
   };
 
-  // Estimate pose from video frame (simplified - uses basic body proportions)
   const estimatePoseFromFrame = (width, height) => {
-    // This is a simplified pose estimation
-    // In production, use TensorFlow.js @tensorflow-models/pose-detection
+
     const poses = {
       keypoints: [
         { x: width * 0.5, y: height * 0.2, name: 'nose', score: 0.95 },
@@ -173,16 +161,13 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     return poses;
   };
 
-  // Create body segmentation mask
   const createBodySegmentationMask = (width, height, pose) => {
     const canvas = new OffscreenCanvas(width, height);
     const ctx = canvas.getContext('2d');
-    
-    // Create a simple elliptical mask for the body
+
     ctx.fillStyle = 'rgba(255, 255, 255, 1)';
     ctx.beginPath();
-    
-    // Draw body outline based on pose keypoints
+
     const centerX = width * 0.5;
     const centerY = height * 0.5;
     const bodyWidth = width * 0.35;
@@ -194,27 +179,23 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     return canvas;
   };
 
-  // Apply segmentation mask to canvas
   const applySegmentationMask = (ctx, width, height, mask) => {
     if (!mask) return;
     
     try {
-      // Create a blurred background effect
+
       ctx.filter = 'blur(8px) brightness(0.3)';
-      
-      // Restore the body area with full brightness
+
       ctx.filter = 'none';
     } catch (error) {
       console.warn('Could not apply segmentation mask:', error);
     }
   };
 
-  // Apply realistic garment overlay with pose anchoring
   const applyGarmentOverlay = (ctx, width, height, pose, product, settings) => {
     const opacity = settings.overlay.opacity || 0.8;
     ctx.globalAlpha = opacity;
 
-    // Get shoulder and hip positions from pose
     const leftShoulder = pose.keypoints.find(k => k.name === 'leftShoulder');
     const rightShoulder = pose.keypoints.find(k => k.name === 'rightShoulder');
     const leftHip = pose.keypoints.find(k => k.name === 'leftHip');
@@ -225,7 +206,6 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       return;
     }
 
-    // Calculate garment dimensions based on body measurements
     const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
     const shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
     const hipWidth = leftHip && rightHip ? Math.abs(rightHip.x - leftHip.x) : shoulderWidth * 0.9;
@@ -233,7 +213,6 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     const garmentStartY = shoulderY;
     const garmentEndY = garmentStartY + garmentHeight;
 
-    // Draw garment based on fit mode
     const fitMode = settings.fitMode || 'regular';
     const garmentColor = settings.overlay.hue ? `hsl(${settings.overlay.hue}, 70%, 50%)` : 'rgba(100, 150, 200, 0.8)';
     
@@ -241,7 +220,6 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.lineWidth = 2;
 
-    // Draw body-fitted garment using trapezoid shape
     const leftSX = leftShoulder.x - shoulderWidth / 2;
     const rightSX = rightShoulder.x + shoulderWidth / 2;
     const leftHX = leftShoulder.x - hipWidth / 2;
@@ -256,20 +234,17 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     ctx.fill();
     ctx.stroke();
 
-    // Add sleeve details
     drawSleeves(ctx, leftShoulder, rightShoulder, settings, width, height);
 
     ctx.globalAlpha = 1;
   };
 
-  // Draw sleeve details
   const drawSleeves = (ctx, leftShoulder, rightShoulder, settings, width, height) => {
     const sleeveLength = height * 0.25;
     const sleeveWidth = width * 0.08;
     
     ctx.fillStyle = 'rgba(80, 120, 180, 0.7)';
-    
-    // Left sleeve
+
     ctx.beginPath();
     ctx.arc(leftShoulder.x, leftShoulder.y, sleeveWidth, 0, Math.PI * 2);
     ctx.fill();
@@ -280,8 +255,7 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       sleeveWidth,
       sleeveLength
     );
-    
-    // Right sleeve
+
     ctx.beginPath();
     ctx.arc(rightShoulder.x, rightShoulder.y, sleeveWidth, 0, Math.PI * 2);
     ctx.fill();
@@ -294,11 +268,9 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     );
   };
 
-  // Draw pose landmarks on canvas
   const drawPoseLandmarks = (ctx, pose, width, height) => {
     if (!pose || !pose.keypoints) return;
 
-    // Draw keypoints
     pose.keypoints.forEach(keypoint => {
       if (keypoint.score > 0.5) {
         ctx.fillStyle = 'rgba(0, 255, 100, 0.8)';
@@ -308,7 +280,6 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       }
     });
 
-    // Draw skeleton lines
     const connections = [
       ['leftShoulder', 'rightShoulder'],
       ['leftShoulder', 'leftHip'],
@@ -363,9 +334,9 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
         className="absolute inset-0 w-full h-full"
       />
       
-      {/* AR Overlay UI */}
+      {}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Status indicators */}
+        {}
         <div className="absolute top-4 left-4 space-y-2 z-10">
           <div className="bg-black/50 backdrop-blur rounded-full px-3 py-1 text-white text-sm">
             <div className="flex items-center space-x-2">
@@ -383,7 +354,7 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
           )}
         </div>
         
-        {/* Pose detection status */}
+        {}
         <div className="absolute top-4 right-4 bg-black/50 backdrop-blur rounded-lg px-3 py-2 text-white text-xs space-y-1">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
@@ -396,7 +367,7 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
         </div>
       </div>
       
-      {/* Camera Controls */}
+      {}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4 z-10">
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -424,7 +395,6 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
   );
 };
 
-// Enhanced Product Selector
 const ProductSelector = ({ products, selectedProduct, onSelect, onFavorite }) => {
   const [category, setCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -441,7 +411,7 @@ const ProductSelector = ({ products, selectedProduct, onSelect, onFavorite }) =>
     <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-gray-700">
       <h3 className="text-xl font-bold text-white mb-4">Select Product</h3>
       
-      {/* Search and Filter */}
+      {}
       <div className="space-y-4 mb-6">
         <input
           type="text"
@@ -468,7 +438,7 @@ const ProductSelector = ({ products, selectedProduct, onSelect, onFavorite }) =>
         </div>
       </div>
       
-      {/* Product Grid */}
+      {}
       <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
         {filteredProducts.map(product => (
           <motion.div
@@ -506,7 +476,6 @@ const ProductSelector = ({ products, selectedProduct, onSelect, onFavorite }) =>
   );
 };
 
-// AR Settings Panel
 const ARSettingsPanel = ({ settings, onUpdate }) => {
   return (
     <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-gray-700">
@@ -516,7 +485,7 @@ const ARSettingsPanel = ({ settings, onUpdate }) => {
       </h3>
       
       <div className="space-y-6">
-        {/* Overlay Opacity */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2">Overlay Opacity</label>
           <input
@@ -534,7 +503,7 @@ const ARSettingsPanel = ({ settings, onUpdate }) => {
           <span className="text-gray-400 text-sm">{Math.round(settings.overlay.opacity * 100)}%</span>
         </div>
         
-        {/* Color Adjustment */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2">Color Hue</label>
           <input
@@ -548,10 +517,10 @@ const ARSettingsPanel = ({ settings, onUpdate }) => {
             })}
             className="w-full"
           />
-          <span className="text-gray-400 text-sm">{settings.overlay.hue}°</span>
+          <span className="text-gray-400 text-sm">{settings.overlay.hue}Â°</span>
         </div>
         
-        {/* Fit Mode */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2">Fit Mode</label>
           <select
@@ -565,7 +534,7 @@ const ARSettingsPanel = ({ settings, onUpdate }) => {
           </select>
         </div>
         
-        {/* Quality Settings */}
+        {}
         <div>
           <label className="block text-gray-300 mb-2">Rendering Quality</label>
           <div className="grid grid-cols-3 gap-2">
@@ -589,7 +558,6 @@ const ARSettingsPanel = ({ settings, onUpdate }) => {
   );
 };
 
-// Performance Monitor - receives real metrics from camera
 const PerformanceMonitor = ({ metrics = { fps: 0, latency: 0 } }) => {
   const fps = metrics.fps || 0;
   const latency = parseFloat(metrics.latency) || 0;
@@ -626,7 +594,7 @@ const PerformanceMonitor = ({ metrics = { fps: 0, latency: 0 } }) => {
         
         <div className="pt-2 border-t border-gray-600">
           <p className="text-xs text-gray-400">
-            {fps > 30 ? '✓ Excellent performance' : fps > 20 ? '⚠ Good performance' : '✗ Needs optimization'}
+            {fps > 30 ? 'âœ“ Excellent performance' : fps > 20 ? 'âš  Good performance' : 'âœ— Needs optimization'}
           </p>
         </div>
       </div>
@@ -634,19 +602,7 @@ const PerformanceMonitor = ({ metrics = { fps: 0, latency: 0 } }) => {
   );
 };
 
-/**
- * Enhanced Virtual Try-On Page
- * Implements complete try-on development flow:
- * - Camera + Segmentation Integration
- * - Pose Detection Integration  
- * - Garment Overlay Renderer
- * - User Authentication Integration
- * - Product Catalog Integration
- * - Save/Share Features
- * - Performance Monitoring
- * Features realistic AR-like virtual fitting with pose detection
- * Real-time AR camera, advanced settings, and performance monitoring
- */
+
 const EnhancedTryOnPage = () => {
   const { user } = useAuth();
   const [capturedImage, setCapturedImage] = useState(null);
@@ -656,14 +612,12 @@ const EnhancedTryOnPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [savedLooks, setSavedLooks] = useState([]);
-  
-  // Comprehensive ML Pipeline State
+
   const [poseDetection, setPoseDetection] = useState({ enabled: true, confidence: 0 });
   const [bodySegmentation, setBodySegmentation] = useState({ enabled: true, mask: null });
   const [garmentProcessing, setGarmentProcessing] = useState({ enabled: true, anchors: null });
   const [performanceMetrics, setPerformanceMetrics] = useState({ fps: 0, latency: 0 });
-  
-  // AR Settings with ML Pipeline Configuration
+
   const [arSettings, setArSettings] = useState({
     overlay: {
       opacity: 0.7,
@@ -671,7 +625,7 @@ const EnhancedTryOnPage = () => {
     },
     fitMode: 'regular',
     quality: 'medium',
-    // ML Model Settings
+
     poseDetection: {
       modelType: 'lite', // lite, full, heavy
       minDetectionConfidence: 0.7,
@@ -697,17 +651,16 @@ const EnhancedTryOnPage = () => {
     }
   });
 
-  // Initialize with fashion products (deferred loading)
   useEffect(() => {
-    // Show UI immediately with fallback products
+
     const fallbackProducts = [
           {
             id: 'PROD-KUR-001',
             name: "Classic Cotton Kurta",
             brand: "Manyavar",
             category: "kurta",
-            price: "₹1,899",
-            originalPrice: "₹2,499",
+            price: "â‚¹1,899",
+            originalPrice: "â‚¹2,499",
             discount: 24,
             image: "/assets/tee_white.svg",
             colors: [{ name: 'White', hex: '#FFFFFF' }],
@@ -720,8 +673,8 @@ const EnhancedTryOnPage = () => {
             name: "Silk Saree with Blouse",
             brand: "Kanjivaram Silk",
             category: "saree",
-            price: "₹9,999",
-            originalPrice: "₹12,999",
+            price: "â‚¹9,999",
+            originalPrice: "â‚¹12,999",
             discount: 23,
             image: "/assets/dress_red.svg",
             colors: [{ name: 'Red', hex: '#FF0000' }],
@@ -734,8 +687,8 @@ const EnhancedTryOnPage = () => {
             name: "Designer Cotton Kurti",
             brand: "Biba",
             category: "kurta",
-            price: "₹1,599",
-            originalPrice: "₹2,199",
+            price: "â‚¹1,599",
+            originalPrice: "â‚¹2,199",
             discount: 27,
             image: "/assets/dress_red.svg",
             colors: [{ name: 'Pink', hex: '#FFC0CB' }],
@@ -744,12 +697,10 @@ const EnhancedTryOnPage = () => {
             region: 'Pan-India'
           }
         ];
-        
-        // Set fallback products immediately for faster UI
+
         setClothingItems(fallbackProducts);
         setLoading(false);
-        
-        // Fetch enhanced products in background (non-blocking)
+
         setTimeout(async () => {
           try {
             const { default: indianProductService } = await import('../services/indianProductService');
@@ -762,7 +713,7 @@ const EnhancedTryOnPage = () => {
                 brand: product.brand,
                 category: product.type,
                 price: indianProductService.formatPrice(product.price),
-                originalPrice: `₹${product.price.mrp.toLocaleString('en-IN')}`,
+                originalPrice: `â‚¹${product.price.mrp.toLocaleString('en-IN')}`,
                 discount: indianProductService.getDiscountPercentage(product.price),
                 image: product.image,
                 colors: product.colors,
@@ -774,8 +725,7 @@ const EnhancedTryOnPage = () => {
                 trending: product.trending,
                 featured: product.featured
               }));
-              
-              // Merge with fallback and update
+
               const mergedProducts = [...transformedProducts, ...fallbackProducts.filter(f => !transformedProducts.find(t => t.id === f.id))];
               setClothingItems(mergedProducts);
             }
@@ -834,13 +784,13 @@ const EnhancedTryOnPage = () => {
   const handleAddToCart = () => {
     if (selectedProduct) {
       console.log('Adding to cart:', selectedProduct);
-      // Add to cart logic here
+
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950">
-      {/* Enhanced Info Banner */}
+      {}
       {showInfo && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -851,9 +801,9 @@ const EnhancedTryOnPage = () => {
             <div className="flex items-center gap-3">
               <FaInfoCircle className="text-xl" />
               <div>
-                <p className="font-medium">🚀 Enhanced Virtual Try-On Experience</p>
+                <p className="font-medium">ðŸš€ Enhanced Virtual Try-On Experience</p>
                 <p className="text-sm opacity-90">
-                  Real-time AR • AI pose detection • Advanced customization • Performance monitoring
+                  Real-time AR â€¢ AI pose detection â€¢ Advanced customization â€¢ Performance monitoring
                 </p>
               </div>
             </div>
@@ -861,13 +811,13 @@ const EnhancedTryOnPage = () => {
               onClick={() => setShowInfo(false)}
               className="text-white hover:text-gray-200 transition-colors text-2xl"
             >
-              ×
+              Ã—
             </button>
           </div>
         </motion.div>
       )}
 
-      {/* Header */}
+      {}
       <div className="relative overflow-hidden py-8">
         <div className="container mx-auto px-6">
           <motion.div
@@ -881,7 +831,7 @@ const EnhancedTryOnPage = () => {
                   Virtual Try-On
                 </span>
               </h1>
-              <p className="text-gray-300">Real-time AR fashion experience with advanced technology •</p>
+              <p className="text-gray-300">Real-time AR fashion experience with advanced technology â€¢</p>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -910,11 +860,11 @@ const EnhancedTryOnPage = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {}
       <div className="container mx-auto px-6 pb-12">
-        {/* Show UI immediately, loading happens in background */}
+        {}
         <div className={`grid ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-4'} gap-8`}>
-            {/* Main AR Camera View */}
+            {}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -978,14 +928,14 @@ const EnhancedTryOnPage = () => {
               )}
             </motion.div>
 
-            {/* Control Panel */}
+            {}
             {!isFullscreen && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="space-y-6"
               >
-                {/* Product Selector */}
+                {}
                 <ProductSelector
                   products={clothingItems}
                   selectedProduct={selectedProduct}
@@ -993,19 +943,19 @@ const EnhancedTryOnPage = () => {
                   onFavorite={(product) => console.log('Favorited:', product)}
                 />
 
-                {/* AR Settings */}
+                {}
                 <ARSettingsPanel
                   settings={arSettings}
                   onUpdate={setArSettings}
                 />
 
-                {/* Performance Monitor */}
+                {}
                 <PerformanceMonitor metrics={performanceMetrics} />
               </motion.div>
             )}
           </div>
 
-        {/* Saved Looks Gallery */}
+        {}
         {savedLooks.length > 0 && !isFullscreen && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1050,7 +1000,7 @@ const EnhancedTryOnPage = () => {
         )}
       </div>
 
-      {/* Captured Image Preview */}
+      {}
       {capturedImage && !isFullscreen && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -1064,7 +1014,7 @@ const EnhancedTryOnPage = () => {
                 onClick={() => setCapturedImage(null)}
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                ×
+                Ã—
               </button>
             </div>
             <img
@@ -1097,7 +1047,7 @@ const EnhancedTryOnPage = () => {
         </motion.div>
       )}
 
-      {/* Enhanced Tech Features Section */}
+      {}
       <div className="py-16 bg-black/10">
         <div className="container mx-auto px-6">
           <motion.div
@@ -1135,7 +1085,7 @@ const EnhancedTryOnPage = () => {
             ))}
           </div>
 
-          {/* Tech Stack */}
+          {}
           <div className="mt-16 text-center">
             <h3 className="text-2xl font-bold text-white mb-4">Advanced Technology for Fashion</h3>
             <p className="text-gray-400 mb-8">Powered by Advanced Technologies for Fashion Industry</p>
@@ -1159,37 +1109,37 @@ const EnhancedTryOnPage = () => {
               ))}
             </div>
             
-            {/* Fashion Features */}
+            {}
             <div className="mt-12 bg-gradient-to-r from-blue-500/10 via-white/5 to-purple-500/10 rounded-2xl p-8 border border-blue-400/20">
               <h4 className="text-xl font-bold text-white mb-6 flex items-center justify-center">
-                ✨ <span className="ml-2">Fashion Features</span>
+                âœ¨ <span className="ml-2">Fashion Features</span>
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 <div>
                   <h5 className="font-semibold text-blue-400 mb-3">Fashion Categories</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Shirts & Tops</li>
-                    <li>• Dresses & Skirts</li>
-                    <li>• Jackets & Outerwear</li>
-                    <li>• Pants & Jeans</li>
+                    <li>â€¢ Shirts & Tops</li>
+                    <li>â€¢ Dresses & Skirts</li>
+                    <li>â€¢ Jackets & Outerwear</li>
+                    <li>â€¢ Pants & Jeans</li>
                   </ul>
                 </div>
                 <div>
                   <h5 className="font-semibold text-green-400 mb-3">Smart Features</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Occasion matching</li>
-                    <li>• Style preferences</li>
-                    <li>• Universal sizing</li>
-                    <li>• Material-specific try-on</li>
+                    <li>â€¢ Occasion matching</li>
+                    <li>â€¢ Style preferences</li>
+                    <li>â€¢ Universal sizing</li>
+                    <li>â€¢ Material-specific try-on</li>
                   </ul>
                 </div>
                 <div>
                   <h5 className="font-semibold text-purple-400 mb-3">Market Integration</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>• Global pricing</li>
-                    <li>• Popular brands</li>
-                    <li>• Tax-inclusive pricing</li>
-                    <li>• Global availability</li>
+                    <li>â€¢ Global pricing</li>
+                    <li>â€¢ Popular brands</li>
+                    <li>â€¢ Tax-inclusive pricing</li>
+                    <li>â€¢ Global availability</li>
                   </ul>
                 </div>
               </div>

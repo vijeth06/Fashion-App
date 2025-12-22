@@ -1,7 +1,4 @@
-/**
- * API Connection Test Utility
- * Tests all backend routes and ensures proper connectivity
- */
+﻿
 
 const API_BASE = 'http://localhost:5000';
 
@@ -41,7 +38,7 @@ export class APIConnectionTester {
       };
 
       this.results.push(result);
-      console.log(`✓ ${name}: ${response.status} (${duration}ms)`);
+      console.log(`âœ“ ${name}: ${response.status} (${duration}ms)`);
       return result;
 
     } catch (error) {
@@ -57,33 +54,29 @@ export class APIConnectionTester {
       };
 
       this.results.push(result);
-      console.error(`✗ ${name}: ${error.message}`);
+      console.error(`âœ— ${name}: ${error.message}`);
       return result;
     }
   }
 
   async runAllTests() {
-    console.log('🔍 Starting API Connection Tests...\n');
-    
-    // Health Check
+    console.log('ðŸ” Starting API Connection Tests...\n');
+
     await this.testEndpoint(
       'Health Check',
       `${API_BASE}/health`
     );
 
-    // Database Test
     await this.testEndpoint(
       'Database Connection',
       `${API_BASE}/api/test-db`
     );
 
-    // Database Status
     await this.testEndpoint(
       'Database Status',
       `${API_BASE}/api/db-status`
     );
 
-    // Auth Routes
     await this.testEndpoint(
       'Auth - Signup',
       `${API_BASE}/api/v1/auth/signup`,
@@ -105,7 +98,6 @@ export class APIConnectionTester {
       }
     );
 
-    // Products Routes
     await this.testEndpoint(
       'Products - Get All',
       `${API_BASE}/api/v1/products`
@@ -116,19 +108,16 @@ export class APIConnectionTester {
       `${API_BASE}/api/v1/products/category/tops`
     );
 
-    // Wishlist Routes
     await this.testEndpoint(
       'Wishlist - Get Items',
       `${API_BASE}/api/v1/wishlist/test-user-id`
     );
 
-    // Looks Routes
     await this.testEndpoint(
       'Looks - Get All',
       `${API_BASE}/api/v1/looks`
     );
 
-    // Analytics Routes
     await this.testEndpoint(
       'Analytics - Post Events',
       `${API_BASE}/api/v1/analytics/events`,
@@ -158,7 +147,6 @@ export class APIConnectionTester {
       `${API_BASE}/api/v1/analytics/realtime`
     );
 
-    // Error Logging
     await this.testEndpoint(
       'Error Logging',
       `${API_BASE}/api/v1/errors/log`,
@@ -171,14 +159,14 @@ export class APIConnectionTester {
       }
     );
 
-    console.log('\n📊 Test Results Summary:');
+    console.log('\nðŸ“Š Test Results Summary:');
     console.log('=========================');
     
     const successful = this.results.filter(r => r.success).length;
     const failed = this.results.filter(r => !r.success).length;
     
-    console.log(`✓ Successful: ${successful}`);
-    console.log(`✗ Failed: ${failed}`);
+    console.log(`âœ“ Successful: ${successful}`);
+    console.log(`âœ— Failed: ${failed}`);
     console.log(`Total: ${this.results.length}`);
 
     return {
@@ -200,16 +188,14 @@ export class APIConnectionTester {
     console.table(this.results.map(r => ({
       Name: r.name,
       Status: r.status,
-      Success: r.success ? '✓' : '✗',
+      Success: r.success ? 'âœ“' : 'âœ—',
       Duration: r.duration
     })));
   }
 }
 
-// Export for use in React components
 export default APIConnectionTester;
 
-// For testing in browser console
 if (typeof window !== 'undefined') {
   window.testAPI = async () => {
     const tester = new APIConnectionTester();
@@ -217,5 +203,5 @@ if (typeof window !== 'undefined') {
     tester.printResults();
     return results;
   };
-  console.log('💡 Run window.testAPI() in console to test all API endpoints');
+  console.log('ðŸ’¡ Run window.testAPI() in console to test all API endpoints');
 }

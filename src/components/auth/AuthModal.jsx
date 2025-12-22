@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGoogle, FaFacebook, FaTwitter, FaGithub, FaMicrosoft, FaPhone, FaEye, FaEyeSlash, FaTimes, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
@@ -48,7 +48,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
           setError(result.error || 'Failed to sign in');
         }
       } else {
-        // Validation
+
         if (formData.password !== formData.confirmPassword) {
           setError('Passwords do not match');
           setIsLoading(false);
@@ -171,7 +171,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
           >
-            {/* Header */}
+            {}
             <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-6 text-white">
               <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors">
                 <FaTimes className="w-5 h-5" />
@@ -182,7 +182,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                 <p className="text-white text-opacity-90 text-sm">Your virtual try-on experience awaits</p>
               </div>
               
-              {/* Tab Navigation */}
+              {}
               <div className="flex bg-white bg-opacity-20 rounded-lg p-1 mt-4">
                 {['signin', 'signup', 'phone'].map((tab) => (
                   <button
@@ -198,9 +198,9 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
               </div>
             </div>
 
-            {/* Content */}
+            {}
             <div className="p-6">
-              {/* Error/Success Messages */}
+              {}
               {(error || success) && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -213,7 +213,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                 </motion.div>
               )}
 
-              {/* Email Form */}
+              {}
               {(activeTab === 'signin' || activeTab === 'signup') && (
                 <form onSubmit={handleEmailAuth} className="space-y-4">
                   {activeTab === 'signup' && (
@@ -328,7 +328,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                 </form>
               )}
 
-              {/* Phone Form */}
+              {}
               {activeTab === 'phone' && (
                 <div className="space-y-4">
                   <div>
@@ -353,7 +353,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                 </div>
               )}
 
-              {/* Social Login */}
+              {}
               {activeTab !== 'phone' && (
                 <>
                   <div className="relative my-6">
@@ -384,7 +384,7 @@ const AuthModal = ({ isOpen, onClose, initialTab = 'signin' }) => {
                 </>
               )}
               
-              {/* Forgot Password Modal */}
+              {}
               {showForgotPassword && (
                 <motion.div
                   initial={{ opacity: 0 }}

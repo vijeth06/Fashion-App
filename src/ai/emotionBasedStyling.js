@@ -1,11 +1,10 @@
-// 😊 EMOTION-BASED STYLING AI ENGINE
-// Features: Facial Expression Analysis, Mood Detection, Emotion-to-Style Mapping, Biometric Feedback
+﻿
+
 
 import { advancedFashionItems } from '../data/advancedProducts.js';
 import { neuralOutfitEngine } from './outfitEngine.js';
 import { quantumColorGenerator } from '../ui/quantumColors.js';
 
-// 🧠 MAIN EMOTION STYLING ENGINE
 export class EmotionBasedStylingAI {
   constructor() {
     this.facialExpressionAnalyzer = new FacialExpressionAnalyzer();
@@ -16,17 +15,16 @@ export class EmotionBasedStylingAI {
     this.personalityProfiler = new PersonalityProfiler();
   }
 
-  // 🎯 MASTER EMOTION-TO-STYLE FUNCTION
   async analyzeEmotionAndRecommendOutfit(
     imageData, 
     userProfile, 
     contextualData = {}, 
     options = {}
   ) {
-    console.log('😊 Analyzing emotions for personalized styling...');
+    console.log('ðŸ˜Š Analyzing emotions for personalized styling...');
     
     try {
-      // 📸 Analyze facial expressions and emotions
+
       const [
         facialAnalysis,
         emotionState,
@@ -41,7 +39,6 @@ export class EmotionBasedStylingAI {
         this.personalityProfiler.analyzePersonality(userProfile, imageData)
       ]);
 
-      // 🎨 Map emotions to style preferences
       const styleMapping = await this.moodToStyleMapper.mapEmotionToStyle({
         facialAnalysis,
         emotionState,
@@ -51,7 +48,6 @@ export class EmotionBasedStylingAI {
         userProfile
       });
 
-      // 👗 Generate mood-matched outfits
       const outfitRecommendations = await this.generateMoodMatchedOutfits(
         styleMapping,
         userProfile,
@@ -59,7 +55,6 @@ export class EmotionBasedStylingAI {
         options
       );
 
-      // 🔮 Predict mood evolution and suggest adaptive styling
       const moodEvolution = await this.predictMoodEvolution(emotionState, contextualFactors);
 
       return {
@@ -103,7 +98,6 @@ export class EmotionBasedStylingAI {
     }
   }
 
-  // 🎭 GENERATE MOOD-MATCHED OUTFITS
   async generateMoodMatchedOutfits(styleMapping, userProfile, contextualData, options) {
     const moodCategories = {
       happy: { colors: 'bright', styles: 'playful', energy: 'high' },
@@ -117,8 +111,7 @@ export class EmotionBasedStylingAI {
     };
 
     const outfits = [];
-    
-    // Generate outfit for current mood
+
     const currentMoodOutfit = await this.generateMoodSpecificOutfit(
       styleMapping.primaryMood,
       moodCategories[styleMapping.primaryMood],
@@ -127,7 +120,6 @@ export class EmotionBasedStylingAI {
     );
     outfits.push(currentMoodOutfit);
 
-    // Generate mood-enhancing outfit
     const enhancingOutfit = await this.generateMoodEnhancingOutfit(
       styleMapping,
       userProfile,
@@ -135,7 +127,6 @@ export class EmotionBasedStylingAI {
     );
     outfits.push(enhancingOutfit);
 
-    // Generate complementary mood outfit
     const complementaryOutfit = await this.generateComplementaryMoodOutfit(
       styleMapping,
       userProfile
@@ -154,7 +145,6 @@ export class EmotionBasedStylingAI {
   }
 }
 
-// 😃 FACIAL EXPRESSION ANALYZER
 export class FacialExpressionAnalyzer {
   constructor() {
     this.faceDetectionModel = new FaceDetectionModel();
@@ -164,7 +154,7 @@ export class FacialExpressionAnalyzer {
 
   async analyzeFacialExpressions(imageData) {
     try {
-      // 🔍 Detect and analyze facial features
+
       const [
         faceDetection,
         facialLandmarks,
@@ -212,7 +202,7 @@ export class FacialExpressionAnalyzer {
   }
 
   async detectFaces(imageData) {
-    // Simulate face detection with confidence scoring
+
     return {
       detected: true,
       confidence: 0.94,
@@ -223,7 +213,7 @@ export class FacialExpressionAnalyzer {
   }
 
   async analyzeExpressions(imageData) {
-    // Simulate facial expression analysis using computer vision
+
     const expressionScores = {
       happiness: Math.random() * 0.4 + 0.3, // 0.3-0.7
       sadness: Math.random() * 0.3,          // 0-0.3
@@ -265,7 +255,6 @@ export class FacialExpressionAnalyzer {
   }
 }
 
-// 🎭 EMOTION CLASSIFIER
 export class EmotionClassifier {
   constructor() {
     this.emotionModel = new DeepEmotionModel();
@@ -308,7 +297,7 @@ export class EmotionClassifier {
   }
 
   async classifyBasicEmotions(imageData) {
-    // Ekman's six basic emotions + neutral
+
     return {
       primary: 'happiness',
       secondary: ['neutral', 'surprise'],
@@ -326,7 +315,7 @@ export class EmotionClassifier {
   }
 
   async classifyComplexEmotions(imageData) {
-    // More nuanced emotional states
+
     return {
       confidence: 0.78,
       optimism: 0.68,
@@ -340,7 +329,6 @@ export class EmotionClassifier {
   }
 }
 
-// 🎨 MOOD TO STYLE MAPPER
 export class MoodToStyleMapper {
   constructor() {
     this.styleDatabase = new EmotionalStyleDatabase();
@@ -358,28 +346,24 @@ export class MoodToStyleMapper {
       userProfile
     } = emotionData;
 
-    // 🎨 Map emotions to colors
     const colorMapping = await this.mapEmotionToColors(
       emotionState,
       personalityInsights,
       userProfile
     );
 
-    // 👗 Map emotions to styles
     const styleMapping = await this.mapEmotionToStyles(
       emotionState,
       contextualFactors,
       userProfile
     );
 
-    // 📐 Map emotions to silhouettes
     const silhouetteMapping = await this.mapEmotionToSilhouettes(
       emotionState,
       biometricData,
       personalityInsights
     );
 
-    // ✨ Generate enhancement suggestions
     const enhancements = await this.generateMoodEnhancements(
       emotionState,
       contextualFactors
@@ -440,7 +424,6 @@ export class MoodToStyleMapper {
     const emotion = emotionState.primary;
     const baseMapping = emotionColorMap[emotion] || emotionColorMap.relaxed;
 
-    // Personalize colors based on user preferences
     return this.personalizeColorMapping(baseMapping, userProfile, personalityInsights);
   }
 
@@ -479,7 +462,7 @@ export class MoodToStyleMapper {
   }
 
   determinePrimaryMood(emotionState) {
-    // Combine emotion classification with valence/arousal to determine styling mood
+
     const { primary, valence, arousal, intensity } = emotionState;
     
     if (valence > 0.6 && arousal > 0.6) return 'excited';
@@ -492,10 +475,9 @@ export class MoodToStyleMapper {
   }
 }
 
-// 📊 BIOMETRIC MONITOR
 export class BiometricMonitor {
   async extractBiometricData(imageData) {
-    // Simulate biometric data extraction from facial analysis
+
     return {
       stress: Math.random() * 0.4 + 0.1, // 0.1-0.5
       energy: Math.random() * 0.6 + 0.3, // 0.3-0.9
@@ -514,7 +496,7 @@ export class BiometricMonitor {
   }
 
   analyzeSkinTone(imageData) {
-    // Simulate skin tone analysis for color recommendations
+
     const tones = ['fair', 'light', 'medium', 'olive', 'tan', 'deep'];
     return {
       primary: tones[Math.floor(Math.random() * tones.length)],
@@ -524,7 +506,6 @@ export class BiometricMonitor {
   }
 }
 
-// 🌍 CONTEXTUAL AWARENESS ENGINE
 export class ContextualAwarenessEngine {
   async analyzeContext(contextualData) {
     return {
@@ -553,10 +534,8 @@ export class ContextualAwarenessEngine {
   }
 }
 
-// 🎯 EXPORT MAIN ENGINE
 export const emotionBasedStylingAI = new EmotionBasedStylingAI();
 
-// 🚀 CONVENIENCE FUNCTIONS
 export async function analyzeEmotionAndStyle(imageData, userProfile, options = {}) {
   return await emotionBasedStylingAI.analyzeEmotionAndRecommendOutfit(
     imageData,
@@ -586,7 +565,6 @@ export async function getConfidenceBoostOutfit(userProfile) {
   return await getMoodBasedOutfit('confidence', userProfile);
 }
 
-// 🔄 REAL-TIME EMOTION MONITORING
 export class RealTimeEmotionMonitor {
   constructor() {
     this.isMonitoring = false;
@@ -612,8 +590,7 @@ export class RealTimeEmotionMonitor {
           emotion: emotionAnalysis.emotionAnalysis,
           recommendations: emotionAnalysis.outfitRecommendations
         });
-        
-        // Keep only last 20 entries
+
         if (this.emotionHistory.length > 20) {
           this.emotionHistory.shift();
         }

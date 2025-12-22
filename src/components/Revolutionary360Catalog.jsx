@@ -1,5 +1,5 @@
-// 👗 REVOLUTIONARY 360° DIGITAL CATALOG
-// Features: 360° product views, AI search, advanced filtering, trend analysis
+﻿
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,6 @@ import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts';
 
-// 3D Product Viewer Component
 function Product3DViewer({ product, autoRotate = true }) {
   const meshRef = useRef();
   const { scene } = useGLTF(product.model3D || '/models/default-garment.glb');
@@ -33,13 +32,11 @@ function Product3DViewer({ product, autoRotate = true }) {
   );
 }
 
-// AI-Powered Search Component
 function AISearchBar({ onSearch, onFilterChange, searchQuery, setSearchQuery }) {
   const [isAIMode, setIsAIMode] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // AI-powered search suggestions
   const generateSuggestions = async (query) => {
     if (!query || query.length < 2) {
       setSuggestions([]);
@@ -47,8 +44,7 @@ function AISearchBar({ onSearch, onFilterChange, searchQuery, setSearchQuery }) 
     }
 
     setIsLoading(true);
-    
-    // Mock AI suggestions - in production, use ML models
+
     const aiSuggestions = [
       `${query} - trending styles`,
       `${query} - similar to your favorites`,
@@ -105,7 +101,7 @@ function AISearchBar({ onSearch, onFilterChange, searchQuery, setSearchQuery }) 
         </button>
       </div>
 
-      {/* AI Suggestions */}
+      {}
       {isAIMode && suggestions.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -132,7 +128,6 @@ function AISearchBar({ onSearch, onFilterChange, searchQuery, setSearchQuery }) 
   );
 }
 
-// Advanced Filter Panel
 function AdvancedFilterPanel({ filters, onFilterChange, isOpen, onToggle }) {
   const filterCategories = {
     category: {
@@ -282,7 +277,6 @@ function AdvancedFilterPanel({ filters, onFilterChange, isOpen, onToggle }) {
   );
 }
 
-// Product Card with 360° View
 function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist }) {
   const [is360View, setIs360View] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -356,7 +350,7 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
                 <FaStar key={i} className="w-4 h-4" />
               ))}
             </div>
-            <span className="text-sm text-gray-600">(4.8) • 234 reviews</span>
+            <span className="text-sm text-gray-600">(4.8) â€¢ 234 reviews</span>
           </div>
 
           <div className="flex gap-3">
@@ -378,7 +372,6 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
     );
   }
 
-  // Grid view
   return (
     <motion.div
       layout
@@ -407,7 +400,7 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
           />
         )}
 
-        {/* Hover Overlay */}
+        {}
         <AnimatePresence>
           {isHovered && (
             <motion.div
@@ -438,7 +431,7 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
           )}
         </AnimatePresence>
 
-        {/* Product Badges */}
+        {}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.isNew && (
             <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">
@@ -453,7 +446,7 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
           )}
         </div>
 
-        {/* Wishlist Button */}
+        {}
         <button
           onClick={() => onWishlist(product)}
           className="absolute top-3 right-3 p-2 bg-white/80 text-gray-700 rounded-full hover:bg-white hover:text-red-500 transition-all"
@@ -487,7 +480,6 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
   );
 }
 
-// Main Revolutionary Catalog Component
 export default function Revolutionary360Catalog() {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
@@ -500,7 +492,6 @@ export default function Revolutionary360Catalog() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Initialize products
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -533,11 +524,9 @@ export default function Revolutionary360Catalog() {
     fetchProducts();
   }, []);
 
-  // Search and filter logic
   useEffect(() => {
     let filtered = products;
 
-    // Apply search
     if (searchQuery) {
       filtered = filtered.filter(product => {
         const productName = typeof product.name === 'string' ? product.name : (product.name?.en || '');
@@ -547,7 +536,6 @@ export default function Revolutionary360Catalog() {
       });
     }
 
-    // Apply filters
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value !== 'All') {
         filtered = filtered.filter(product => {
@@ -567,7 +555,6 @@ export default function Revolutionary360Catalog() {
       }
     });
 
-    // Apply sorting
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => (a.price || a.basePrice) - (b.price || b.basePrice));
@@ -582,7 +569,7 @@ export default function Revolutionary360Catalog() {
         filtered.sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || Date.now()));
         break;
       default:
-        // Featured - keep original order
+
         break;
     }
 
@@ -599,16 +586,16 @@ export default function Revolutionary360Catalog() {
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
-    // Navigate to product details
+
   };
 
   const handleTryOn = (product) => {
-    // Navigate to try-on with selected product
+
     console.log('Try on:', product.name);
   };
 
   const handleWishlist = (product) => {
-    // Add to wishlist
+
     console.log('Add to wishlist:', product.name);
   };
 
@@ -626,18 +613,18 @@ export default function Revolutionary360Catalog() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Revolutionary 360° Fashion Catalog
+            Revolutionary 360Â° Fashion Catalog
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Experience the future of fashion shopping with AI-powered search, 
-            360° product views, and intelligent recommendations
+            360Â° product views, and intelligent recommendations
           </p>
         </div>
 
-        {/* Search Bar */}
+        {}
         <div className="mb-6">
           <AISearchBar
             onSearch={handleSearch}
@@ -647,7 +634,7 @@ export default function Revolutionary360Catalog() {
           />
         </div>
 
-        {/* Controls */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <button
@@ -696,7 +683,7 @@ export default function Revolutionary360Catalog() {
           </div>
         </div>
 
-        {/* Advanced Filters */}
+        {}
         <AdvancedFilterPanel
           filters={filters}
           onFilterChange={handleFilterChange}
@@ -704,7 +691,7 @@ export default function Revolutionary360Catalog() {
           onToggle={() => setShowFilters(!showFilters)}
         />
 
-        {/* Products Grid/List */}
+        {}
         <div className={viewMode === 'grid' 
           ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
           : 'space-y-6'
@@ -723,7 +710,7 @@ export default function Revolutionary360Catalog() {
           </AnimatePresence>
         </div>
 
-        {/* No Results */}
+        {}
         {filteredProducts.length === 0 && (
           <div className="text-center py-16">
             <FaSearch className="w-16 h-16 text-gray-400 mx-auto mb-4" />

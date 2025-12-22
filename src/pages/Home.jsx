@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowRight, FaPlay, FaStar, FaUsers, FaTshirt, FaCamera, FaHeart, FaShoppingBag, FaRocket, FaGem, FaLightbulb, FaAtom, FaDna, FaRobot } from 'react-icons/fa';
@@ -15,14 +15,12 @@ export default function Home() {
   const [quantumPalette, setQuantumPalette] = useState(null);
   const [particleSystem, setParticleSystem] = useState([]);
 
-  // Initialize quantum color palette and particle system
   useEffect(() => {
     const palette = quantumColorGenerator.generateEmotionPalette('confidence', 0.9, {
       colorDNA: { warmTones: 0.7, coolTones: 0.3, brights: 0.8, neutrals: 0.2 }
     });
     setQuantumPalette(palette);
-    
-    // Initialize particle system
+
     const particles = Array.from({ length: 50 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -35,15 +33,13 @@ export default function Home() {
     setParticleSystem(particles);
   }, []);
 
-  // Track mouse movement for parallax and quantum field effects
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth) * 100,
         y: (e.clientY / window.innerHeight) * 100
       });
-      
-      // Update particle system based on mouse interaction
+
       setParticleSystem(prev => prev.map(particle => ({
         ...particle,
         x: particle.x + particle.vx + (Math.random() - 0.5) * 0.1,
@@ -56,7 +52,6 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Hero slides with quantum fashion themes
   const heroSlides = [
     {
       title: "QUANTUM FASHION",
@@ -75,7 +70,6 @@ export default function Home() {
     }
   ];
 
-  // Revolutionary features with quantum properties
   const features = [
     {
       icon: FaAtom,
@@ -103,7 +97,6 @@ export default function Home() {
     }
   ];
 
-  // Auto-rotate features and hero slides
   useEffect(() => {
     const featureInterval = setInterval(() => {
       setCurrentFeature((prev) => (prev + 1) % features.length);
@@ -150,7 +143,7 @@ export default function Home() {
         : 'linear-gradient(135deg, #FF006E20, #8338EC30, #3A86FF20)'
     }}>
       
-      {/* Quantum Particle Field */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
         {particleSystem.map(particle => (
           <motion.div
@@ -175,9 +168,9 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Dynamic Holographic Background */}
+      {}
       <div className="fixed inset-0 opacity-40">
-        {/* Quantum Grid */}
+        {}
         <div className="absolute inset-0" style={{
           backgroundImage: `
             linear-gradient(rgba(34, 211, 238, 0.3) 1px, transparent 1px),
@@ -187,7 +180,7 @@ export default function Home() {
           transform: `translate(${mousePosition.x * 0.05}px, ${mousePosition.y * 0.05}px) rotate(${mousePosition.x * 0.01}deg)`
         }}></div>
         
-        {/* Floating Quantum Geometries */}
+        {}
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
@@ -222,7 +215,7 @@ export default function Home() {
           />
         ))}
         
-        {/* Holographic Light Rays */}
+        {}
         {[...Array(8)].map((_, i) => (
           <motion.div
             key={`ray-${i}`}
@@ -249,9 +242,9 @@ export default function Home() {
         ))}
       </div>
       
-      {/* Hero Section */}
+      {}
       <section className="relative">
-        {/* Hero Content */}
+        {}
         <div className="relative z-10 container mx-auto px-6 py-32 text-center">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -346,7 +339,7 @@ export default function Home() {
       </div>
     </section>
 
-    {/* Cyber Features Grid */}
+    {}
     <section className="py-32 relative">
         <div className="container mx-auto px-6">
           <motion.div
@@ -379,7 +372,7 @@ export default function Home() {
               {
                 title: "AI NEURAL SCAN",
                 description: "Quantum body mapping with molecular precision",
-                icon: "🧠",
+                icon: "ðŸ§ ",
                 gradient: "from-rose-400 to-orange-400",
                 borderColor: "border-rose-400/30",
                 step: "01"
@@ -387,7 +380,7 @@ export default function Home() {
               {
                 title: "HOLO PROJECTION",
                 description: "Real-time 4D clothing visualization",
-                icon: "🔮",
+                icon: "ðŸ”®",
                 gradient: "from-fuchsia-400 to-violet-500", 
                 borderColor: "border-fuchsia-400/30",
                 step: "02"
@@ -395,7 +388,7 @@ export default function Home() {
               {
                 title: "QUANTUM FITTING",
                 description: "Molecular fabric simulation technology",
-                icon: "⚡",
+                icon: "âš¡",
                 gradient: "from-sky-400 to-cyan-500",
                 borderColor: "border-sky-400/30",
                 step: "03"
@@ -410,7 +403,7 @@ export default function Home() {
                 className={`group relative overflow-hidden rounded-3xl bg-black/50 backdrop-blur-xl border ${feature.borderColor} hover:border-white/40 transition-all duration-500`}
               >
                 <div className="p-8 relative z-10">
-                  {/* Step Number */}
+                  {}
                   <div className="absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-br from-white to-gray-100 backdrop-blur-xl border-2 border-purple-500/80 rounded-2xl flex items-center justify-center shadow-2xl">
                     <span className="text-3xl font-black text-purple-600 font-mono">{feature.step}</span>
                   </div>
@@ -431,7 +424,7 @@ export default function Home() {
         </div>
       </section>
       
-      {/* How It Works - Clear Numbered Steps */}
+      {}
       <section className="py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/50 via-purple-900/30 to-slate-900/50"></div>
         
@@ -498,13 +491,13 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="group relative"
                 >
-                  {/* Connection Line (not for last item) */}
+                  {}
                   {index < 2 && (
                     <div className="hidden lg:block absolute top-24 left-full w-12 h-0.5 bg-gradient-to-r from-purple-400/50 to-transparent z-0" />
                   )}
                   
                   <div className="relative bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-500 group-hover:transform group-hover:-translate-y-2">
-                    {/* Large Step Number */}
+                    {}
                     <div className="absolute -top-8 left-8">
                       <div className={`w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl border-4 border-purple-500/30`}>
                         <span className="text-3xl font-black text-purple-600">{item.step}</span>
@@ -512,12 +505,12 @@ export default function Home() {
                       <div className={`absolute inset-0 w-16 h-16 bg-gradient-to-br ${item.color} opacity-20 rounded-3xl blur-lg`}></div>
                     </div>
                     
-                    {/* Icon */}
+                    {}
                     <div className={`w-20 h-20 bg-gradient-to-br ${item.bgColor} rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
                       <Icon className="w-10 h-10 text-white" />
                     </div>
                     
-                    {/* Content */}
+                    {}
                     <h3 className="text-2xl font-bold text-white mb-4 font-mono tracking-wider text-center">
                       {item.title}
                     </h3>
@@ -525,7 +518,7 @@ export default function Home() {
                       {item.description}
                     </p>
                     
-                    {/* Gradient Border Animation */}
+                    {}
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity duration-500`} />
                   </div>
                 </motion.div>
@@ -535,11 +528,11 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Cyber Stats Matrix */}
+      {}
       <section className="py-24 relative">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-amber-400/10 to-sky-400/10"></div>
-          {/* Matrix Rain Effect */}
+          {}
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
@@ -588,7 +581,7 @@ export default function Home() {
                 <h3 className="text-xl font-bold text-white mb-2 font-mono tracking-wider">{stat.label}</h3>
                 <p className="text-gray-400 font-light">{stat.sublabel}</p>
                 
-                {/* Cyber border effect */}
+                {}
                 <div className="mt-4 mx-auto w-16 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
               </motion.div>
             ))}
@@ -596,9 +589,9 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Cyber CTA Terminal */}
+      {}
       <section className="py-32 relative overflow-hidden">
-        {/* Digital Grid Background */}
+        {}
         <div className="absolute inset-0">
           <div 
             className="absolute inset-0 opacity-10"
@@ -611,7 +604,7 @@ export default function Home() {
             }}
           ></div>
           
-          {/* Floating cyber elements */}
+          {}
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
@@ -694,7 +687,7 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Auth Modal */}
+      {}
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}

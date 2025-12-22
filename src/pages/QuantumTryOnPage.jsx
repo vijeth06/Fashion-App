@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import QuantumTryOn from '../components/QuantumTryOn';
@@ -44,11 +44,11 @@ const QuantumTryOnPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-950/20 via-green-950/20 to-blue-950/20 py-8">
-      {/* Indian Fashion Quantum Header */}
+      {}
       <div className="container mx-auto px-6 mb-8">
         <div className="text-center">
           <h1 className="text-6xl font-black text-white mb-4">
-            क्वांटम
+            à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤®
             <span className="block text-transparent bg-gradient-to-r from-orange-400 via-white to-green-500 bg-clip-text">
               VIRTUAL TRY-ON
             </span>
@@ -62,11 +62,11 @@ const QuantumTryOnPage = () => {
         </div>
       </div>
 
-      {/* Product Selection for Quantum Mode */}
+      {}
       <div className="container mx-auto px-6 mb-8">
         <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-orange-400/30">
           <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
-            🌟 <span className="ml-2">Select Fashion Items</span>
+            ðŸŒŸ <span className="ml-2">Select Fashion Items</span>
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {indianProducts.slice(0, 12).map((item) => (
@@ -84,14 +84,14 @@ const QuantumTryOnPage = () => {
                 <div className="aspect-square bg-gradient-to-br from-orange-500/20 to-green-500/20 rounded-xl mb-3 flex items-center justify-center">
                   <span className="text-2xl">
                     {item.type === 'kurta'
-                      ? '👕'
+                      ? 'ðŸ‘•'
                       : item.type === 'saree'
-                        ? '🥻'
+                        ? 'ðŸ¥»'
                         : item.type === 'jacket'
-                          ? '🧥'
+                          ? 'ðŸ§¥'
                           : item.type === 'jeans'
-                            ? '👖'
-                            : '👔'}
+                            ? 'ðŸ‘–'
+                            : 'ðŸ‘”'}
                   </span>
                 </div>
                 <h4 className="text-white font-mono text-xs mb-1 truncate">
@@ -99,10 +99,10 @@ const QuantumTryOnPage = () => {
                 </h4>
                 <p className="text-gray-400 text-xs truncate">{item.brand}</p>
                 <p className="text-orange-400 text-xs font-bold">
-                  ₹{item.price.selling.toLocaleString('en-IN')}
+                  â‚¹{item.price.selling.toLocaleString('en-IN')}
                 </p>
 
-                {/* Quantum Properties Indicator */}
+                {}
                 <div className="absolute top-2 right-2 flex flex-col space-y-1">
                   {item.fabricPhysics?.quantumProperties?.colorShifting && (
                     <div
@@ -122,27 +122,27 @@ const QuantumTryOnPage = () => {
                   />
                 </div>
 
-                {/* Region Badge */}
+                {}
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                   {item.region === 'Pan-India'
-                    ? '🇮🇳'
+                    ? 'ðŸ‡®ðŸ‡³'
                     : item.region === 'North Indian'
                       ? 'N'
                       : item.region === 'South Indian'
                         ? 'S'
-                        : '🌍'}
+                        : 'ðŸŒ'}
                 </div>
               </motion.div>
             ))}
           </div>
           <p className="text-gray-400 text-sm mt-4 text-center">
-            Select an item to experience quantum fabric simulation • आइटम चुनें और
-            क्वांटम कपड़ा सिमुलेशन का अनुभव करें
+            Select an item to experience quantum fabric simulation â€¢ à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤°
+            à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾ à¤¸à¤¿à¤®à¥à¤²à¥‡à¤¶à¤¨ à¤•à¤¾ à¤…à¤¨à¥à¤­à¤µ à¤•à¤°à¥‡à¤‚
           </p>
         </div>
       </div>
 
-      {/* Quantum Try-On Interface */}
+      {}
       <QuantumTryOn
         selectedItem={selectedItem}
         userProfile={user}

@@ -1,21 +1,18 @@
-import React, { Component, useState, useEffect } from 'react';
+﻿import React, { Component, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { OutfitProvider } from './context/OutfitContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import UltraModernLayout from './components/UltraModernLayout';
 
-// Core pages (imported directly - no lazy loading)
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
 
-// Import auth debug utilities for development
 import './utils/authDebug';
 
-// Direct imports for faster responses (no lazy loading)
 import Favorites from './pages/Favorites';
 import Looks from './pages/Looks';
 import ProductDetails from './pages/ProductDetails';
@@ -32,7 +29,6 @@ import NeuralInterface from './pages/NeuralInterface';
 import BiometricAnalysis from './pages/BiometricAnalysis';
 import VirtualTryOn from './pages/VirtualTryOn';
 
-// Direct imports for advanced features (no lazy loading)
 import QuantumTryOn from './components/QuantumTryOn';
 import MetaverseIntegration from './components/MetaverseIntegration';
 import BiometricSustainability from './components/BiometricSustainability';
@@ -45,14 +41,12 @@ import DatabaseManager from './components/DatabaseManager';
 
 import SegmentationUpload from './components/SegmentationUpload';
 
-// Direct imports for AI features (no lazy loading)
 import { BodyAnalysisPage, OutfitRecommendationsPage } from './pages/AIFeatures';
 import APIStatus from './pages/APIStatus';
 
-// Database Service (mock for frontend)
 const apiService = {
   testConnection: async () => {
-    // Mock database connection test
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
@@ -94,14 +88,11 @@ const PremiumPage = () => {
   );
 };
 
-// Add route for segmentation demo
 const SegmentationDemoPage = () => (
   <div className="container mx-auto py-8">
     <SegmentationUpload />
   </div>
 );
-
-// Neural Interface Page Component will be imported from dedicated file
 
 const SustainabilityPage = () => {
   const { user } = useAuth();
@@ -148,7 +139,6 @@ const DatabaseManagerPage = () => {
   );
 };
 
-// Database Connection Test Component
 const DatabaseTestPage = () => {
   const [connectionStatus, setConnectionStatus] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -188,7 +178,7 @@ const DatabaseTestPage = () => {
             <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-4xl mx-auto">
               {connectionStatus?.connected ? (
                 <div className="text-center">
-                  <div className="text-6xl mb-4">✅</div>
+                  <div className="text-6xl mb-4">âœ…</div>
                   <h2 className="text-2xl font-bold text-green-400 mb-4">Database Connected Successfully!</h2>
                   <p className="text-gray-300 mb-6">MongoDB connection established and collections initialized.</p>
                   
@@ -207,7 +197,7 @@ const DatabaseTestPage = () => {
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="text-6xl mb-4">❌</div>
+                  <div className="text-6xl mb-4">âŒ</div>
                   <h2 className="text-2xl font-bold text-red-400 mb-4">Database Connection Failed</h2>
                   <p className="text-gray-300 mb-4">Unable to connect to MongoDB database.</p>
                   <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
@@ -245,7 +235,7 @@ class ErrorBoundary extends Component {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
           <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg text-center">
-            <div className="text-6xl mb-4">⚠️</div>
+            <div className="text-6xl mb-4">âš ï¸</div>
             <h1 className="text-2xl font-bold mb-2">Something went wrong</h1>
             <p className="text-gray-600 mb-6">
               We're sorry, but an unexpected error occurred. Please try again later.
@@ -265,7 +255,6 @@ class ErrorBoundary extends Component {
   }
 }
 
-// Scroll to top on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -276,7 +265,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Loading fallback for lazy components
 const PageLoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-indigo-50">
     <div className="text-center">
@@ -286,7 +274,6 @@ const PageLoadingFallback = () => (
   </div>
 );
 
-// Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -302,7 +289,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Quantum Try-On Page Wrapper with ML Pipeline Integration
 const QuantumTryOnPageWrapper = () => {
   const { user } = useAuth();
   const [selectedItem, setSelectedItem] = useState(null);
@@ -345,7 +331,7 @@ const QuantumTryOnPageWrapper = () => {
       <div className="container mx-auto px-6 mb-8">
         <div className="text-center">
           <h1 className="text-6xl font-black text-white mb-4">
-            क्वांटम
+            à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤®
             <span className="block text-transparent bg-gradient-to-r from-orange-400 via-white to-green-500 bg-clip-text">
               VIRTUAL TRY-ON
             </span>
@@ -362,7 +348,7 @@ const QuantumTryOnPageWrapper = () => {
       <div className="container mx-auto px-6 mb-8">
         <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-orange-400/30">
           <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
-            🌟 <span className="ml-2">Select Fashion Items</span>
+            ðŸŒŸ <span className="ml-2">Select Fashion Items</span>
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {indianProducts.slice(0, 12).map((item) => (
@@ -380,14 +366,14 @@ const QuantumTryOnPageWrapper = () => {
                 <div className="aspect-square bg-gradient-to-br from-orange-500/20 to-green-500/20 rounded-xl mb-3 flex items-center justify-center">
                   <span className="text-2xl">
                     {item.type === 'kurta'
-                      ? '👕'
+                      ? 'ðŸ‘•'
                       : item.type === 'saree'
-                        ? '🥻'
+                        ? 'ðŸ¥»'
                         : item.type === 'jacket'
-                          ? '🧥'
+                          ? 'ðŸ§¥'
                           : item.type === 'jeans'
-                            ? '👖'
-                            : '👔'}
+                            ? 'ðŸ‘–'
+                            : 'ðŸ‘”'}
                   </span>
                 </div>
                 <h4 className="text-white font-mono text-xs mb-1 truncate">
@@ -395,7 +381,7 @@ const QuantumTryOnPageWrapper = () => {
                 </h4>
                 <p className="text-gray-400 text-xs truncate">{item.brand}</p>
                 <p className="text-orange-400 text-xs font-bold">
-                  ₹{item.price.selling.toLocaleString('en-IN')}
+                  â‚¹{item.price.selling.toLocaleString('en-IN')}
                 </p>
 
                 <div className="absolute top-2 right-2 flex flex-col space-y-1">
@@ -419,19 +405,19 @@ const QuantumTryOnPageWrapper = () => {
 
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                   {item.region === 'Pan-India'
-                    ? '🇮🇳'
+                    ? 'ðŸ‡®ðŸ‡³'
                     : item.region === 'North Indian'
                       ? 'N'
                       : item.region === 'South Indian'
                         ? 'S'
-                        : '🌍'}
+                        : 'ðŸŒ'}
                 </div>
               </motion.div>
             ))}
           </div>
           <p className="text-gray-400 text-sm mt-4 text-center">
-            Select an item to experience quantum fabric simulation • आइटम चुनें और क्वांटम कपड़ा
-            सिमुलेशन का अनुभव करें
+            Select an item to experience quantum fabric simulation â€¢ à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤° à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾
+            à¤¸à¤¿à¤®à¥à¤²à¥‡à¤¶à¤¨ à¤•à¤¾ à¤…à¤¨à¥à¤­à¤µ à¤•à¤°à¥‡à¤‚
           </p>
         </div>
       </div>
@@ -455,7 +441,7 @@ function App() {
             <ScrollToTop />
               <Routes>
                 <Route element={<UltraModernLayout />}>
-                  {/* Public Routes */}
+                  {}
                   <Route path="/" element={<FeatureShowcase />} />
                   <Route path="/home" element={<Home />} />
                   <Route path="/catalog" element={<Catalog />} />
@@ -466,14 +452,14 @@ function App() {
                   <Route path="/recommendations" element={<Recommendations />} />
                   <Route path="/community" element={<CommunityFeed />} />
                   
-                  {/* AI-Powered Features */}
+                  {}
                   <Route path="/ai/body-analysis" element={<BodyAnalysisPage />} />
                   <Route path="/ai/outfit-recommendations" element={<OutfitRecommendationsPage />} />
                   
-                  {/* API Status Dashboard */}
+                  {}
                   <Route path="/api-status" element={<APIStatus />} />
                   
-                  {/* Advanced Quantum Features */}
+                  {}
                   <Route path="/quantum-tryon" element={<QuantumTryOnPageWrapper />} />
                   <Route path="/metaverse" element={<MetaversePage />} />
                   <Route path="/biometric" element={<BiometricAnalysis />} />
@@ -481,20 +467,20 @@ function App() {
                   <Route path="/neural-interface" element={<NeuralInterface />} />
                   <Route path="/sustainability" element={<SustainabilityPage />} />
                   
-                  {/* Advanced Platform Features */}
+                  {}
                   <Route path="/social-platform" element={<SocialPlatformPage />} />
                   <Route path="/real-time" element={<RealTimeFeaturesPage />} />
                   <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
                   
-                  {/* Database Management Routes */}
+                  {}
                   <Route path="/database-manager" element={<DatabaseManagerPage />} />
                   <Route path="/database-test" element={<DatabaseTestPage />} />
                   
-                  {/* Auth Routes */}
+                  {}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   
-                  {/* Protected Routes */}
+                  {}
                   <Route
                     path="/favorites"
                     element={
@@ -553,7 +539,7 @@ function App() {
                   />
                   <Route path="/segmentation-demo" element={<SegmentationDemoPage />} />
                   
-                  {/* 404 Route */}
+                  {}
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

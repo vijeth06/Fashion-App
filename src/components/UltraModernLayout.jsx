@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -16,7 +16,6 @@ const UltraModernLayout = () => {
     setShowAuthModal(true);
   };
 
-  // Background animation particles
   const particles = Array.from({ length: 50 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -28,9 +27,9 @@ const UltraModernLayout = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-950 relative overflow-hidden">
       
-      {/* Animated Background */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Gradient Orbs */}
+        {}
         <motion.div
           className="absolute -top-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
           animate={{
@@ -73,7 +72,7 @@ const UltraModernLayout = () => {
           }}
         />
 
-        {/* Floating Particles */}
+        {}
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
@@ -97,7 +96,7 @@ const UltraModernLayout = () => {
           />
         ))}
 
-        {/* Grid Pattern */}
+        {}
         <div 
           className="absolute inset-0 opacity-5"
           style={{
@@ -110,10 +109,10 @@ const UltraModernLayout = () => {
         />
       </div>
 
-      {/* Navigation */}
+      {}
       <ModernNavBar />
 
-      {/* Main Content */}
+      {}
       <main className="relative z-10 pt-16 lg:pt-20">
         <AnimatePresence mode="wait">
           <motion.div
@@ -128,14 +127,14 @@ const UltraModernLayout = () => {
         </AnimatePresence>
       </main>
 
-      {/* Modern Footer */}
+      {}
       <footer className="relative z-10 bg-gradient-to-t from-slate-950 via-slate-900/95 to-transparent backdrop-blur-xl mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           
-          {/* Footer Content */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             
-            {/* Brand Section */}
+            {}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-6">
                 <motion.div
@@ -158,7 +157,7 @@ const UltraModernLayout = () => {
                 the way we shop for fashion. Join millions of users discovering their perfect style.
               </p>
               
-              {/* Social Links */}
+              {}
               <div className="flex space-x-4">
                 {[
                   { name: 'Twitter', color: 'from-blue-400 to-blue-500', to: '/community' },
@@ -178,7 +177,7 @@ const UltraModernLayout = () => {
               </div>
             </div>
             
-            {/* Quick Links */}
+            {}
             <div>
               <h4 className="text-white font-bold mb-6 text-lg">
                 Explore
@@ -208,7 +207,7 @@ const UltraModernLayout = () => {
               </ul>
             </div>
             
-            {/* Account */}
+            {}
             <div>
               <h4 className="text-white font-bold mb-6 text-lg">
                 Account
@@ -258,11 +257,11 @@ const UltraModernLayout = () => {
             </div>
           </div>
           
-          {/* Footer Bottom */}
+          {}
           <div className="border-t border-slate-800 mt-16 pt-8">
             <div className="flex flex-col lg:flex-row justify-between items-center">
               <div className="text-slate-400 text-sm mb-4 lg:mb-0">
-                © {new Date().getFullYear()} VirtualFashion. All rights reserved.
+                Â© {new Date().getFullYear()} VirtualFashion. All rights reserved.
                 <span className="text-purple-400 ml-2">Powered by AI Innovation</span>
               </div>
               <div className="flex items-center space-x-6 text-sm">
@@ -284,7 +283,7 @@ const UltraModernLayout = () => {
         </div>
       </footer>
       
-      {/* Auth Modal */}
+      {}
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}

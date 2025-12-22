@@ -1,4 +1,4 @@
-// Barrel exports for components
+﻿
 export { default as AdaptiveNeuralInterface } from './AdaptiveNeuralInterface.jsx';
 export { default as AdvancedAdminDashboard } from './AdvancedAdminDashboard.jsx';
 export { default as AdvancedARTryOn } from './AdvancedARTryOn.jsx';
@@ -23,5 +23,4 @@ export { default as SocialSharing } from './SocialSharing.jsx';
 export { default as ThreeDViewer } from './ThreeDViewer.jsx';
 export { default as UltraModernLayout } from './UltraModernLayout.jsx';
 
-// Re-export auth components
 export * from './auth';

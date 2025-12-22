@@ -1,7 +1,4 @@
-/**
- * Community Service - Real User Data from MongoDB
- * Fetches actual user profiles, follows, and social interactions
- */
+﻿
 
 import apiService from './apiService';
 
@@ -11,9 +8,7 @@ class CommunityService {
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
   }
 
-  /**
-   * Fetch all users from database
-   */
+  
   async getAllUsers(page = 1, limit = 20) {
     try {
       const cacheKey = `users_${page}_${limit}`;
@@ -34,9 +29,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Search users by query
-   */
+  
   async searchUsers(query, filters = {}) {
     if (!query || query.trim().length === 0) {
       return this.getAllUsers();
@@ -61,9 +54,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get user profile by ID
-   */
+  
   async getUserProfile(userId) {
     try {
       const cacheKey = `user_${userId}`;
@@ -84,17 +75,14 @@ class CommunityService {
     }
   }
 
-  /**
-   * Follow a user
-   */
+  
   async followUser(userId, targetUserId) {
     try {
       const response = await apiService.post('/api/users/follow', {
         userId,
         targetUserId
       });
-      
-      // Invalidate cache
+
       this.invalidateUserCache(userId);
       this.invalidateUserCache(targetUserId);
       
@@ -105,17 +93,14 @@ class CommunityService {
     }
   }
 
-  /**
-   * Unfollow a user
-   */
+  
   async unfollowUser(userId, targetUserId) {
     try {
       const response = await apiService.post('/api/users/unfollow', {
         userId,
         targetUserId
       });
-      
-      // Invalidate cache
+
       this.invalidateUserCache(userId);
       this.invalidateUserCache(targetUserId);
       
@@ -126,9 +111,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get user's followers
-   */
+  
   async getUserFollowers(userId) {
     try {
       const response = await apiService.get(`/api/users/${userId}/followers`);
@@ -144,9 +127,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get user's following
-   */
+  
   async getUserFollowing(userId) {
     try {
       const response = await apiService.get(`/api/users/${userId}/following`);
@@ -162,9 +143,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get user's wishlist/favorites
-   */
+  
   async getUserWishlist(userId) {
     try {
       const response = await apiService.get(`/api/wishlist/${userId}`);
@@ -180,9 +159,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get user's looks/outfits
-   */
+  
   async getUserLooks(userId) {
     try {
       const response = await apiService.get(`/api/looks/user/${userId}`);
@@ -198,9 +175,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Get trending users
-   */
+  
   async getTrendingUsers(limit = 10) {
     try {
       const cacheKey = `trending_users_${limit}`;
@@ -221,14 +196,11 @@ class CommunityService {
     }
   }
 
-  /**
-   * Update user profile
-   */
+  
   async updateUserProfile(userId, updates) {
     try {
       const response = await apiService.put(`/api/users/${userId}`, updates);
-      
-      // Invalidate cache
+
       this.invalidateUserCache(userId);
       
       return response.success;
@@ -238,9 +210,7 @@ class CommunityService {
     }
   }
 
-  /**
-   * Cache management
-   */
+  
   getFromCache(key) {
     const cached = this.cache.get(key);
     if (!cached) return null;
@@ -275,6 +245,5 @@ class CommunityService {
   }
 }
 
-// Export singleton instance
 const communityService = new CommunityService();
 export default communityService;

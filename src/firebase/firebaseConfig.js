@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
+﻿import { initializeApp, getApps, getApp } from "firebase/app";
 import { 
   getAuth, 
   GoogleAuthProvider, 
@@ -19,7 +19,6 @@ import {
 import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCxxARYzK6iHujKnh6aHhlGrvE4EYQPugM",
   authDomain: "virtual-fashion-tryon.firebaseapp.com",
@@ -29,13 +28,11 @@ const firebaseConfig = {
   appId: "1:137777083432:web:f5f1dd51f3bbe859f2b11d"
 };
 
-// Initialize Firebase (prevent duplicate initialization)
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Configure auth providers
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('profile');
 googleProvider.addScope('email');
@@ -53,9 +50,6 @@ const microsoftProvider = new OAuthProvider('microsoft.com');
 microsoftProvider.addScope('mail.read');
 microsoftProvider.addScope('calendars.read');
 
-// Enhanced Auth Functions with Social Logins
-
-// Google Sign In
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -67,7 +61,6 @@ export const signInWithGoogle = async () => {
   }
 };
 
-// Facebook Sign In
 export const signInWithFacebook = async () => {
   try {
     const result = await signInWithPopup(auth, facebookProvider);
@@ -79,7 +72,6 @@ export const signInWithFacebook = async () => {
   }
 };
 
-// Twitter Sign In
 export const signInWithTwitter = async () => {
   try {
     const result = await signInWithPopup(auth, twitterProvider);
@@ -91,7 +83,6 @@ export const signInWithTwitter = async () => {
   }
 };
 
-// GitHub Sign In
 export const signInWithGithub = async () => {
   try {
     const result = await signInWithPopup(auth, githubProvider);
@@ -103,7 +94,6 @@ export const signInWithGithub = async () => {
   }
 };
 
-// Email/Password Sign In
 export const signInWithEmail = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -114,20 +104,16 @@ export const signInWithEmail = async (email, password) => {
   }
 };
 
-// Email/Password Sign Up
 export const signUpWithEmail = async (email, password, displayName) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Update profile with display name
+
     if (displayName) {
       await updateProfile(userCredential.user, { displayName });
     }
-    
-    // Send email verification
+
     await sendEmailVerification(userCredential.user);
-    
-    // Create user profile in Firestore
+
     await createUserProfile(userCredential.user, { displayName });
     
     return { user: userCredential.user, success: true, emailVerificationSent: true };
@@ -137,7 +123,6 @@ export const signUpWithEmail = async (email, password, displayName) => {
   }
 };
 
-// Password Reset
 export const resetPassword = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -148,7 +133,6 @@ export const resetPassword = async (email) => {
   }
 };
 
-// Create or update user profile in Firestore
 const createUserProfile = async (user, additionalData = {}) => {
   try {
     const userRef = doc(db, 'users', user.uid);
@@ -164,8 +148,7 @@ const createUserProfile = async (user, additionalData = {}) => {
       updatedAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
       provider: user.providerData[0]?.providerId || 'email',
-      
-      // Fashion profile initialization
+
       fashionProfile: {
         preferredStyle: 'modern',
         sizeProfile: {
@@ -177,16 +160,14 @@ const createUserProfile = async (user, additionalData = {}) => {
         brandPreferences: [],
         priceRange: { min: 0, max: 1000 }
       },
-      
-      // Biometric profile initialization
+
       biometricProfile: {
         bodyMeasurements: {},
         bodyType: null,
         skinTone: null,
         measurementMethod: 'manual'
       },
-      
-      // Shopping behavior
+
       shoppingBehavior: {
         totalOrders: 0,
         totalSpent: 0,
@@ -211,7 +192,6 @@ const createUserProfile = async (user, additionalData = {}) => {
   }
 };
 
-// Get user profile
 export const getUserProfile = async (uid) => {
   try {
     const userRef = doc(db, 'users', uid);
@@ -223,9 +203,9 @@ export const getUserProfile = async (uid) => {
       return { success: false, error: 'User profile not found' };
     }
   } catch (error) {
-    // Handle offline errors gracefully - don't spam console
+
     if (error.code === 'unavailable' || error.message?.includes('offline')) {
-      // Return a default profile when offline
+
       return { 
         success: false, 
         error: 'offline',
@@ -237,7 +217,6 @@ export const getUserProfile = async (uid) => {
   }
 };
 
-// Update user profile
 export const updateUserProfile = async (uid, updates) => {
   try {
     const userRef = doc(db, 'users', uid);
@@ -252,19 +231,16 @@ export const updateUserProfile = async (uid, updates) => {
   }
 };
 
-// Upload profile picture
 export const uploadProfilePicture = async (uid, file) => {
   try {
     const storageRef = ref(storage, `profile-pictures/${uid}`);
     const snapshot = await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(snapshot.ref);
-    
-    // Update auth profile
+
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, { photoURL: downloadURL });
     }
-    
-    // Update Firestore profile
+
     await updateUserProfile(uid, { photoURL: downloadURL });
     
     return { success: true, photoURL: downloadURL };
@@ -274,7 +250,6 @@ export const uploadProfilePicture = async (uid, file) => {
   }
 };
 
-// Sign Out
 export const signOutUser = async () => {
   try {
     await signOut(auth);
@@ -285,7 +260,6 @@ export const signOutUser = async () => {
   }
 };
 
-// Auth state observer
 export const onAuthStateChange = (callback) => {
   return onAuthStateChanged(auth, callback);
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
 import html2canvas from 'html2canvas';
@@ -12,7 +12,6 @@ import productService from '../services/productService';
 import { advancedFashionItems } from '../data/advancedProducts';
 import { FaAtom, FaRocket, FaCamera, FaUpload, FaMagic, FaCog, FaEye, FaRobot } from 'react-icons/fa';
 
-// Represents a single overlay layer with its own transform
 function createLayer(item) {
   return {
     id: Date.now() + Math.random(),
@@ -27,17 +26,14 @@ export default function TryOn() {
   const { user } = useAuth();
   const { uploadedImage, setUploadedImage, addFavorite, addLook } = useOutfit();
 
-  // Products state
   const [clothingItems, setClothingItems] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [productsError, setProductsError] = useState(null);
 
-  // Mode Selection
   const [tryOnMode, setTryOnMode] = useState('quantum'); // 'quantum', 'classic', 'ar'
   const [selectedItem, setSelectedItem] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
 
-  // Camera state
   const [useCamera, setUseCamera] = useState(false);
   const [facingMode, setFacingMode] = useState('user'); // 'user' or 'environment'
   const [mirrored, setMirrored] = useState(true);
@@ -46,26 +42,23 @@ export default function TryOn() {
   const [showARMode, setShowARMode] = useState(false);
   const webcamRef = useRef(null);
 
-  // Layers state (mix & match)
   const [layers, setLayers] = useState([]); // array of {id, item, scale, rotation, offset}
   const [activeLayerId, setActiveLayerId] = useState(null);
   const [currentLookData, setCurrentLookData] = useState(null);
 
-  // Drag state
   const stageRef = useRef(null);
   const draggingRef = useRef({ active: false, layerId: null, last: { x: 0, y: 0 } });
 
   const setActiveLayer = (id) => setActiveLayerId(id);
   const activeLayer = layers.find(l => l.id === activeLayerId) || null;
 
-  // Fetch products from API
   useEffect(() => {
     async function fetchProducts() {
       try {
         setProductsLoading(true);
         setProductsError(null);
         const data = await productService.getAllProducts({ limit: 100 });
-        // Format products for try-on compatibility
+
         const formattedProducts = (data.products || []).map(product => 
           productService.formatForTryOn(product)
         );
@@ -81,7 +74,6 @@ export default function TryOn() {
     fetchProducts();
   }, []);
 
-  // Upload handler
   const onUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -92,13 +84,11 @@ export default function TryOn() {
     setCameraError('');
   };
 
-  // Download composite using html2canvas
   const onDownload = async (saveOnly = false) => {
     if (!stageRef.current) return;
     const canvas = await html2canvas(stageRef.current, { backgroundColor: null, useCORS: true });
     const url = canvas.toDataURL('image/png');
-    
-    // Update current look data for sharing
+
     setCurrentLookData({
       id: Date.now(),
       imageDataUrl: url,
@@ -116,7 +106,6 @@ export default function TryOn() {
     a.click();
   };
 
-  // Share using Web Share API if available
   const onShare = async () => {
     if (!stageRef.current) return;
     const canvas = await html2canvas(stageRef.current, { backgroundColor: null, useCORS: true });
@@ -130,7 +119,6 @@ export default function TryOn() {
     }
   };
 
-  // Stage drag handlers
   const onLayerMouseDown = (layerId) => (e) => {
     setActiveLayer(layerId);
     draggingRef.current = { active: true, layerId, last: { x: e.clientX, y: e.clientY } };
@@ -145,7 +133,6 @@ export default function TryOn() {
   };
   const endDrag = () => { draggingRef.current = { active: false, layerId: null, last: { x: 0, y: 0 } }; };
 
-  // Keyboard controls for active layer
   useEffect(() => {
     const onKey = (e) => {
       if (!activeLayer) return;
@@ -168,7 +155,6 @@ export default function TryOn() {
     setLayers((p) => p.map(l => l.id === activeLayer.id ? { ...l, scale: 1, rotation: 0, offset: { x: 0, y: 0 } } : l));
   };
 
-  // Camera controls
   const videoConstraints = { facingMode };
   const startCamera = () => { setUseCamera(true); setCameraError(''); setCameraReady(false); };
   const stopCamera = () => { setUseCamera(false); };
@@ -179,7 +165,6 @@ export default function TryOn() {
     if (shot) { setUploadedImage(shot); setUseCamera(false); }
   };
 
-  // Layer operations
   const addLayerFromItem = (item) => {
     const newLayer = createLayer(item);
     setLayers((p) => [...p, newLayer]);
@@ -201,7 +186,6 @@ export default function TryOn() {
     });
   };
 
-  // Initialize user profile
   useEffect(() => {
     if (user) {
       setUserProfile({
@@ -223,108 +207,15 @@ export default function TryOn() {
     }
   }, [user]);
 
-  // Render classic interface
   const renderClassicInterface = () => {
     return (
       <div className="container mx-auto px-6 py-8">
         <div className="grid layout" style={{ gridTemplateColumns: '360px 1fr', gap: 16 }}>
-          {/* Controls */}
+          {}
           <aside className="side-panel card p-4">
             <div style={{ marginBottom: 12 }}>
               <label className="label">Upload Photo</label>
-              <input type="file" accept="image/*" className="field" onChange={onUpload} />
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <label className="label">Webcam</label>
-              <div className="toolbar" style={{ gap: 8, display: 'flex', flexWrap: 'wrap' }}>
-                {!useCamera ? (
-                  <button onClick={startCamera} className="btn btn-secondary">Start Camera</button>
-                ) : (
-                  <button onClick={stopCamera} className="btn btn-secondary">Stop Camera</button>
-                )}
-                <button onClick={flipCamera} disabled={!useCamera} className="btn btn-secondary">Flip</button>
-                <button onClick={() => setMirrored((m) => !m)} disabled={!useCamera} className="btn btn-secondary">{mirrored ? 'Unmirror' : 'Mirror'}</button>
-                <button onClick={capturePhoto} disabled={!useCamera || !cameraReady} className="btn btn-primary">Capture</button>
-              </div>
-              {cameraError && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mt-3"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="text-red-400 font-medium">{cameraError}</span>
-                  </div>
-                </motion.div>
-              )}
-              {useCamera && !cameraReady && !cameraError && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mt-3"
-                >
-                  <div className="flex items-center space-x-3">
-                    <motion.div 
-                      className="w-3 h-3 bg-blue-500 rounded-full"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    ></motion.div>
-                    <span className="text-blue-400 font-medium">Initializing camera...</span>
-                  </div>
-                  <div className="mt-2 bg-blue-500/20 rounded-full h-1 overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-blue-500 rounded-full"
-                      animate={{ x: ['-100%', '100%'] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    ></motion.div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <label className="label">Add Items (Mix & Match)</label>
-              <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                {ITEMS.map((it) => (
-                  <button key={it.id} onClick={() => addLayerFromItem(it)} className="chip" title={it.name}>
-                    <img src={it.imageUrl} alt={it.name} style={{ width: '100%', height: 64, objectFit: 'contain' }} />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <label className="label">Layers</label>
-              {layers.length === 0 ? (
-                <div className="tip">No layers yet. Add items above.</div>
-              ) : (
-                <div className="grid" style={{ gap: 8 }}>
-                  {layers.map((l, idx) => (
-                    <div key={l.id} className={`row space-between card ${activeLayerId === l.id ? 'ring-2 ring-cyan-400/50' : ''}`} style={{ padding: 8, alignItems: 'center' }}>
-                      <button className="chip" onClick={() => setActiveLayer(l.id)} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <img src={l.item.imageUrl} alt={l.item.name} style={{ width: 40, height: 40, objectFit: 'contain' }} />
-                        <span>{l.item.name}</span>
-                      </button>
-                      <div className="row" style={{ gap: 4 }}>
-                        <button className="btn btn-secondary" onClick={() => moveLayer(l.id, 'up')} disabled={idx === 0}>↑</button>
-                        <button className="btn btn-secondary" onClick={() => moveLayer(l.id, 'down')} disabled={idx === layers.length - 1}>↓</button>
-                        <button className="btn btn-secondary" onClick={() => removeLayer(l.id)}>Remove</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="toolbar" style={{ gap: 8, display: 'flex', flexWrap: 'wrap' }}>
-              <button onClick={() => onDownload(false)} className="btn btn-primary">Download Look</button>
-              <button onClick={onShare} className="btn btn-secondary">Share</button>
-            </div>
-          </aside>
-
-          {/* Stage */}
+              <input type="file" accept="image}
           <section>
             <div
               ref={stageRef}
@@ -333,7 +224,7 @@ export default function TryOn() {
               onMouseUp={endDrag}
               onMouseLeave={endDrag}
             >
-              {/* Base image from upload or camera */}
+              {}
               {useCamera ? (
                 cameraReady ? (
                   <Webcam
@@ -402,7 +293,7 @@ export default function TryOn() {
                 <div className="stage-empty center text-gray-400">Upload a photo or start the webcam</div>
               )}
 
-              {/* Overlay layers (render in order) */}
+              {}
               {layers.map((l) => (
                 <img
                   key={l.id}
@@ -417,7 +308,7 @@ export default function TryOn() {
           </section>
         </div>
 
-        {/* AR Try-On Modal */}
+        {}
         {showARMode && (
           <ARTryOn 
             isOpen={showARMode}
@@ -431,7 +322,6 @@ export default function TryOn() {
     );
   };
 
-  // Render the appropriate try-on interface
   const renderTryOnInterface = () => {
     switch (tryOnMode) {
       case 'quantum':
@@ -456,7 +346,7 @@ export default function TryOn() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20">
-      {/* Revolutionary Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -475,7 +365,7 @@ export default function TryOn() {
             </p>
           </div>
           
-          {/* Mode Selector */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -517,7 +407,7 @@ export default function TryOn() {
           </motion.div>
         </div>
 
-        {/* Item Selection for Quantum Mode */}
+        {}
         {tryOnMode === 'quantum' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -542,12 +432,12 @@ export default function TryOn() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-cyan-500/20 rounded-xl mb-3 flex items-center justify-center">
-                    <span className="text-2xl">👔</span>
+                    <span className="text-2xl">ðŸ‘”</span>
                   </div>
                   <h4 className="text-white font-mono text-xs mb-1 truncate">{item.name}</h4>
                   <p className="text-gray-400 text-xs">{item.category}</p>
                   
-                  {/* Quantum Properties Indicator */}
+                  {}
                   <div className="absolute top-2 right-2 flex space-x-1">
                     {item.fabricPhysics?.quantumProperties?.colorShifting && (
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
@@ -563,7 +453,7 @@ export default function TryOn() {
         )}
       </motion.div>
 
-      {/* Try-On Interface */}
+      {}
       <AnimatePresence mode="wait">
         <motion.div
           key={tryOnMode}

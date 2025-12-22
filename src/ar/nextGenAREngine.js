@@ -1,5 +1,5 @@
-// 🥽 NEXT-GENERATION AR/VR FASHION EXPERIENCE
-// Features: Photorealistic rendering, advanced physics, spatial computing
+﻿
+
 
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -19,34 +19,26 @@ export class NextGenAREngine {
     this.isInitialized = false;
   }
 
-  // 🚀 Initialize Next-Gen AR System
   async initialize(container, options = {}) {
     try {
-      console.log('🥽 Initializing Next-Generation AR Engine...');
-      
-      // Setup Three.js scene with WebXR
+      console.log('ðŸ¥½ Initializing Next-Generation AR Engine...');
+
       await this.setupScene(container);
-      
-      // Initialize advanced body tracking
+
       await this.bodyTracker.initialize();
-      
-      // Setup photorealistic fabric simulation
+
       await this.fabricSimulator.initialize();
-      
-      // Configure dynamic lighting
+
       await this.lightingEngine.initialize();
-      
-      // Initialize physics engine
+
       await this.physicsEngine.initialize();
-      
-      // Setup spatial computing
+
       await this.spatialComputer.initialize();
-      
-      // Enable WebXR features
+
       await this.setupWebXR();
       
       this.isInitialized = true;
-      console.log('✅ Next-Gen AR Engine initialized successfully');
+      console.log('âœ… Next-Gen AR Engine initialized successfully');
       
       return {
         success: true,
@@ -54,12 +46,11 @@ export class NextGenAREngine {
         performance: this.getPerformanceMetrics()
       };
     } catch (error) {
-      console.error('❌ AR Engine initialization failed:', error);
+      console.error('âŒ AR Engine initialization failed:', error);
       throw new Error('Next-Gen AR Engine initialization failed');
     }
   }
 
-  // 👥 Advanced Body Tracking and Pose Estimation
   async trackBodyAdvanced(videoStream) {
     const tracking = await this.bodyTracker.track(videoStream);
     
@@ -75,7 +66,6 @@ export class NextGenAREngine {
     };
   }
 
-  // 🧵 Photorealistic Fabric Simulation
   async simulateFabricOnBody(garmentData, bodyTracking) {
     const simulation = await this.fabricSimulator.simulate({
       garment: garmentData,
@@ -96,7 +86,6 @@ export class NextGenAREngine {
     };
   }
 
-  // 💡 Dynamic Lighting and Shadows
   async updateLighting(environmentData, userPosition) {
     const lighting = await this.lightingEngine.update({
       environment: environmentData,
@@ -116,7 +105,6 @@ export class NextGenAREngine {
     };
   }
 
-  // 🌐 Spatial Computing and World Understanding
   async analyzeSpatialEnvironment() {
     const spatial = await this.spatialComputer.analyze();
     
@@ -131,7 +119,6 @@ export class NextGenAREngine {
     };
   }
 
-  // 🎭 Virtual Fitting Room Experience
   async createVirtualFittingRoom(roomConfig) {
     const fittingRoom = {
       environment: await this.createEnvironment(roomConfig),
@@ -144,7 +131,6 @@ export class NextGenAREngine {
     return fittingRoom;
   }
 
-  // 👗 Advanced Garment Rendering
   async renderGarmentAdvanced(garmentData, bodyMesh, environmentLighting) {
     const rendering = {
       geometry: await this.generateGarmentGeometry(garmentData, bodyMesh),
@@ -158,7 +144,6 @@ export class NextGenAREngine {
     return rendering;
   }
 
-  // 🎮 Hand and Gesture Tracking
   async trackHandsAndGestures() {
     const handTracking = await this.bodyTracker.trackHands();
     
@@ -172,7 +157,6 @@ export class NextGenAREngine {
     };
   }
 
-  // 📱 Mobile AR Optimization
   optimizeForMobile() {
     return {
       renderScale: 0.8,
@@ -186,7 +170,6 @@ export class NextGenAREngine {
   }
 }
 
-// 👥 Advanced Body Tracking System
 class AdvancedBodyTracker {
   constructor() {
     this.models = {
@@ -200,7 +183,7 @@ class AdvancedBodyTracker {
   }
 
   async initialize() {
-    // Load advanced body tracking models
+
     await Promise.all([
       this.loadPoseModel(),
       this.loadSegmentationModel(),
@@ -238,7 +221,6 @@ class AdvancedBodyTracker {
   }
 }
 
-// 🧵 Photorealistic Fabric Simulator
 class PhotorealisticFabricSimulator {
   constructor() {
     this.materials = new Map();
@@ -254,14 +236,11 @@ class PhotorealisticFabricSimulator {
 
   async simulate(options) {
     const { garment, body, environment, physics } = options;
-    
-    // Create cloth mesh
+
     const clothMesh = this.createClothMesh(garment);
-    
-    // Apply physics constraints
+
     const constraints = this.generateConstraints(garment, body);
-    
-    // Run simulation
+
     const simulation = await this.physics.simulate({
       mesh: clothMesh,
       constraints,
@@ -314,7 +293,6 @@ class PhotorealisticFabricSimulator {
   }
 }
 
-// 💡 Dynamic Lighting Engine
 class DynamicLightingEngine {
   constructor() {
     this.lights = [];
@@ -330,17 +308,13 @@ class DynamicLightingEngine {
 
   async update(options) {
     const { environment, userPosition, timeOfDay, weather } = options;
-    
-    // Calculate lighting based on environment
+
     const lighting = this.calculateEnvironmentLighting(environment);
-    
-    // Adjust for time of day
+
     const timeAdjusted = this.adjustForTimeOfDay(lighting, timeOfDay);
-    
-    // Apply weather effects
+
     const weatherAdjusted = this.applyWeatherEffects(timeAdjusted, weather);
-    
-    // Add user-specific lighting
+
     const userLighting = this.addUserLighting(weatherAdjusted, userPosition);
     
     return userLighting;
@@ -356,7 +330,6 @@ class DynamicLightingEngine {
   }
 }
 
-// ⚡ Advanced Physics Engine
 class AdvancedPhysicsEngine {
   constructor() {
     this.world = null;
@@ -365,7 +338,7 @@ class AdvancedPhysicsEngine {
   }
 
   async initialize() {
-    // Initialize physics world with advanced features
+
     this.world = this.createPhysicsWorld();
     this.setupCollisionDetection();
     this.setupConstraintSolver();
@@ -373,8 +346,7 @@ class AdvancedPhysicsEngine {
 
   simulate(options) {
     const { meshes, constraints, deltaTime, iterations } = options;
-    
-    // Run physics simulation
+
     for (let i = 0; i < iterations; i++) {
       this.integrateForces(meshes, deltaTime / iterations);
       this.satisfyConstraints(constraints);
@@ -390,7 +362,6 @@ class AdvancedPhysicsEngine {
   }
 }
 
-// 🌐 Spatial Computing Engine
 class SpatialComputingEngine {
   constructor() {
     this.worldMesh = null;

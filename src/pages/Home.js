@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           <div className="bg-white p-8 rounded-xl shadow-lg">
-            <div className="text-4xl mb-4">👕</div>
+            <div className="text-4xl mb-4">ðŸ‘•</div>
             <h2 className="text-2xl font-bold mb-4">Browse Catalog</h2>
             <p className="text-gray-600 mb-6">Explore our collection of trendy clothing items and accessories.</p>
             <Link to="/catalog" className="btn btn-primary">
@@ -21,7 +21,7 @@ const Home = () => {
           </div>
           
           <div className="bg-white p-8 rounded-xl shadow-lg">
-            <div className="text-4xl mb-4">📸</div>
+            <div className="text-4xl mb-4">ðŸ“¸</div>
             <h2 className="text-2xl font-bold mb-4">Try It On</h2>
             <p className="text-gray-600 mb-6">Upload your photo and see how our clothes look on you.</p>
             <Link to="/try-on" className="btn btn-secondary">

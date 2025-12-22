@@ -1,18 +1,4 @@
-/**
- * Virtual Try-On Component - REBUILT VERSION
- * 
- * Features:
- * - Proper state management with useReducer
- * - Error boundaries and recovery
- * - Loading states for all operations
- * - User-friendly error messages
- * - Accessibility support
- * - Memory leak prevention
- * - Retry mechanisms
- * - Performance optimization
- * 
- * @version 2.0.0
- */
+﻿
 
 import React, { useReducer, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,32 +23,24 @@ import PoseDetectionService from '../services/PoseDetectionService.v2';
 import ClothingOverlaySystem from '../services/ClothingOverlaySystem.v2';
 import ExportService from '../services/ExportService.v2';
 
-/**
- * State management using useReducer for better control
- */
+
 const initialState = {
-  // Mode
+
   mode: 'webcam', // 'webcam' | 'upload'
-  
-  // Status
+
   status: 'idle', // 'idle' | 'initializing' | 'ready' | 'active' | 'error'
   initializationStep: null,
-  
-  // Detection
+
   poseData: null,
   poseConfidence: 0,
-  
-  // Clothing
+
   selectedClothing: [],
-  
-  // Upload
+
   uploadedImage: null,
-  
-  // Performance
+
   fps: 0,
   isRealTime: false,
-  
-  // Settings
+
   settings: {
     showKeypoints: false,
     showPerformanceStats: true,
@@ -71,13 +49,11 @@ const initialState = {
     clothingOpacity: 0.85,
     autoRetry: true
   },
-  
-  // Error handling
+
   error: null,
   errorType: null, // 'initialization' | 'detection' | 'upload' | 'export'
   retryCount: 0,
-  
-  // UI
+
   showSettings: false,
   capturedImage: null
 };
@@ -201,9 +177,7 @@ function tryOnReducer(state, action) {
   }
 }
 
-/**
- * Main Virtual Try-On Component
- */
+
 const VirtualTryOnComponent = ({
   clothingItems = [],
   onCapture,
@@ -212,19 +186,15 @@ const VirtualTryOnComponent = ({
 }) => {
   const [state, dispatch] = useReducer(tryOnReducer, initialState);
 
-  // Refs for services
   const poseServiceRef = useRef(null);
   const overlaySystemRef = useRef(null);
   const exportServiceRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  
-  // Cleanup tracking
+
   const cleanupRef = useRef([]);
 
-  /**
-   * Initialize all services
-   */
+  
   const initializeServices = useCallback(async () => {
     if (state.status === 'initializing') {
       console.warn('Already initializing...');
@@ -234,7 +204,7 @@ const VirtualTryOnComponent = ({
     dispatch({ type: 'SET_STATUS', payload: { status: 'initializing', step: 'Starting...' } });
 
     try {
-      // Step 1: Initialize Pose Detection
+
       dispatch({ type: 'INITIALIZATION_STEP', payload: 'Initializing AI pose detection...' });
       
       if (!poseServiceRef.current) {
@@ -244,7 +214,6 @@ const VirtualTryOnComponent = ({
           maxFPS: 30
         });
 
-        // Set up callbacks
         poseServiceRef.current
           .onPoseDetected((poseData) => {
             dispatch({
@@ -283,24 +252,20 @@ const VirtualTryOnComponent = ({
         }
       }
 
-      // Step 2: Initialize Clothing Overlay System
       dispatch({ type: 'INITIALIZATION_STEP', payload: 'Setting up clothing overlay...' });
       
       if (canvasRef.current && !overlaySystemRef.current) {
         overlaySystemRef.current = new ClothingOverlaySystem(canvasRef.current, {
           targetFPS: 30
         });
-        
-        // Start rendering loop
+
         overlaySystemRef.current.startRealTimeRendering();
       }
 
-      // Step 3: Initialize Export Service
       if (!exportServiceRef.current) {
         exportServiceRef.current = new ExportService();
       }
 
-      // Success!
       dispatch({ type: 'SET_STATUS', payload: { status: 'ready' } });
       dispatch({ type: 'CLEAR_ERROR' });
       
@@ -324,9 +289,7 @@ const VirtualTryOnComponent = ({
     }
   }, [state.status]);
 
-  /**
-   * Retry initialization with exponential backoff
-   */
+  
   const retryInitialization = useCallback(async () => {
     const maxRetries = 3;
     const backoffMs = Math.min(1000 * Math.pow(2, state.retryCount), 8000);
@@ -351,14 +314,11 @@ const VirtualTryOnComponent = ({
     return initializeServices();
   }, [state.retryCount, initializeServices]);
 
-  /**
-   * Start try-on experience
-   */
+  
   const startTryOn = useCallback(async () => {
     try {
       console.log('Starting try-on, current status:', state.status, 'mode:', state.mode);
-      
-      // Ensure services are initialized
+
       if (state.status !== 'ready' && state.status !== 'active') {
         console.log('Initializing services first...');
         const initialized = await initializeServices();
@@ -373,8 +333,7 @@ const VirtualTryOnComponent = ({
 
       if (state.mode === 'webcam') {
         console.log('Webcam mode - waiting for video to be ready');
-        // Video should already be started by WebcamComponent (auto-start)
-        // Detection will start in handleVideoReady when video is ready
+
         
         if (videoRef.current && poseServiceRef.current) {
           console.log('Video already ready, starting detection immediately');
@@ -398,7 +357,6 @@ const VirtualTryOnComponent = ({
           throw new Error('Please upload an image first');
         }
 
-        // Trigger pose detection on uploaded image
         const img = new Image();
         img.onload = async () => {
           try {
@@ -440,9 +398,7 @@ const VirtualTryOnComponent = ({
     }
   }, [state.mode, state.status, state.uploadedImage, initializeServices]);
 
-  /**
-   * Stop try-on experience
-   */
+  
   const stopTryOn = useCallback(() => {
     if (poseServiceRef.current) {
       poseServiceRef.current.stopDetection();
@@ -452,14 +408,11 @@ const VirtualTryOnComponent = ({
     dispatch({ type: 'UPDATE_POSE', payload: { poseData: null, confidence: 0 } });
   }, []);
 
-  /**
-   * Handle video ready event from webcam
-   */
+  
   const handleVideoReady = useCallback(async (video) => {
     console.log('Video ready callback triggered');
     videoRef.current = video;
 
-    // Set canvas size to match video
     if (canvasRef.current) {
       const width = video.videoWidth || 640;
       const height = video.videoHeight || 480;
@@ -473,7 +426,6 @@ const VirtualTryOnComponent = ({
       }
     }
 
-    // Start detection if in active state
     if (state.status === 'active' && poseServiceRef.current) {
       console.log('Starting pose detection on video...');
       try {
@@ -494,9 +446,7 @@ const VirtualTryOnComponent = ({
     }
   }, [state.status]);
 
-  /**
-   * Handle image upload
-   */
+  
   const handleImageUpload = useCallback((imageData, imageInfo) => {
     console.log('Image uploaded:', imageInfo);
     dispatch({
@@ -504,7 +454,6 @@ const VirtualTryOnComponent = ({
       payload: { data: imageData, info: imageInfo }
     });
 
-    // Set canvas size to match image
     if (canvasRef.current) {
       console.log(`Setting canvas size to ${imageInfo.width}x${imageInfo.height} for uploaded image`);
       canvasRef.current.width = imageInfo.width;
@@ -514,17 +463,14 @@ const VirtualTryOnComponent = ({
         overlaySystemRef.current.setCanvasSize(imageInfo.width, imageInfo.height);
       }
     }
-    
-    // Automatically initialize services if not already done
+
     if (state.status === 'idle') {
       console.log('Auto-initializing services after image upload...');
       initializeServices();
     }
   }, [state.status, initializeServices]);
 
-  /**
-   * Add clothing item to overlay
-   */
+  
   const addClothingItem = useCallback(async (item) => {
     if (!overlaySystemRef.current) {
       console.warn('Overlay system not initialized');
@@ -551,9 +497,7 @@ const VirtualTryOnComponent = ({
     }
   }, []);
 
-  /**
-   * Remove clothing item
-   */
+  
   const removeClothingItem = useCallback((itemId) => {
     if (overlaySystemRef.current) {
       overlaySystemRef.current.removeClothingItem(itemId);
@@ -561,9 +505,7 @@ const VirtualTryOnComponent = ({
     dispatch({ type: 'REMOVE_CLOTHING', payload: itemId });
   }, []);
 
-  /**
-   * Clear all clothing
-   */
+  
   const clearAllClothing = useCallback(() => {
     if (overlaySystemRef.current) {
       overlaySystemRef.current.clearAllItems();
@@ -571,9 +513,7 @@ const VirtualTryOnComponent = ({
     dispatch({ type: 'CLEAR_CLOTHING' });
   }, []);
 
-  /**
-   * Capture current frame
-   */
+  
   const captureFrame = useCallback(async () => {
     if (!canvasRef.current || !exportServiceRef.current) {
       throw new Error('Services not initialized');
@@ -583,11 +523,10 @@ const VirtualTryOnComponent = ({
       let baseCanvas = null;
       let baseVideo = null;
 
-      // Prepare base layer
       if (state.mode === 'webcam') {
         baseVideo = videoRef.current;
       } else if (state.mode === 'upload' && state.uploadedImage) {
-        // Create offscreen canvas with uploaded image
+
         const img = await new Promise((resolve, reject) => {
           const image = new Image();
           image.onload = () => resolve(image);
@@ -603,7 +542,6 @@ const VirtualTryOnComponent = ({
         baseCanvas = offscreen;
       }
 
-      // Export composite image
       const dataURL = await exportServiceRef.current.exportTryOnImage({
         canvas: baseCanvas,
         videoElement: baseVideo,
@@ -639,9 +577,7 @@ const VirtualTryOnComponent = ({
     }
   }, [state.mode, state.uploadedImage, state.selectedClothing, onCapture]);
 
-  /**
-   * Download captured frame
-   */
+  
   const downloadCapture = useCallback(async () => {
     try {
       const dataURL = await captureFrame();
@@ -654,9 +590,7 @@ const VirtualTryOnComponent = ({
     }
   }, [captureFrame]);
 
-  /**
-   * Share captured frame
-   */
+  
   const shareCapture = useCallback(async () => {
     try {
       const dataURL = state.capturedImage || await captureFrame();
@@ -683,20 +617,15 @@ const VirtualTryOnComponent = ({
     }
   }, [state.capturedImage, captureFrame, onShare]);
 
-  /**
-   * Update settings
-   */
+  
   const updateSettings = useCallback((newSettings) => {
     dispatch({ type: 'UPDATE_SETTINGS', payload: newSettings });
   }, []);
 
-  /**
-   * Initialize on mount
-   */
+  
   useEffect(() => {
     initializeServices();
 
-    // Cleanup on unmount
     return () => {
       console.log('VirtualTryOnComponent: Cleaning up...');
 
@@ -710,7 +639,6 @@ const VirtualTryOnComponent = ({
         overlaySystemRef.current = null;
       }
 
-      // Run additional cleanup tasks
       cleanupRef.current.forEach(cleanup => {
         try {
           cleanup();
@@ -721,9 +649,7 @@ const VirtualTryOnComponent = ({
     };
   }, []); // Empty deps - only run once
 
-  /**
-   * Auto-retry on initialization error
-   */
+  
   useEffect(() => {
     if (
       state.errorType === 'initialization' &&
@@ -732,12 +658,10 @@ const VirtualTryOnComponent = ({
     ) {
       retryInitialization();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [state.errorType, state.settings.autoRetry, state.retryCount]);
 
-  /**
-   * Memoized clothing categories
-   */
+  
   const clothingCategories = useMemo(() => {
     const categories = {
       tops: [],
@@ -756,9 +680,7 @@ const VirtualTryOnComponent = ({
     return categories;
   }, [clothingItems]);
 
-  /**
-   * Status indicators
-   */
+  
   const StatusIndicator = () => {
     if (state.status === 'initializing') {
       return (
@@ -792,7 +714,7 @@ const VirtualTryOnComponent = ({
 
   return (
     <div className={`max-w-7xl mx-auto p-6 ${className}`} role="main" aria-label="Virtual Fashion Try-On">
-      {/* Header */}
+      {}
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Virtual Fashion Try-On
@@ -802,7 +724,7 @@ const VirtualTryOnComponent = ({
         </p>
       </header>
 
-      {/* Global Error Banner */}
+      {}
       <AnimatePresence>
         {state.error && (
           <motion.div
@@ -847,7 +769,7 @@ const VirtualTryOnComponent = ({
         )}
       </AnimatePresence>
 
-      {/* Mode Selection */}
+      {}
       <div className="flex justify-center mb-8">
         <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-2 flex" role="tablist">
           <button
@@ -884,14 +806,14 @@ const VirtualTryOnComponent = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Try-On Area */}
+        {}
         <div className="lg:col-span-3">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-            {/* Control Bar */}
+            {}
             <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4 flex-wrap">
-                  {/* Start/Stop Button */}
+                  {}
                   {state.mode === 'webcam' && (
                     <button
                       onClick={state.status === 'active' ? stopTryOn : startTryOn}
@@ -920,10 +842,10 @@ const VirtualTryOnComponent = ({
                     </button>
                   )}
 
-                  {/* Status Indicator */}
+                  {}
                   <StatusIndicator />
 
-                  {/* Pose Detection Status */}
+                  {}
                   {state.poseData && state.status === 'active' && (
                     <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -939,7 +861,7 @@ const VirtualTryOnComponent = ({
                   )}
                 </div>
 
-                {/* Action Buttons */}
+                {}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={downloadCapture}
@@ -990,7 +912,7 @@ const VirtualTryOnComponent = ({
               </div>
             </div>
 
-            {/* Try-On Display Area */}
+            {}
             <div className="relative bg-gray-900 min-h-[600px]" aria-live="polite">
               {state.mode === 'webcam' ? (
                 <WebcamComponent
@@ -1023,14 +945,14 @@ const VirtualTryOnComponent = ({
                         className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                         aria-label="Remove uploaded image"
                       >
-                        ×
+                        Ã—
                       </button>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Clothing Overlay Canvas */}
+              {}
               <canvas
                 ref={canvasRef}
                 className="absolute inset-0 pointer-events-none w-full h-full object-contain"
@@ -1038,7 +960,7 @@ const VirtualTryOnComponent = ({
                 aria-label="Clothing overlay"
               />
 
-              {/* Pose Keypoints Visualization */}
+              {}
               {state.settings.showKeypoints && state.poseData && (
                 <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
                   {Object.entries(state.poseData.keypoints).map(([joint, position]) => (
@@ -1058,7 +980,7 @@ const VirtualTryOnComponent = ({
                 </div>
               )}
 
-              {/* Performance Stats HUD */}
+              {}
               {state.settings.showPerformanceStats && state.status === 'active' && (
                 <div 
                   className="absolute top-4 left-4 bg-black/70 text-white p-3 rounded-lg text-sm font-mono"
@@ -1081,7 +1003,7 @@ const VirtualTryOnComponent = ({
                 </div>
               )}
 
-              {/* Loading Overlay */}
+              {}
               <AnimatePresence>
                 {state.status === 'initializing' && (
                   <motion.div
@@ -1106,7 +1028,7 @@ const VirtualTryOnComponent = ({
               </AnimatePresence>
             </div>
 
-            {/* Settings Panel */}
+            {}
             <AnimatePresence>
               {state.showSettings && (
                 <motion.div
@@ -1169,7 +1091,7 @@ const VirtualTryOnComponent = ({
           </div>
         </div>
 
-        {/* Clothing Selection Sidebar */}
+        {}
         <div className="lg:col-span-1">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sticky top-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
@@ -1177,7 +1099,7 @@ const VirtualTryOnComponent = ({
               Clothing
             </h2>
 
-            {/* Selected Items */}
+            {}
             {state.selectedClothing.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Selected</h3>
@@ -1193,7 +1115,7 @@ const VirtualTryOnComponent = ({
                         className="text-red-600 hover:text-red-700 dark:text-red-400"
                         aria-label={`Remove ${item.name}`}
                       >
-                        ×
+                        Ã—
                       </button>
                     </div>
                   ))}
@@ -1201,7 +1123,7 @@ const VirtualTryOnComponent = ({
               </div>
             )}
 
-            {/* Available Items */}
+            {}
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {Object.entries(clothingCategories).map(([category, items]) => (
                 items.length > 0 && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   SOCIAL_PLATFORMS, 
   PLATFORM_CONFIGS, 
@@ -30,7 +30,7 @@ export default function SocialSharing({
     setShareSuccess(null);
 
     try {
-      // Try Web Share API first on mobile
+
       if (platform === 'native' && navigator.share) {
         const success = await shareWithWebAPI(shareData);
         if (success) {
@@ -79,7 +79,7 @@ export default function SocialSharing({
     <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 ${className}`}>
       <div className=\"bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto\">
         <div className=\"p-6\">
-          {/* Header */}
+          {}
           <div className=\"flex items-center justify-between mb-6\">
             <h2 className=\"text-2xl font-bold text-gray-900\">Share Your Look</h2>
             <button
@@ -92,7 +92,7 @@ export default function SocialSharing({
             </button>
           </div>
 
-          {/* Preview */}
+          {}
           <div className=\"bg-gray-50 rounded-xl p-4 mb-6\">
             <div className=\"flex gap-3\">
               {lookData.imageDataUrl && (
@@ -116,14 +116,14 @@ export default function SocialSharing({
             </div>
           </div>
 
-          {/* Success Message */}
+          {}
           {shareSuccess && (
             <div className=\"bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded\">
               <p className=\"text-green-700 text-sm\">{shareSuccess}</p>
             </div>
           )}
 
-          {/* Native Sharing (Mobile) */}
+          {}
           {navigator.share && (
             <div className=\"mb-6\">
               <button
@@ -131,14 +131,14 @@ export default function SocialSharing({
                 disabled={sharing}
                 className=\"w-full bg-purple-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2\"
               >
-                <span>📱</span>
+                <span>ðŸ“±</span>
                 {sharing ? 'Sharing...' : 'Share via Apps'}
               </button>
               <div className=\"text-center text-gray-500 text-sm mt-2 mb-4\">or choose a platform below</div>
             </div>
           )}
 
-          {/* Platform Grid */}
+          {}
           <div className=\"grid grid-cols-2 gap-3\">
             {platforms.map((platform) => {
               const config = PLATFORM_CONFIGS[platform];
@@ -157,7 +157,7 @@ export default function SocialSharing({
                     </div>
                   </button>
                   
-                  {/* Tips Button */}
+                  {}
                   <button
                     onClick={() => setShowTips(showTips === platform ? null : platform)}
                     className=\"absolute top-2 right-2 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs hover:bg-gray-200 transition-colors\"
@@ -169,7 +169,7 @@ export default function SocialSharing({
             })}
           </div>
 
-          {/* Platform Tips */}
+          {}
           {showTips && (
             <div className=\"mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200\">
               <h4 className=\"font-semibold text-blue-900 mb-2\">
@@ -178,7 +178,7 @@ export default function SocialSharing({
               <ul className=\"text-sm text-blue-800 space-y-1\">
                 {getSharingTips(showTips).map((tip, index) => (
                   <li key={index} className=\"flex items-start gap-2\">
-                    <span className=\"text-blue-500 mt-0.5\">•</span>
+                    <span className=\"text-blue-500 mt-0.5\">â€¢</span>
                     <span>{tip}</span>
                   </li>
                 ))}
@@ -186,7 +186,7 @@ export default function SocialSharing({
             </div>
           )}
 
-          {/* Footer */}
+          {}
           <div className=\"mt-6 pt-4 border-t border-gray-200\">
             <p className=\"text-center text-xs text-gray-500\">
               By sharing, you agree to our terms of service and privacy policy.
@@ -198,7 +198,6 @@ export default function SocialSharing({
   );
 }
 
-// Quick Share Button Component
 export function QuickShareButton({ 
   lookData, 
   variant = 'default',

@@ -1,28 +1,6 @@
-/**
- * Export and Sharing Service - REBUILT VERSION
- * 
- * Features:
- * - Multiple export formats (PNG, JPEG, WebP)
- * - Quality control
- * - Watermark support
- * - Metadata embedding
- * - Social media sharing
- * - Collage creation
- * - Robust error handling
- * 
- * @version 2.0.0
- */
+﻿
 
-/**
- * @typedef {Object} ExportOptions
- * @property {HTMLCanvasElement} canvas - Base canvas (uploaded image)
- * @property {HTMLVideoElement} videoElement - Video element (webcam)
- * @property {HTMLCanvasElement} overlayCanvas - Clothing overlay canvas
- * @property {'png'|'jpeg'|'webp'} format - Output format
- * @property {'low'|'medium'|'high'|'maximum'} quality - Quality level
- * @property {boolean} watermark - Add watermark
- * @property {Object} metadata - Additional metadata
- */
+
 
 export class ExportService {
   constructor() {
@@ -46,11 +24,7 @@ export class ExportService {
     };
   }
 
-  /**
-   * Export try-on image with composition
-   * @param {ExportOptions} options - Export configuration
-   * @returns {Promise<string>} Data URL of exported image
-   */
+  
   async exportTryOnImage(options) {
     const {
       canvas,
@@ -63,7 +37,7 @@ export class ExportService {
     } = options;
 
     try {
-      // Validate inputs
+
       if (!overlayCanvas) {
         throw new Error('Overlay canvas is required');
       }
@@ -72,16 +46,13 @@ export class ExportService {
         throw new Error('Either canvas or video element is required');
       }
 
-      // Validate format
       if (!this.supportedFormats.includes(format)) {
         throw new Error(`Unsupported format: ${format}. Use one of: ${this.supportedFormats.join(', ')}`);
       }
 
-      // Create composite canvas
       const compositeCanvas = document.createElement('canvas');
       const ctx = compositeCanvas.getContext('2d', { alpha: true });
 
-      // Determine dimensions from source
       let width, height;
       
       if (videoElement && videoElement.readyState === 4) {
@@ -95,7 +66,6 @@ export class ExportService {
         height = overlayCanvas.height;
       }
 
-      // Validate dimensions
       if (!width || !height || width <= 0 || height <= 0) {
         throw new Error('Invalid canvas dimensions');
       }
@@ -103,36 +73,30 @@ export class ExportService {
       compositeCanvas.width = width;
       compositeCanvas.height = height;
 
-      // Enable high-quality rendering
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
 
-      // 1. Draw background (video or uploaded image)
       if (videoElement && videoElement.readyState === 4) {
         ctx.drawImage(videoElement, 0, 0, width, height);
       } else if (canvas) {
         ctx.drawImage(canvas, 0, 0, width, height);
       } else {
-        // Fallback: white background
+
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, width, height);
       }
 
-      // 2. Draw clothing overlay
       ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(overlayCanvas, 0, 0, width, height);
 
-      // 3. Add watermark if requested
       if (watermark) {
         this.addWatermark(ctx, width, height, this.defaultWatermark);
       }
 
-      // 4. Add metadata overlay if requested
       if (metadata && metadata.showOverlay) {
         this.addMetadataOverlay(ctx, metadata, width, height);
       }
 
-      // 5. Convert to desired format with quality
       const mimeType = this.getMimeType(format);
       const qualityValue = this.qualitySettings[quality] || 0.92;
       
@@ -146,14 +110,7 @@ export class ExportService {
     }
   }
 
-  /**
-   * Add watermark to canvas
-   * @private
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {number} width
-   * @param {number} height
-   * @param {Object} watermarkConfig
-   */
+  
   addWatermark(ctx, width, height, watermarkConfig) {
     ctx.save();
 
@@ -171,7 +128,6 @@ export class ExportService {
     ctx.fillStyle = color;
     ctx.font = `${Math.max(fontSize, width * 0.015)}px ${fontFamily}`;
 
-    // Add text shadow for better visibility
     if (shadow) {
       ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
       ctx.shadowBlur = 4;
@@ -179,7 +135,6 @@ export class ExportService {
       ctx.shadowOffsetY = 2;
     }
 
-    // Calculate position
     const padding = 20;
     let x, y;
 
@@ -217,14 +172,7 @@ export class ExportService {
     ctx.restore();
   }
 
-  /**
-   * Add metadata overlay (clothing info, timestamp)
-   * @private
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {Object} metadata
-   * @param {number} width
-   * @param {number} height
-   */
+  
   addMetadataOverlay(ctx, metadata, width, height) {
     ctx.save();
 
@@ -237,7 +185,6 @@ export class ExportService {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.textBaseline = 'top';
 
-    // Prepare metadata lines
     const lines = [];
     
     if (metadata.clothing && metadata.clothing.length > 0) {
@@ -254,12 +201,10 @@ export class ExportService {
 
     if (lines.length === 0) return;
 
-    // Calculate overlay size
     const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
     const overlayWidth = maxWidth + (bgPadding * 2);
     const overlayHeight = (lines.length * lineHeight) + (bgPadding * 2);
 
-    // Draw semi-transparent background
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(
       padding,
@@ -268,7 +213,6 @@ export class ExportService {
       overlayHeight
     );
 
-    // Draw text lines
     ctx.fillStyle = '#ffffff';
     lines.forEach((line, index) => {
       ctx.fillText(
@@ -281,12 +225,7 @@ export class ExportService {
     ctx.restore();
   }
 
-  /**
-   * Get MIME type for format
-   * @private
-   * @param {string} format
-   * @returns {string}
-   */
+  
   getMimeType(format) {
     const mimeTypes = {
       'png': 'image/png',
@@ -298,11 +237,7 @@ export class ExportService {
     return mimeTypes[format] || 'image/png';
   }
 
-  /**
-   * Download image to user's device
-   * @param {string} dataURL - Image data URL
-   * @param {string} filename - Download filename
-   */
+  
   downloadImage(dataURL, filename = null) {
     if (!dataURL) {
       throw new Error('Data URL is required');
@@ -326,12 +261,7 @@ export class ExportService {
     }
   }
 
-  /**
-   * Share image using Web Share API
-   * @param {string} dataURL - Image data URL
-   * @param {Object} shareData - Share configuration
-   * @returns {Promise<boolean>}
-   */
+  
   async shareImage(dataURL, shareData = {}) {
     if (!navigator.share) {
       throw new Error('Web Share API not supported in this browser');
@@ -342,13 +272,11 @@ export class ExportService {
     }
 
     try {
-      // Convert data URL to Blob
+
       const blob = await this.dataURLToBlob(dataURL);
-      
-      // Create File from Blob
+
       const file = new File([blob], 'virtual-tryon.png', { type: blob.type });
 
-      // Prepare share data
       const shareOptions = {
         title: shareData.title || 'Virtual Fashion Try-On',
         text: shareData.text || 'Check out my virtual try-on!',
@@ -360,7 +288,7 @@ export class ExportService {
 
     } catch (error) {
       if (error.name === 'AbortError') {
-        // User cancelled the share
+
         return false;
       }
       console.error('Share failed:', error);
@@ -368,12 +296,7 @@ export class ExportService {
     }
   }
 
-  /**
-   * Share to specific social media platform
-   * @param {string} platform - Platform name (twitter, facebook, etc.)
-   * @param {string} dataURL - Image data URL
-   * @param {Object} options - Share options
-   */
+  
   async shareToSocial(platform, dataURL, options = {}) {
     const {
       text = 'Check out my virtual try-on!',
@@ -383,8 +306,7 @@ export class ExportService {
     try {
       switch (platform.toLowerCase()) {
         case 'twitter':
-          // Twitter doesn't support direct image sharing via URL
-          // Must use Web Share API or download + manual upload
+
           return this.openShareWindow(
             `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + ' ' + hashtags.map(t => `#${t}`).join(' '))}`,
             'Share on Twitter'
@@ -397,7 +319,7 @@ export class ExportService {
           );
 
         case 'pinterest':
-          // Download image first, then user can manually pin
+
           this.downloadImage(dataURL);
           return this.openShareWindow(
             `https://pinterest.com/pin/create/button/?description=${encodeURIComponent(text)}`,
@@ -419,13 +341,7 @@ export class ExportService {
     }
   }
 
-  /**
-   * Open share window
-   * @private
-   * @param {string} url
-   * @param {string} title
-   * @returns {boolean}
-   */
+  
   openShareWindow(url, title) {
     const width = 600;
     const height = 400;
@@ -441,11 +357,7 @@ export class ExportService {
     return true;
   }
 
-  /**
-   * Copy image to clipboard
-   * @param {string} dataURL - Image data URL
-   * @returns {Promise<boolean>}
-   */
+  
   async copyToClipboard(dataURL) {
     if (!navigator.clipboard || !navigator.clipboard.write) {
       throw new Error('Clipboard API not supported');
@@ -464,24 +376,14 @@ export class ExportService {
     }
   }
 
-  /**
-   * Convert data URL to Blob
-   * @private
-   * @param {string} dataURL
-   * @returns {Promise<Blob>}
-   */
+  
   async dataURLToBlob(dataURL) {
     const response = await fetch(dataURL);
     const blob = await response.blob();
     return blob;
   }
 
-  /**
-   * Create a collage from multiple images
-   * @param {string[]} imageDataURLs - Array of image data URLs
-   * @param {Object} options - Collage options
-   * @returns {Promise<string>} Collage data URL
-   */
+  
   async createCollage(imageDataURLs, options = {}) {
     const {
       layout = 'grid', // 'grid', 'horizontal', 'vertical'
@@ -496,25 +398,21 @@ export class ExportService {
     }
 
     try {
-      // Load all images
+
       const images = await Promise.all(
         imageDataURLs.map(url => this.loadImage(url))
       );
 
-      // Calculate layout
       const layoutInfo = this.calculateCollageLayout(images, layout, spacing, maxWidth, maxHeight);
 
-      // Create canvas
       const canvas = document.createElement('canvas');
       canvas.width = layoutInfo.width;
       canvas.height = layoutInfo.height;
       const ctx = canvas.getContext('2d');
 
-      // Fill background
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw images according to layout
       layoutInfo.positions.forEach((pos, index) => {
         ctx.drawImage(
           images[index],
@@ -533,12 +431,7 @@ export class ExportService {
     }
   }
 
-  /**
-   * Load image from URL
-   * @private
-   * @param {string} url
-   * @returns {Promise<HTMLImageElement>}
-   */
+  
   async loadImage(url) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -548,10 +441,7 @@ export class ExportService {
     });
   }
 
-  /**
-   * Calculate collage layout
-   * @private
-   */
+  
   calculateCollageLayout(images, layout, spacing, maxWidth, maxHeight) {
     const count = images.length;
 
@@ -591,7 +481,6 @@ export class ExportService {
       };
     }
 
-    // Grid layout
     const cols = Math.ceil(Math.sqrt(count));
     const rows = Math.ceil(count / cols);
     
@@ -615,11 +504,7 @@ export class ExportService {
     };
   }
 
-  /**
-   * Get export statistics
-   * @param {string} dataURL
-   * @returns {Object} Statistics object
-   */
+  
   getExportStats(dataURL) {
     if (!dataURL) {
       return null;
@@ -641,12 +526,7 @@ export class ExportService {
     };
   }
 
-  /**
-   * Compress image to target size
-   * @param {string} dataURL
-   * @param {number} targetSizeKB - Target size in KB
-   * @returns {Promise<string>} Compressed image data URL
-   */
+  
   async compressImage(dataURL, targetSizeKB) {
     const img = await this.loadImage(dataURL);
     const canvas = document.createElement('canvas');
@@ -656,7 +536,6 @@ export class ExportService {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
 
-    // Binary search for optimal quality
     let minQuality = 0.1;
     let maxQuality = 0.95;
     let bestDataURL = dataURL;

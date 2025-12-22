@@ -1,11 +1,6 @@
-/**
- * Indian Fashion Products Service
- * Service to load and manage real Indian fashion products for virtual try-on
- */
-
-// Import the real Indian fashion products data
+﻿
 const indianFashionProducts = [
-  // Men's Traditional Wear
+
   {
     productId: 'PROD-KUR-001',
     name: 'Classic Cotton Kurta',
@@ -68,7 +63,7 @@ const indianFashionProducts = [
   {
     productId: 'PROD-SHI-001',
     name: 'Formal White Shirt',
-    nameHindi: 'फॉर्मल व्हाइट शर्ट',
+    nameHindi: 'à¤«à¥‰à¤°à¥à¤®à¤² à¤µà¥à¤¹à¤¾à¤‡à¤Ÿ à¤¶à¤°à¥à¤Ÿ',
     brand: 'Peter England',
     category: 'mens-shirts',
     subCategory: 'men',
@@ -127,7 +122,7 @@ const indianFashionProducts = [
   {
     productId: 'PROD-TSH-001',
     name: 'Cotton Round Neck T-Shirt',
-    nameHindi: 'कॉटन राउंड नेक टी-शर्ट',
+    nameHindi: 'à¤•à¥‰à¤Ÿà¤¨ à¤°à¤¾à¤‰à¤‚à¤¡ à¤¨à¥‡à¤• à¤Ÿà¥€-à¤¶à¤°à¥à¤Ÿ',
     brand: 'Allen Solly',
     category: 'mens-tshirts',
     subCategory: 'men',
@@ -154,7 +149,7 @@ const indianFashionProducts = [
     },
     bestseller: true
   },
-  // Women's Traditional Wear
+
   {
     productId: 'PROD-KUR-W001',
     name: 'Designer Cotton Kurti',
@@ -277,7 +272,7 @@ const indianFashionProducts = [
   {
     productId: 'PROD-DRE-W001',
     name: 'Western Midi Dress',
-    nameHindi: 'वेस्टर्न मिडी ड्रेस',
+    nameHindi: 'à¤µà¥‡à¤¸à¥à¤Ÿà¤°à¥à¤¨ à¤®à¤¿à¤¡à¥€ à¤¡à¥à¤°à¥‡à¤¸',
     brand: 'H&M',
     category: 'womens-dresses',
     subCategory: 'women',
@@ -304,11 +299,11 @@ const indianFashionProducts = [
     },
     trending: true
   },
-  // Unisex Items
+
   {
     productId: 'PROD-HOO-U001',
     name: 'Cotton Hoodie',
-    nameHindi: 'कॉटन हुडी',
+    nameHindi: 'à¤•à¥‰à¤Ÿà¤¨ à¤¹à¥à¤¡à¥€',
     brand: 'H&M',
     category: 'unisex-hoodies',
     subCategory: 'unisex',
@@ -339,7 +334,7 @@ const indianFashionProducts = [
   {
     productId: 'PROD-JAC-U001',
     name: 'Denim Jacket',
-    nameHindi: 'डेनिम जैकेट',
+    nameHindi: 'à¤¡à¥‡à¤¨à¤¿à¤® à¤œà¥ˆà¤•à¥‡à¤Ÿ',
     brand: 'Levi\'s',
     category: 'unisex-jackets',
     subCategory: 'unisex',
@@ -368,15 +363,12 @@ const indianFashionProducts = [
   }
 ];
 
-/**
- * Indian Fashion Product Service
- */
+
 class IndianProductService {
   constructor() {
     this.products = indianFashionProducts;
   }
 
-  // Get all products
   async getAllProducts() {
     try {
       return {
@@ -394,7 +386,6 @@ class IndianProductService {
     }
   }
 
-  // Get products by category
   async getProductsByCategory(category) {
     try {
       const filtered = this.products.filter(product => 
@@ -414,7 +405,6 @@ class IndianProductService {
     }
   }
 
-  // Get featured products
   async getFeaturedProducts() {
     try {
       const featured = this.products.filter(product => product.featured);
@@ -432,7 +422,6 @@ class IndianProductService {
     }
   }
 
-  // Get products by gender
   async getProductsByGender(gender) {
     try {
       let filtered;
@@ -458,7 +447,6 @@ class IndianProductService {
     }
   }
 
-  // Get trending products
   async getTrendingProducts() {
     try {
       const trending = this.products.filter(product => product.trending);
@@ -476,7 +464,6 @@ class IndianProductService {
     }
   }
 
-  // Get product by ID
   async getProductById(id) {
     try {
       const product = this.products.find(product => product.productId === id);
@@ -499,15 +486,13 @@ class IndianProductService {
     }
   }
 
-  // Format price for display
   formatPrice(price) {
     if (price.currency === 'INR') {
-      return `₹${price.selling.toLocaleString('en-IN')}`;
+      return `â‚¹${price.selling.toLocaleString('en-IN')}`;
     }
     return `${price.currency} ${price.selling}`;
   }
 
-  // Get discount percentage
   getDiscountPercentage(price) {
     if (price.mrp && price.selling) {
       return Math.round(((price.mrp - price.selling) / price.mrp) * 100);
@@ -515,7 +500,6 @@ class IndianProductService {
     return 0;
   }
 
-  // Search products
   async searchProducts(query) {
     try {
       const lowercaseQuery = query.toLowerCase();
@@ -543,11 +527,9 @@ class IndianProductService {
   }
 }
 
-// Create and export singleton instance
 const indianProductService = new IndianProductService();
 export default indianProductService;
 
-// Named exports for specific functions
 export {
   indianFashionProducts,
   IndianProductService

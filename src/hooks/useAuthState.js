@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   signInWithGoogle,
   signInWithFacebook,
@@ -20,14 +20,11 @@ export function useAuthState() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cache TTL for profile in milliseconds
   const PROFILE_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((firebaseUser) => {
-      // Do not block rendering while we fetch the full profile.
-      // Set a minimal user object and show the app immediately,
-      // then fetch the richer profile in the background and update state.
+
       (async () => {
         if (firebaseUser) {
           const minimalUser = {
@@ -43,20 +40,19 @@ export function useAuthState() {
             }
           };
 
-          // Try to read a cached profile to render instantly
           try {
             const key = `userProfile_${minimalUser.uid}`;
             const cached = localStorage.getItem(key);
             if (cached) {
               const parsed = JSON.parse(cached);
-              // support old cache format where parsed is raw data
+
               const parsedData = parsed.data || parsed;
               const cachedAt = parsed.cachedAt || 0;
               const isStale = Date.now() - cachedAt > PROFILE_CACHE_TTL_MS;
-              // Use cached data for instant render, even if stale.
+
               setUserProfile(parsedData);
               setUser({ ...minimalUser, ...parsedData });
-              // If cache is stale, we'll trigger a background refresh below
+
             } else {
               setUser(minimalUser);
             }
@@ -64,10 +60,8 @@ export function useAuthState() {
             setUser(minimalUser);
           }
 
-          // Allow the app to render right away
           setLoading(false);
 
-          // Fetch latest profile in background and update state & cache
           try {
             const profileResult = await getUserProfile(minimalUser.uid);
             if (profileResult.success) {
@@ -77,16 +71,16 @@ export function useAuthState() {
                 const key = `userProfile_${minimalUser.uid}`;
                 localStorage.setItem(key, JSON.stringify({ data: profileResult.data, cachedAt: Date.now() }));
               } catch (e) {
-                // ignore storage errors
+
               }
             } else if (profileResult.offline) {
-              // If offline, we already rendered cached profile (if any). Nothing more to do.
+
             } else {
-              // profile fetch failed but not due to offline — clear profile state
+
               setUserProfile(null);
             }
           } catch (err) {
-            // swallow background fetch errors to avoid blocking UI
+
             console.error('Background profile fetch failed', err);
           }
         } else {
@@ -102,7 +96,6 @@ export function useAuthState() {
     return () => unsubscribe();
   }, []);
 
-  // Enhanced Sign Up with display name
   const signUp = async (email, password, displayName) => {
     setLoading(true);
     setError(null);
@@ -122,7 +115,6 @@ export function useAuthState() {
     }
   };
 
-  // Enhanced Sign In
   const signIn = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -142,7 +134,6 @@ export function useAuthState() {
     }
   };
 
-  // Google Sign In
   const signInWithGoogleAuth = async () => {
     setLoading(true);
     setError(null);
@@ -162,7 +153,6 @@ export function useAuthState() {
     }
   };
 
-  // Facebook Sign In
   const signInWithFacebookAuth = async () => {
     setLoading(true);
     setError(null);
@@ -182,7 +172,6 @@ export function useAuthState() {
     }
   };
 
-  // Twitter Sign In
   const signInWithTwitterAuth = async () => {
     setLoading(true);
     setError(null);
@@ -202,7 +191,6 @@ export function useAuthState() {
     }
   };
 
-  // GitHub Sign In
   const signInWithGithubAuth = async () => {
     setLoading(true);
     setError(null);
@@ -222,7 +210,6 @@ export function useAuthState() {
     }
   };
 
-  // Password Reset
   const requestPasswordReset = async (email) => {
     setLoading(true);
     setError(null);
@@ -242,7 +229,6 @@ export function useAuthState() {
     }
   };
 
-  // Update Profile
   const updateProfile = async (updates) => {
     if (!user) return { success: false, error: 'Not authenticated' };
     
@@ -251,7 +237,7 @@ export function useAuthState() {
     try {
       const result = await updateUserProfile(user.uid, updates);
       if (result.success) {
-        // Refresh user profile
+
         const profileResult = await getUserProfile(user.uid);
         if (profileResult.success) {
           setUserProfile(profileResult.data);
@@ -260,7 +246,7 @@ export function useAuthState() {
             const key = `userProfile_${user.uid}`;
             localStorage.setItem(key, JSON.stringify({ data: profileResult.data, cachedAt: Date.now() }));
           } catch (e) {
-            // ignore storage errors
+
           }
         }
         return { success: true };
@@ -276,7 +262,6 @@ export function useAuthState() {
     }
   };
 
-  // Upload Profile Picture
   const uploadAvatar = async (file) => {
     if (!user) return { success: false, error: 'Not authenticated' };
     
@@ -287,19 +272,19 @@ export function useAuthState() {
       if (result.success) {
         setUser({ ...user, photoURL: result.photoURL });
         try {
-          // update cached profile if present
+
           const key = `userProfile_${user.uid}`;
           const cached = localStorage.getItem(key);
           if (cached) {
             const parsed = JSON.parse(cached);
-            // Support both {data, cachedAt} format and legacy raw profile
+
             const parsedData = parsed.data || parsed;
             parsedData.photoURL = result.photoURL;
             const newCache = { data: parsedData, cachedAt: Date.now() };
             localStorage.setItem(key, JSON.stringify(newCache));
           }
         } catch (e) {
-          // ignore storage errors
+
         }
         return { success: true, photoURL: result.photoURL };
       } else {
@@ -314,7 +299,6 @@ export function useAuthState() {
     }
   };
 
-  // Sign Out
   const signOut = async () => {
     setLoading(true);
     setError(null);
@@ -322,13 +306,13 @@ export function useAuthState() {
       const result = await signOutUser();
       if (result.success) {
         try {
-          // Remove cached profile on sign out
+
           if (user && user.uid) {
             const key = `userProfile_${user.uid}`;
             localStorage.removeItem(key);
           }
         } catch (e) {
-          // ignore
+
         }
         return { success: true };
       } else {

@@ -1,7 +1,4 @@
-/**
- * Real User Data for Community
- * Complete user profiles with wishlists, favorites, and follows
- */
+﻿
 
 export const communityUsers = [
   {
@@ -11,7 +8,7 @@ export const communityUsers = [
     username: '@emmastyle',
     email: 'emma.thompson@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=1',
-    bio: 'Fashion enthusiast | NYC | Sustainable fashion advocate 🌿',
+    bio: 'Fashion enthusiast | NYC | Sustainable fashion advocate ðŸŒ¿',
     location: 'New York, NY',
     joinedDate: '2024-01-15',
     verified: true,
@@ -36,7 +33,7 @@ export const communityUsers = [
     username: '@marcusfashion',
     email: 'marcus.chen@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=12',
-    bio: 'Streetwear collector | LA | Sneakerhead 👟',
+    bio: 'Streetwear collector | LA | Sneakerhead ðŸ‘Ÿ',
     location: 'Los Angeles, CA',
     joinedDate: '2024-02-20',
     verified: true,
@@ -61,7 +58,7 @@ export const communityUsers = [
     username: '@sofiaglam',
     email: 'sofia.rodriguez@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=5',
-    bio: 'Luxury fashion blogger | Miami | Runway obsessed ✨',
+    bio: 'Luxury fashion blogger | Miami | Runway obsessed âœ¨',
     location: 'Miami, FL',
     joinedDate: '2024-03-10',
     verified: true,
@@ -86,7 +83,7 @@ export const communityUsers = [
     username: '@jameswears',
     email: 'james.wilson@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=14',
-    bio: 'Minimalist wardrobe | Seattle | Less is more 🖤',
+    bio: 'Minimalist wardrobe | Seattle | Less is more ðŸ–¤',
     location: 'Seattle, WA',
     joinedDate: '2024-04-05',
     verified: false,
@@ -110,7 +107,7 @@ export const communityUsers = [
     username: '@aishastyle',
     email: 'aisha.patel@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=9',
-    bio: 'Traditional meets modern | Chicago | Fashion designer 🎨',
+    bio: 'Traditional meets modern | Chicago | Fashion designer ðŸŽ¨',
     location: 'Chicago, IL',
     joinedDate: '2024-05-12',
     verified: true,
@@ -134,7 +131,7 @@ export const communityUsers = [
     username: '@tyleroutfit',
     email: 'tyler.brooks@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=13',
-    bio: 'Vintage hunter | Portland | Thrift shop lover 🛍️',
+    bio: 'Vintage hunter | Portland | Thrift shop lover ðŸ›ï¸',
     location: 'Portland, OR',
     joinedDate: '2024-06-18',
     verified: false,
@@ -158,7 +155,7 @@ export const communityUsers = [
     username: '@oliviachic',
     email: 'olivia.martinez@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=10',
-    bio: 'Parisian style in Texas | Austin | Coffee & fashion ☕',
+    bio: 'Parisian style in Texas | Austin | Coffee & fashion â˜•',
     location: 'Austin, TX',
     joinedDate: '2024-07-22',
     verified: true,
@@ -182,7 +179,7 @@ export const communityUsers = [
     username: '@liamwear',
     email: 'liam.anderson@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=15',
-    bio: 'Fitness fashion | Denver | Athleisure lifestyle 💪',
+    bio: 'Fitness fashion | Denver | Athleisure lifestyle ðŸ’ª',
     location: 'Denver, CO',
     joinedDate: '2024-08-14',
     verified: false,
@@ -206,7 +203,7 @@ export const communityUsers = [
     username: '@ninakorean',
     email: 'nina.kim@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=20',
-    bio: 'K-fashion influencer | SF | Color enthusiast 🌈',
+    bio: 'K-fashion influencer | SF | Color enthusiast ðŸŒˆ',
     location: 'San Francisco, CA',
     joinedDate: '2024-09-01',
     verified: true,
@@ -230,7 +227,7 @@ export const communityUsers = [
     username: '@carlosstyle',
     email: 'carlos.santos@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=8',
-    bio: 'Brazilian fashion | Boston | Beach to street 🏖️',
+    bio: 'Brazilian fashion | Boston | Beach to street ðŸ–ï¸',
     location: 'Boston, MA',
     joinedDate: '2024-10-05',
     verified: false,
@@ -249,7 +246,6 @@ export const communityUsers = [
   }
 ];
 
-// Helper functions
 export const getUserById = (id) => communityUsers.find(user => user.id === id);
 export const getUserByUsername = (username) => communityUsers.find(user => user.username === username);
 export const searchUsers = (query) => {
