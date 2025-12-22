@@ -301,11 +301,9 @@ export const BodyAnalysisPage = () => {
                 </>
               )}
 
-              {}
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image}
+            </div>
+          </div>
+
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold mb-6 text-gray-900">Your Measurements</h2>
             {analysis ? (
