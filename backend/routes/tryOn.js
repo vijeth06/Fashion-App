@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { authenticateUser } = require('../middleware/auth');
+const { verifyFirebaseToken: authenticateUser } = require('../middleware/auth');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({

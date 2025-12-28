@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require('../middleware/auth');
+const { verifyFirebaseToken: authenticateUser } = require('../middleware/auth');
 router.post('/looks/share', authenticateUser, async (req, res) => {
   try {
     const look = {
