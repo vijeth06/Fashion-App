@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -94,27 +94,27 @@ export default function Recommendations() {
   }, [selectedOccasion, userProfile]);
 
   const tabs = [
-    { id: 'personalized', name: 'For You', icon: 'ðŸŽ¯', description: 'Personalized just for you' },
-    { id: 'occasions', name: 'Occasions', icon: 'ðŸ“…', description: 'Perfect for any event' },
-    { id: 'trending', name: 'Trending', icon: 'ðŸ”¥', description: 'What\'s hot right now' },
-    { id: 'outfits', name: 'Complete Outfits', icon: 'ðŸ‘”', description: 'Ready-to-wear looks' }
+    { id: 'personalized', name: 'For You', icon: '🎯', description: 'Personalized just for you' },
+    { id: 'occasions', name: 'Occasions', icon: '📅', description: 'Perfect for any event' },
+    { id: 'trending', name: 'Trending', icon: '🔥', description: 'What\'s hot right now' },
+    { id: 'outfits', name: 'Complete Outfits', icon: '👔', description: 'Ready-to-wear looks' }
   ];
 
   const occasions = [
-    { id: 'casual', name: 'Casual', emoji: 'ðŸ‘•' },
-    { id: 'formal', name: 'Formal', emoji: 'ðŸ‘”' },
-    { id: 'business', name: 'Business', emoji: 'ðŸ’¼' },
-    { id: 'party', name: 'Party', emoji: 'ðŸŽ‰' },
-    { id: 'workout', name: 'Workout', emoji: 'ðŸ’ª' },
-    { id: 'beach', name: 'Beach', emoji: 'ðŸ–ï¸' },
-    { id: 'date', name: 'Date', emoji: 'â¤ï¸' }
+    { id: 'casual', name: 'Casual', emoji: '👕' },
+    { id: 'formal', name: 'Formal', emoji: '👔' },
+    { id: 'business', name: 'Business', emoji: '💼' },
+    { id: 'party', name: 'Party', emoji: '🎉' },
+    { id: 'workout', name: 'Workout', emoji: '💪' },
+    { id: 'beach', name: 'Beach', emoji: '🏖️' },
+    { id: 'date', name: 'Date', emoji: '❤️' }
   ];
 
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">ðŸŽ¯</div>
+          <div className="text-6xl mb-4">🎯</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Sign in for Personalized Recommendations</h2>
           <p className="text-gray-600 mb-6">Get AI-powered fashion suggestions tailored just for you.</p>
           <Link to="/login" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">

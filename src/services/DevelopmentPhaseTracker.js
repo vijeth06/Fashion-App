@@ -327,11 +327,11 @@ export class DevelopmentPhaseTracker {
   generateRecommendations(incompleteTasks) {
     if (incompleteTasks.length === 0) {
       return [
-        "ðŸŽ‰ All development phases completed successfully!",
-        "ðŸš€ Ready for production deployment",
-        "ðŸ“ˆ Monitor performance metrics and user feedback",
-        "ðŸ”„ Plan for continuous improvements and feature updates",
-        "ðŸŽ¯ Focus on user acquisition and market expansion"
+        "🎉 All development phases completed successfully!",
+        "🚀 Ready for production deployment",
+        "📈 Monitor performance metrics and user feedback",
+        "🔄 Plan for continuous improvements and feature updates",
+        "🎯 Focus on user acquisition and market expansion"
       ];
     }
 
@@ -389,14 +389,14 @@ export class DevelopmentPhaseTracker {
   displayProgress() {
     const report = this.generateProjectReport();
     
-    console.log('\nðŸš€ VIRTUAL TRY-ON DEVELOPMENT STATUS REPORT');
+    console.log('\n🚀 VIRTUAL TRY-ON DEVELOPMENT STATUS REPORT');
     console.log('='.repeat(50));
-    console.log(`ðŸ“… Generated: ${report.timestamp}`);
-    console.log(`ðŸ“Š Overall Progress: ${report.overview.overallProgress.toFixed(1)}%`);
-    console.log(`âœ… Completed Phases: ${report.overview.completedPhases}/${report.overview.totalPhases}`);
-    console.log(`ðŸŽ¯ Status: ${report.overview.status}\n`);
+    console.log(`📅 Generated: ${report.timestamp}`);
+    console.log(`📊 Overall Progress: ${report.overview.overallProgress.toFixed(1)}%`);
+    console.log(`✅ Completed Phases: ${report.overview.completedPhases}/${report.overview.totalPhases}`);
+    console.log(`🎯 Status: ${report.overview.status}\n`);
 
-    console.log('ðŸ“‹ DEVELOPMENT PHASES:');
+    console.log('📋 DEVELOPMENT PHASES:');
     Object.entries(this.phases).forEach(([phaseId, phase]) => {
       const statusIcon = phase.status === 'completed' ? 'âœ…' : 'ðŸ”„';
       console.log(`${statusIcon} ${phase.name}: ${phase.progress}%`);
