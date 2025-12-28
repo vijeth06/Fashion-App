@@ -28,6 +28,7 @@ import TryOnWithItem from './pages/TryOnWithItem';
 import NeuralInterface from './pages/NeuralInterface';
 import BiometricAnalysis from './pages/BiometricAnalysis';
 import VirtualTryOn from './pages/VirtualTryOn';
+import SmartVirtualTryOn from './pages/SmartVirtualTryOn';
 
 import QuantumTryOn from './components/QuantumTryOn';
 import MetaverseIntegration from './components/MetaverseIntegration';
@@ -447,19 +448,17 @@ function App() {
                   <Route path="/catalog" element={<Catalog />} />
                   <Route path="/catalog/:id" element={<ProductDetails />} />
                   <Route path="/try-on" element={<VirtualTryOn />} />
+                  <Route path="/smart-tryon" element={<SmartVirtualTryOn />} />
                   <Route path="/try" element={<TryOnWithItem />} />
                   <Route path="/enhanced-tryon" element={<EnhancedTryOn />} />
                   <Route path="/recommendations" element={<Recommendations />} />
                   <Route path="/community" element={<CommunityFeed />} />
                   
-                  {}
                   <Route path="/ai/body-analysis" element={<BodyAnalysisPage />} />
                   <Route path="/ai/outfit-recommendations" element={<OutfitRecommendationsPage />} />
                   
-                  {}
                   <Route path="/api-status" element={<APIStatus />} />
                   
-                  {}
                   <Route path="/quantum-tryon" element={<QuantumTryOnPageWrapper />} />
                   <Route path="/metaverse" element={<MetaversePage />} />
                   <Route path="/biometric" element={<BiometricAnalysis />} />
@@ -467,20 +466,16 @@ function App() {
                   <Route path="/neural-interface" element={<NeuralInterface />} />
                   <Route path="/sustainability" element={<SustainabilityPage />} />
                   
-                  {}
                   <Route path="/social-platform" element={<SocialPlatformPage />} />
                   <Route path="/real-time" element={<RealTimeFeaturesPage />} />
                   <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
                   
-                  {}
                   <Route path="/database-manager" element={<DatabaseManagerPage />} />
                   <Route path="/database-test" element={<DatabaseTestPage />} />
                   
-                  {}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   
-                  {}
                   <Route
                     path="/favorites"
                     element={
@@ -539,7 +534,6 @@ function App() {
                   />
                   <Route path="/segmentation-demo" element={<SegmentationDemoPage />} />
                   
-                  {}
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

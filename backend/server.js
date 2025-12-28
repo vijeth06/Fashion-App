@@ -22,6 +22,7 @@ const errorRoutes = require('./routes/errors');
 const paymentsRoutes = require('./routes/payments');
 const ordersRoutes = require('./routes/orders');
 const gdprRoutes = require('./routes/gdpr');
+const socialRoutes = require('./routes/social'); // NEW: Social features
 
 // Import new commerce logic routes
 const couponRoutes = require('./routes/coupons');
@@ -195,6 +196,9 @@ app.use(`${config.api.prefix}/${config.api.version}/upload`, uploadRoutes);
 app.use(`${config.api.prefix}/${config.api.version}/try-on`, tryOnRoutes);
 app.use(`${config.api.prefix}/${config.api.version}/payments`, paymentsRoutes);
 app.use(`${config.api.prefix}/${config.api.version}/orders`, ordersRoutes);
+
+// Social Fashion Platform Routes - NEW
+app.use(`${config.api.prefix}/social`, socialRoutes);
 
 // Commerce Logic Routes - New
 app.use(`${config.api.prefix}/${config.api.version}/coupons`, couponRoutes);
