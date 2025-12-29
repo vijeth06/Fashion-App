@@ -102,14 +102,14 @@ export default function QuantumTryOn({ selectedItem, userProfile, onItemSelect, 
                 value={fabricPhysics?.gravity || 9.81}
                 min={0}
                 max={20}
-                unit="m/sÂ²"
+                unit=" m/s²"
               />
               <QuantumControl
                 label="WIND"
                 value={fabricPhysics?.wind || 0}
                 min={0}
                 max={10}
-                unit="m/s"
+                unit=" m/s"
               />
               <QuantumControl
                 label="STIFFNESS"
@@ -348,7 +348,8 @@ function QuantumControl({ label, value, min, max, unit, onChange }) {
           whileHover={{ borderColor: '#00FFFF' }}
         >
           <div className="text-cyan-400 font-mono text-sm">
-            {typeof value === 'number' ? value.toFixed(2) : value}{unit}
+            {typeof value === 'number' ? value.toFixed(2) : value}
+            {unit && <span className="text-gray-500">{unit}</span>}
           </div>
         </motion.div>
       </div>
