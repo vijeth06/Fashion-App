@@ -48,7 +48,7 @@ const QuantumTryOnPage = () => {
       <div className="container mx-auto px-6 mb-8">
         <div className="text-center">
           <h1 className="text-6xl font-black text-white mb-4">
-            à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤®
+            QUANTUM
             <span className="block text-transparent bg-gradient-to-r from-orange-400 via-white to-green-500 bg-clip-text">
               VIRTUAL TRY-ON
             </span>
@@ -57,7 +57,7 @@ const QuantumTryOnPage = () => {
             Quantum Physics-Based Virtual Try-On for Fashion
           </p>
           <p className="text-lg text-gray-400">
-            Quantum Physics-based Virtual Try-on for Indian Fashion
+            Experience Revolutionary Virtual Try-On for Indian Fashion
           </p>
         </div>
       </div>
@@ -136,8 +136,7 @@ const QuantumTryOnPage = () => {
             ))}
           </div>
           <p className="text-gray-400 text-sm mt-4 text-center">
-            Select an item to experience quantum fabric simulation • à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤°
-            à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾ à¤¸à¤¿à¤®à¥à¤²à¥‡à¤¶à¤¨ à¤•à¤¾ à¤…à¤¨à¥à¤­à¤µ à¤•à¤°à¥‡à¤‚
+            Select an item to experience quantum fabric simulation
           </p>
         </div>
       </div>
