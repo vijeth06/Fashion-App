@@ -1,6 +1,6 @@
 ﻿
-import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
+import { ensureTfBackend, tf } from './tfBackend';
 
 export class EnhancedPoseDetection {
   constructor() {
@@ -33,7 +33,7 @@ export class EnhancedPoseDetection {
     try {
       console.log('🕛 Initializing Enhanced Pose Detection...');
 
-      await this.initializeBackend();
+      await ensureTfBackend();
       
       const detectorConfig = {
         modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
@@ -55,27 +55,6 @@ export class EnhancedPoseDetection {
     }
   }
 
-
-  async initializeBackend() {
-    await tf.ready();
-
-    const preferredBackends = ['webgpu', 'webgl', 'wasm', 'cpu'];
-
-    for (const backend of preferredBackends) {
-      try {
-        if (tf.getBackend() !== backend) {
-          await tf.setBackend(backend);
-        }
-        await tf.ready();
-        console.log(`TensorFlow.js backend set to: ${tf.getBackend()}`);
-        return tf.getBackend();
-      } catch (error) {
-        console.warn(`Backend ${backend} failed, trying next:`, error?.message || error);
-      }
-    }
-
-    throw new Error('No TensorFlow.js backend could be initialized');
-  }
 
   
   async detectPose(imageElement) {

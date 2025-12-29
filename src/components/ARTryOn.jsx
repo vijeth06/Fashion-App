@@ -32,10 +32,12 @@ const ARTryOn = ({
   const rafIdRef = useRef(null);
   const lastPoseTimeRef = useRef(0);
   const isMountedRef = useRef(false);
+  const smoothingRef = useRef({ top: null, bottom: null, shoes: null });
   
   const [isRecording, setIsRecording] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [status, setStatus] = useState('idle');
+  const [liteMode, setLiteMode] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [currentGarment, setCurrentGarment] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -129,6 +131,10 @@ const ARTryOn = ({
 
     const detectPose = async (timestamp) => {
       if (!isMountedRef.current || !isCameraActive) return;
+      if (liteMode) {
+        rafIdRef.current = requestAnimationFrame(detectPose);
+        return;
+      }
 
       if (videoRef.current && videoRef.current.readyState >= 2) {
         if (timestamp - lastPoseTimeRef.current >= targetFrameMs) {
@@ -138,10 +144,16 @@ const ARTryOn = ({
             const poseData = await enhancedPoseDetection.detectPose(videoRef.current);
             
             if (poseData.success && canvasRef.current) {
+              if (poseData.confidence !== undefined && poseData.confidence < 0.2) {
+                setStatus('pose-low');
+              } else {
+                setStatus('tracking');
+              }
               drawPoseAndGarments(poseData);
             }
           } catch (error) {
             console.error('Pose detection error:', error);
+            setStatus('pose-error');
           }
         }
       }
@@ -163,9 +175,11 @@ const ARTryOn = ({
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+    const normalizedKeypoints = normalizeKeypoints(poseData.keypoints || [], canvas.width, canvas.height);
+
     if (poseData.keypoints) {
       ctx.fillStyle = 'red';
-      poseData.keypoints.forEach(kp => {
+      normalizedKeypoints.forEach(kp => {
         if (kp.visible && kp.score > 0.3) {
           ctx.beginPath();
           ctx.arc(kp.x, kp.y, 5, 0, 2 * Math.PI);
@@ -174,7 +188,139 @@ const ARTryOn = ({
       });
     }
 
-    drawVirtualGarmentsWithPose(ctx, poseData);
+    const transforms = computeGarmentTransforms(normalizedKeypoints, canvas.width, canvas.height, smoothingRef);
+
+    drawGarmentsWithTransforms(ctx, transforms);
+  };
+
+  const normalizeKeypoints = (keypoints, width, height) => {
+    if (!keypoints || !width || !height) return [];
+    return keypoints.map(kp => ({
+      ...kp,
+      x: kp.x,
+      y: kp.y,
+      nx: kp.x / width,
+      ny: kp.y / height
+    }));
+  };
+
+  const smoothTransform = (category, nextTransform, alpha = 0.25) => {
+    if (!nextTransform) return null;
+    const previous = smoothingRef.current[category];
+    if (!previous) {
+      smoothingRef.current[category] = nextTransform;
+      return nextTransform;
+    }
+
+    const smoothed = {
+      x: previous.x + (nextTransform.x - previous.x) * alpha,
+      y: previous.y + (nextTransform.y - previous.y) * alpha,
+      width: previous.width + (nextTransform.width - previous.width) * alpha,
+      height: previous.height + (nextTransform.height - previous.height) * alpha,
+      rotation: previous.rotation + (nextTransform.rotation - previous.rotation) * alpha,
+    };
+
+    smoothingRef.current[category] = smoothed;
+    return smoothed;
+  };
+
+  const computeGarmentTransforms = (keypoints, width, height, smoothingStore) => {
+    const get = (name) => keypoints.find(kp => kp.name === name);
+
+    const transforms = {};
+
+    const leftShoulder = get('left_shoulder');
+    const rightShoulder = get('right_shoulder');
+    const leftHip = get('left_hip');
+    const rightHip = get('right_hip');
+    const leftKnee = get('left_knee');
+    const rightKnee = get('right_knee');
+    const leftAnkle = get('left_ankle');
+    const rightAnkle = get('right_ankle');
+
+    const shoulderMid = (leftShoulder && rightShoulder)
+      ? { x: (leftShoulder.x + rightShoulder.x) / 2, y: (leftShoulder.y + rightShoulder.y) / 2 }
+      : null;
+    const hipMid = (leftHip && rightHip)
+      ? { x: (leftHip.x + rightHip.x) / 2, y: (leftHip.y + rightHip.y) / 2 }
+      : null;
+
+    const shoulderWidth = (leftShoulder && rightShoulder)
+      ? Math.hypot(rightShoulder.x - leftShoulder.x, rightShoulder.y - leftShoulder.y)
+      : null;
+    const hipWidth = (leftHip && rightHip)
+      ? Math.hypot(rightHip.x - leftHip.x, rightHip.y - leftHip.y)
+      : null;
+
+    if (leftShoulder && rightShoulder && hipMid && shoulderWidth) {
+      const heightTop = hipMid.y - Math.min(leftShoulder.y, rightShoulder.y);
+      const widthTop = shoulderWidth * 1.1;
+      const rotation = Math.atan2(rightShoulder.y - leftShoulder.y, rightShoulder.x - leftShoulder.x);
+      transforms.top = smoothTransform('top', {
+        x: (shoulderMid.x - widthTop / 2),
+        y: Math.min(leftShoulder.y, rightShoulder.y) - heightTop * 0.1,
+        width: widthTop,
+        height: heightTop * 1.2,
+        rotation,
+      });
+    }
+
+    if (leftHip && rightHip && (leftKnee || rightKnee)) {
+      const kneeY = Math.max(leftKnee?.y || rightKnee?.y || hipMid?.y || 0, hipMid?.y || 0);
+      const legHeight = kneeY - hipMid.y;
+      const widthBottom = (hipWidth || shoulderWidth || width * 0.2) * 1.05;
+      transforms.bottom = smoothTransform('bottom', {
+        x: (hipMid.x - widthBottom / 2),
+        y: hipMid.y,
+        width: widthBottom,
+        height: legHeight * 1.1,
+        rotation: 0,
+      });
+    }
+
+    if (leftAnkle || rightAnkle) {
+      const ankleY = Math.max(leftAnkle?.y || 0, rightAnkle?.y || 0);
+      const ankleX = ((leftAnkle?.x || 0) + (rightAnkle?.x || 0)) / 2 || hipMid?.x || shoulderMid?.x || 0;
+      const widthShoes = hipWidth ? hipWidth * 0.6 : width * 0.15;
+      transforms.shoes = smoothTransform('shoes', {
+        x: ankleX - widthShoes / 2,
+        y: ankleY - (height * 0.02),
+        width: widthShoes,
+        height: height * 0.04,
+        rotation: 0,
+      });
+    }
+
+    return transforms;
+  };
+
+  const drawGarmentsWithTransforms = (ctx, transforms) => {
+    Object.entries(mixAndMatch).forEach(([category, product]) => {
+      if (!product || category === 'accessories') return;
+      const transform = transforms[category];
+      if (!transform) return;
+
+      ctx.save();
+      ctx.translate(transform.x + transform.width / 2, transform.y + transform.height / 2);
+      ctx.rotate(transform.rotation || 0);
+      ctx.translate(-transform.width / 2, -transform.height / 2);
+      ctx.globalAlpha = arSettings.opacity / 100;
+      ctx.fillStyle = product.color || 'rgba(255, 107, 107, 0.6)';
+      ctx.fillRect(0, 0, transform.width, transform.height);
+
+      if (product.imageUrl || product.image) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = product.imageUrl || product.image;
+        img.onload = () => {
+          ctx.globalAlpha = 0.8;
+          ctx.drawImage(img, 0, 0, transform.width, transform.height);
+          ctx.globalAlpha = 1;
+        };
+      }
+
+      ctx.restore();
+    });
   };
 
   const startARSession = async () => {
@@ -548,9 +694,21 @@ const ARTryOn = ({
                 <div className="bg-black bg-opacity-50 text-white px-4 py-2 rounded-full text-sm">
                   AR Try-On Active
                 </div>
+
+                <div className="bg-black bg-opacity-50 text-white px-4 py-2 rounded-full text-xs font-mono">
+                  Status: {status}
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setLiteMode(!liteMode)}
+                  className={`p-3 rounded-full transition-all ${liteMode ? 'bg-yellow-400 text-black' : 'bg-black bg-opacity-50 text-white hover:bg-opacity-70'}`}
+                  title="Lite mode disables pose overlays if performance is poor"
+                >
+                  {liteMode ? 'Lite' : 'Live'}
+                </button>
+
                 <button
                   onClick={() => setIsFullscreen(!isFullscreen)}
                   className="p-3 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"

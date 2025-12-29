@@ -1,7 +1,7 @@
 ﻿
 
-import * as tf from '@tensorflow/tfjs';
 import * as bodySegmentation from '@tensorflow-models/body-segmentation';
+import { ensureTfBackend, tf } from './tfBackend';
 import { colorSegmentationToLabelMatrix } from './segmentationColorMap';
 
 export class ClothSegmentationService {
@@ -23,6 +23,8 @@ export class ClothSegmentationService {
 
     try {
       console.log('ðŸŽ¨ Initializing Cloth Segmentation Service...');
+
+      await ensureTfBackend();
 
       const segmentationConfig = {
         runtime: 'tfjs',

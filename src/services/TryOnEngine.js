@@ -1,8 +1,8 @@
 ﻿
 
-import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as bodySegmentation from '@tensorflow-models/body-segmentation';
+import { ensureTfBackend, tf } from './tfBackend';
 
 export class TryOnEngine {
   constructor(config = {}) {
@@ -51,8 +51,7 @@ export class TryOnEngine {
     try {
       console.log('ðŸš€ Initializing Virtual Try-On Engine V2...');
 
-      await tf.ready();
-      await tf.setBackend('webgl'); // GPU acceleration
+      await ensureTfBackend();
 
       await this.loadPoseEstimationModel();
       await this.loadBodySegmentationModel();
