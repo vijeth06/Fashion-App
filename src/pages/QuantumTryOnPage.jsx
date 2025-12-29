@@ -66,7 +66,7 @@ const QuantumTryOnPage = () => {
       <div className="container mx-auto px-6 mb-8">
         <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-6 border border-orange-400/30">
           <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
-            ðŸŒŸ <span className="ml-2">Select Fashion Items</span>
+            🌟 <span className="ml-2">Select Fashion Items</span>
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {indianProducts.slice(0, 12).map((item) => (
@@ -84,14 +84,14 @@ const QuantumTryOnPage = () => {
                 <div className="aspect-square bg-gradient-to-br from-orange-500/20 to-green-500/20 rounded-xl mb-3 flex items-center justify-center">
                   <span className="text-2xl">
                     {item.type === 'kurta'
-                      ? 'ðŸ‘•'
+                      ? '👕'
                       : item.type === 'saree'
-                        ? 'ðŸ¥»'
+                        ? '🥻'
                         : item.type === 'jacket'
-                          ? 'ðŸ§¥'
+                          ? '🧥'
                           : item.type === 'jeans'
-                            ? 'ðŸ‘–'
-                            : 'ðŸ‘”'}
+                            ? '👖'
+                            : '👔'}
                   </span>
                 </div>
                 <h4 className="text-white font-mono text-xs mb-1 truncate">
@@ -125,12 +125,12 @@ const QuantumTryOnPage = () => {
                 {}
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                   {item.region === 'Pan-India'
-                    ? 'ðŸ‡®ðŸ‡³'
+                    ? '🇮🇳'
                     : item.region === 'North Indian'
                       ? 'N'
                       : item.region === 'South Indian'
                         ? 'S'
-                        : 'ðŸŒ'}
+                        : '🌍'}
                 </div>
               </motion.div>
             ))}
