@@ -34,7 +34,7 @@ class OrderTrackingService {
       'confirmed': {
         label: 'Order Confirmed',
         description: 'Your order has been confirmed and payment received',
-        icon: 'âœ…',
+        icon: '✅',
         color: 'text-green-600',
         bgColor: 'bg-green-100',
         progress: 25
@@ -82,7 +82,7 @@ class OrderTrackingService {
       'cancelled': {
         label: 'Cancelled',
         description: 'Your order has been cancelled',
-        icon: 'âŒ',
+        icon: '❌',
         color: 'text-red-600',
         bgColor: 'bg-red-100',
         progress: 0

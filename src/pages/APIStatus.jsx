@@ -288,10 +288,10 @@ const APIStatusDashboard = () => {
             Backend Status
           </h3>
           <div className="space-y-2 text-blue-800">
-            <p>âœ“ Backend Server: <strong>http://localhost:5000</strong></p>
-            <p>âœ“ API Base URL: <strong>http://localhost:5000/api/v1</strong></p>
-            <p>âœ“ Health Check: <a href="http://localhost:5000/health" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">http://localhost:5000/health</a></p>
-            <p>âœ“ Database: <strong>MongoDB Atlas Connected</strong></p>
+            <p>✓ Backend Server: <strong>http://localhost:5000</strong></p>
+            <p>✓ API Base URL: <strong>http://localhost:5000/api/v1</strong></p>
+            <p>✓ Health Check: <a href="http://localhost:5000/health" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">http://localhost:5000/health</a></p>
+            <p>✓ Database: <strong>MongoDB Atlas Connected</strong></p>
           </div>
         </motion.div>
 

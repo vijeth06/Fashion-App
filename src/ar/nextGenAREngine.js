@@ -38,7 +38,7 @@ export class NextGenAREngine {
       await this.setupWebXR();
       
       this.isInitialized = true;
-      console.log('âœ… Next-Gen AR Engine initialized successfully');
+      console.log('✅ Next-Gen AR Engine initialized successfully');
       
       return {
         success: true,
@@ -46,7 +46,7 @@ export class NextGenAREngine {
         performance: this.getPerformanceMetrics()
       };
     } catch (error) {
-      console.error('âŒ AR Engine initialization failed:', error);
+      console.error('❌ AR Engine initialization failed:', error);
       throw new Error('Next-Gen AR Engine initialization failed');
     }
   }

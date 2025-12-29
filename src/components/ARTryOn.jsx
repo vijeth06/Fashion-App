@@ -833,10 +833,10 @@ const ARTryOn = ({
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">Gesture Controls</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
-                      <li>â€¢ Pinch to scale garments</li>
-                      <li>â€¢ Drag to reposition</li>
-                      <li>â€¢ Rotate with two fingers</li>
-                      <li>â€¢ Tap to select/deselect</li>
+                      <li>• Pinch to scale garments</li>
+                      <li>• Drag to reposition</li>
+                      <li>• Rotate with two fingers</li>
+                      <li>• Tap to select/deselect</li>
                     </ul>
                   </div>
 

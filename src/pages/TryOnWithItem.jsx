@@ -194,7 +194,7 @@ const TryOnWithItem = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 flex items-center justify-center">
         <div className="text-center p-8">
-          <div className="text-red-400 text-6xl mb-4">âš ï¸</div>
+          <div className="text-red-400 text-6xl mb-4">⚠️</div>
           <h2 className="text-white text-2xl font-bold mb-4">Try-On Error</h2>
           <p className="text-gray-300 mb-6">{error}</p>
           <div className="space-x-4">
@@ -344,7 +344,7 @@ const TryOnWithItem = () => {
                   ${product?.price || '29.99'}
                 </span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-yellow-400">â˜…</span>
+                  <span className="text-yellow-400">★</span>
                   <span className="text-white">{product?.rating || '4.8'}</span>
                 </div>
               </div>
@@ -486,7 +486,7 @@ const TryOnWithItem = () => {
             className="fixed inset-0 pointer-events-none flex items-center justify-center z-50"
           >
             <div className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg">
-              âœ¨ Look Captured!
+              ✨ Look Captured!
             </div>
           </motion.div>
         )}

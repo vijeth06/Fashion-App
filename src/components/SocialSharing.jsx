@@ -178,7 +178,7 @@ export default function SocialSharing({
               <ul className=\"text-sm text-blue-800 space-y-1\">
                 {getSharingTips(showTips).map((tip, index) => (
                   <li key={index} className=\"flex items-start gap-2\">
-                    <span className=\"text-blue-500 mt-0.5\">â€¢</span>
+                    <span className=\"text-blue-500 mt-0.5\">•</span>
                     <span>{tip}</span>
                   </li>
                 ))}

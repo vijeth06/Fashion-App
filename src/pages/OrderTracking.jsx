@@ -299,7 +299,7 @@ const OrderTracking = () => {
                     <FaShoppingBag className="w-5 h-5 text-purple-600" />
                     <div>
                       <p className="font-medium text-gray-900">Order Value</p>
-                      <p className="text-gray-600">â‚¹{orderDetails.totalAmount?.toLocaleString()}</p>
+                      <p className="text-gray-600">₹{orderDetails.totalAmount?.toLocaleString()}</p>
                     </div>
                   </div>
                   

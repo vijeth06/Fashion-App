@@ -80,10 +80,10 @@ export default function Catalog() {
 
   const priceRanges = [
     { value: 'all', label: 'ALL PRICES' },
-    { value: '0-1000', label: 'UNDER â‚¹1,000' },
-    { value: '1000-2500', label: 'â‚¹1,000 - â‚¹2,500' },
-    { value: '2500-5000', label: 'â‚¹2,500 - â‚¹5,000' },
-    { value: '5000+', label: 'â‚¹5,000+' }
+    { value: '0-1000', label: 'UNDER ₹1,000' },
+    { value: '1000-2500', label: '₹1,000 - ₹2,500' },
+    { value: '2500-5000', label: '₹2,500 - ₹5,000' },
+    { value: '5000+', label: '₹5,000+' }
   ];
 
   const sortOptions = [
@@ -604,11 +604,11 @@ export default function Catalog() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <span className="text-2xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                â‚¹{itemPrice.toLocaleString('en-IN')}
+                                ₹{itemPrice.toLocaleString('en-IN')}
                               </span>
                               {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  â‚¹{itemMRP.toLocaleString('en-IN')}
+                                  ₹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                             </div>
@@ -675,11 +675,11 @@ export default function Catalog() {
                             </h3>
                             <div className="flex items-center space-x-4">
                               <span className="text-3xl font-bold bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 bg-clip-text text-transparent">
-                                â‚¹{itemPrice.toLocaleString('en-IN')}
+                                ₹{itemPrice.toLocaleString('en-IN')}
                               </span>
                               {itemMRP && itemMRP > itemPrice && (
                                 <span className="text-lg text-gray-500 line-through">
-                                  â‚¹{itemMRP.toLocaleString('en-IN')}
+                                  ₹{itemMRP.toLocaleString('en-IN')}
                                 </span>
                               )}
                               <div className="flex items-center space-x-1">

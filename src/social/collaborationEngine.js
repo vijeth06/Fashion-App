@@ -30,7 +30,7 @@ export class RealTimeCollaborationEngine {
       await this.realTimeSync.initialize();
       
       this.isInitialized = true;
-      console.log('âœ… Real-Time Collaboration Engine initialized successfully');
+      console.log('✅ Real-Time Collaboration Engine initialized successfully');
       
       return {
         success: true,
@@ -38,7 +38,7 @@ export class RealTimeCollaborationEngine {
         endpoints: this.getEndpoints()
       };
     } catch (error) {
-      console.error('âŒ Collaboration Engine initialization failed:', error);
+      console.error('❌ Collaboration Engine initialization failed:', error);
       throw new Error('Real-Time Collaboration Engine initialization failed');
     }
   }

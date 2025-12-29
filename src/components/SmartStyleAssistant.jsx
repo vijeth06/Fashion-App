@@ -79,9 +79,9 @@ export default function SmartStyleAssistant({ isVisible, onClose, userPreference
   const initializeStyleAI = async () => {
     try {
       await emotionBasedStylist.initialize();
-      console.log('âœ… Style AI initialized');
+      console.log('✅ Style AI initialized');
     } catch (error) {
-      console.error('âŒ Style AI initialization failed:', error);
+      console.error('❌ Style AI initialization failed:', error);
     }
   };
 

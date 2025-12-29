@@ -674,7 +674,7 @@ export class DevelopmentTestSuite {
     results.totalDuration = results.endTime - results.startTime;
     results.summary = this.generateTestSummary(results);
     
-    console.log('âœ… Test Suite Completed');
+    console.log('✅ Test Suite Completed');
     console.log(results.summary);
     
     return results;

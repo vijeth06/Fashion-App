@@ -124,7 +124,7 @@ export default function Checkout() {
   }, [user]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above â‚¹2000 in India
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000 in India
   const tax = taxBreakdown.totalGST || 0;
   const total = subtotal + shipping + tax;
 
@@ -310,7 +310,7 @@ export default function Checkout() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="text-6xl mb-6">âœ…</div>
+          <div className="text-6xl mb-6">✅</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Confirmed!</h2>
           <p className="text-gray-600 mb-2">Thank you for your purchase.</p>
           <p className="text-sm text-gray-500 mb-6">Order ID: {orderId}</p>
@@ -319,9 +319,9 @@ export default function Checkout() {
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 mb-2">What's Next?</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>â€¢ You'll receive an email confirmation</li>
-                <li>â€¢ Your order will be processed within 24 hours</li>
-                <li>â€¢ Estimated delivery: 3-5 business days</li>
+                <li>• You'll receive an email confirmation</li>
+                <li>• Your order will be processed within 24 hours</li>
+                <li>• Estimated delivery: 3-5 business days</li>
               </ul>
             </div>
             

@@ -37,10 +37,10 @@ export class ClothSegmentationService {
       );
       
       this.isInitialized = true;
-      console.log('âœ… Cloth Segmentation Service initialized');
+      console.log('✅ Cloth Segmentation Service initialized');
       
     } catch (error) {
-      console.error('âŒ Failed to initialize Cloth Segmentation:', error);
+      console.error('❌ Failed to initialize Cloth Segmentation:', error);
       throw error;
     }
   }
@@ -70,7 +70,7 @@ export class ClothSegmentationService {
       };
       
     } catch (error) {
-      console.error('âŒ Cloth segmentation failed:', error);
+      console.error('❌ Cloth segmentation failed:', error);
       return {
         mask: null,
         boundaries: [],

@@ -214,11 +214,11 @@ export default function ProductDetails() {
               
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                  â‚¹{(product.pricing?.selling || product.price || 0).toLocaleString('en-IN')}
+                  ₹{(product.pricing?.selling || product.price || 0).toLocaleString('en-IN')}
                 </div>
                 {product.pricing?.mrp && product.pricing.mrp > product.pricing.selling && (
                   <div className="text-xl text-gray-500 line-through">
-                    â‚¹{product.pricing.mrp.toLocaleString('en-IN')}
+                    ₹{product.pricing.mrp.toLocaleString('en-IN')}
                   </div>
                 )}
                 {product.pricing?.discount && (
@@ -287,7 +287,7 @@ export default function ProductDetails() {
                 onClick={handleAddToCart}
                 className="w-full btn-primary py-4 px-6 text-lg"
               >
-                Add to Cart - â‚¹{((product.pricing?.selling || product.price || 0) * quantity).toLocaleString('en-IN')}
+                Add to Cart - ₹{((product.pricing?.selling || product.price || 0) * quantity).toLocaleString('en-IN')}
               </button>
               
               <div className="grid grid-cols-2 gap-3">
@@ -295,7 +295,7 @@ export default function ProductDetails() {
                   to="/try-on"
                   className="flex items-center justify-center gap-2 btn-secondary py-3 px-6"
                 >
-                  <span>âœ¨</span>
+                  <span>✨</span>
                   Virtual Try-On
                 </Link>
                 <button
@@ -367,9 +367,9 @@ export default function ProductDetails() {
                 <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
                   <h3 className="font-semibold text-white mb-2">How to Measure</h3>
                   <ul className="text-sm text-gray-300 space-y-1">
-                    <li>â€¢ <strong>Chest:</strong> Measure around the fullest part of your chest</li>
-                    <li>â€¢ <strong>Waist:</strong> Measure around your natural waistline</li>
-                    <li>â€¢ <strong>Length:</strong> Measure from shoulder to desired hem length</li>
+                    <li>• <strong>Chest:</strong> Measure around the fullest part of your chest</li>
+                    <li>• <strong>Waist:</strong> Measure around your natural waistline</li>
+                    <li>• <strong>Length:</strong> Measure from shoulder to desired hem length</li>
                   </ul>
                 </div>
               </div>

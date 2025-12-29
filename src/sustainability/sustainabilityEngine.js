@@ -32,7 +32,7 @@ export class SustainabilityEngine {
       await this.impactCalculator.initialize(config.impact);
       
       this.isInitialized = true;
-      console.log('âœ… Sustainability & Ethics Engine initialized successfully');
+      console.log('✅ Sustainability & Ethics Engine initialized successfully');
       
       return {
         success: true,
@@ -40,7 +40,7 @@ export class SustainabilityEngine {
         standards: this.getSupportedStandards()
       };
     } catch (error) {
-      console.error('âŒ Sustainability Engine initialization failed:', error);
+      console.error('❌ Sustainability Engine initialization failed:', error);
       throw new Error('Sustainability & Ethics Engine initialization failed');
     }
   }

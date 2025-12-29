@@ -945,7 +945,7 @@ const VirtualTryOnComponent = ({
                         className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                         aria-label="Remove uploaded image"
                       >
-                        Ã—
+                        ×
                       </button>
                     </div>
                   )}
@@ -1115,7 +1115,7 @@ const VirtualTryOnComponent = ({
                         className="text-red-600 hover:text-red-700 dark:text-red-400"
                         aria-label={`Remove ${item.name}`}
                       >
-                        Ã—
+                        ×
                       </button>
                     </div>
                   ))}

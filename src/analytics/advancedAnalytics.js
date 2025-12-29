@@ -38,7 +38,7 @@ export class AdvancedAnalyticsEngine {
       await this.recommendationSystem.initialize(config.recommendations);
       
       this.isInitialized = true;
-      console.log('âœ… Advanced Analytics Engine initialized successfully');
+      console.log('✅ Advanced Analytics Engine initialized successfully');
       
       return {
         success: true,
@@ -46,7 +46,7 @@ export class AdvancedAnalyticsEngine {
         models: this.getLoadedModels()
       };
     } catch (error) {
-      console.error('âŒ Analytics Engine initialization failed:', error);
+      console.error('❌ Analytics Engine initialization failed:', error);
       throw new Error('Advanced Analytics Engine initialization failed');
     }
   }

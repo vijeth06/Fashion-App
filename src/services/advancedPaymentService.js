@@ -733,7 +733,7 @@ class AdvancedPaymentService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log('âœ… Post-payment processes triggered for:', orderId);
+      console.log('✅ Post-payment processes triggered for:', orderId);
     } catch (error) {
       console.error('Failed to trigger post-payment processes:', error);
     }

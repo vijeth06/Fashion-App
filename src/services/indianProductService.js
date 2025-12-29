@@ -488,7 +488,7 @@ class IndianProductService {
 
   formatPrice(price) {
     if (price.currency === 'INR') {
-      return `â‚¹${price.selling.toLocaleString('en-IN')}`;
+      return `₹${price.selling.toLocaleString('en-IN')}`;
     }
     return `${price.currency} ${price.selling}`;
   }

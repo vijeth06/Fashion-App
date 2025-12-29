@@ -3,10 +3,10 @@ import { auth, db } from '../firebase/firebaseConfig';
 
 export const testFirebaseConnection = () => {
   console.log('ðŸ”¥ Firebase Connection Test:');
-  console.log('Auth instance:', auth ? 'âœ… Connected' : 'âŒ Not connected');
-  console.log('Firestore instance:', db ? 'âœ… Connected' : 'âŒ Not connected');
+  console.log('Auth instance:', auth ? '✅ Connected' : '❌ Not connected');
+  console.log('Firestore instance:', db ? '✅ Connected' : '❌ Not connected');
   console.log('Current user:', auth?.currentUser ? auth.currentUser.email : 'No user signed in');
-  console.log('Auth state ready:', auth ? 'âœ… Ready' : 'âŒ Not ready');
+  console.log('Auth state ready:', auth ? '✅ Ready' : '❌ Not ready');
 };
 
 export const testEmailLogin = async (email = 'test@example.com', password = 'testpass123') => {

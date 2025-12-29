@@ -38,7 +38,7 @@ export class APIConnectionTester {
       };
 
       this.results.push(result);
-      console.log(`âœ“ ${name}: ${response.status} (${duration}ms)`);
+      console.log(`✓ ${name}: ${response.status} (${duration}ms)`);
       return result;
 
     } catch (error) {
@@ -54,7 +54,7 @@ export class APIConnectionTester {
       };
 
       this.results.push(result);
-      console.error(`âœ— ${name}: ${error.message}`);
+      console.error(`✗ ${name}: ${error.message}`);
       return result;
     }
   }
@@ -165,8 +165,8 @@ export class APIConnectionTester {
     const successful = this.results.filter(r => r.success).length;
     const failed = this.results.filter(r => !r.success).length;
     
-    console.log(`âœ“ Successful: ${successful}`);
-    console.log(`âœ— Failed: ${failed}`);
+    console.log(`✓ Successful: ${successful}`);
+    console.log(`✗ Failed: ${failed}`);
     console.log(`Total: ${this.results.length}`);
 
     return {
@@ -188,7 +188,7 @@ export class APIConnectionTester {
     console.table(this.results.map(r => ({
       Name: r.name,
       Status: r.status,
-      Success: r.success ? 'âœ“' : 'âœ—',
+      Success: r.success ? '✓' : '✗',
       Duration: r.duration
     })));
   }

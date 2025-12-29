@@ -58,7 +58,7 @@ export const communityUsers = [
     username: '@sofiaglam',
     email: 'sofia.rodriguez@example.com',
     photoURL: 'https://i.pravatar.cc/150?img=5',
-    bio: 'Luxury fashion blogger | Miami | Runway obsessed âœ¨',
+    bio: 'Luxury fashion blogger | Miami | Runway obsessed ✨',
     location: 'Miami, FL',
     joinedDate: '2024-03-10',
     verified: true,

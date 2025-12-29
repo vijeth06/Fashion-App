@@ -38,7 +38,7 @@ const Favorites = () => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Saved Outfits</h2>
           <Link to="/try" className="text-primary hover:underline">
-            Create New Outfit â†’
+            Create New Outfit →
           </Link>
         </div>
         
@@ -131,7 +131,7 @@ const Favorites = () => {
           </div>
         ) : (
           <div className="bg-gray-50 rounded-xl p-8 text-center">
-            <div className="text-5xl mb-4">â¤ï¸</div>
+            <div className="text-5xl mb-4">❤️</div>
             <h3 className="text-xl font-medium mb-2">No liked items yet</h3>
             <p className="text-gray-600 mb-4">Browse our catalog and like items to save them here</p>
             <Link to="/catalog" className="btn btn-primary">

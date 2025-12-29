@@ -350,7 +350,7 @@ function ProductCard({ product, viewMode, onProductClick, onTryOn, onWishlist })
                 <FaStar key={i} className="w-4 h-4" />
               ))}
             </div>
-            <span className="text-sm text-gray-600">(4.8) â€¢ 234 reviews</span>
+            <span className="text-sm text-gray-600">(4.8) • 234 reviews</span>
           </div>
 
           <div className="flex gap-3">

@@ -430,7 +430,7 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                               <p className="font-medium text-gray-900">{order.customer}</p>
-                              <p className="text-sm text-gray-500">{order.items} items â€¢ ${order.amount}</p>
+                              <p className="text-sm text-gray-500">{order.items} items • ${order.amount}</p>
                             </div>
                           </div>
                           <div className="text-right">
@@ -760,7 +760,7 @@ export default function AdminDashboard() {
                           <div>
                             <p className="font-medium text-gray-900">{alert.product}</p>
                             <p className="text-sm text-gray-600">
-                              Stock: {alert.stock} units â€¢ 
+                              Stock: {alert.stock} units • 
                               Status: <span className={`font-medium ${
                                 alert.type === 'out_of_stock' ? 'text-red-600' :
                                 alert.type === 'critical_stock' ? 'text-orange-600' : 'text-yellow-600'

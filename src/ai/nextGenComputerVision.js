@@ -41,9 +41,9 @@ export class NextGenComputerVisionEngine {
       ]);
 
       this.isInitialized = true;
-      console.log('âœ… Computer Vision Engine initialized successfully');
+      console.log('✅ Computer Vision Engine initialized successfully');
     } catch (error) {
-      console.error('âŒ Failed to initialize Computer Vision Engine:', error);
+      console.error('❌ Failed to initialize Computer Vision Engine:', error);
       throw new Error('Computer Vision initialization failed');
     }
   }

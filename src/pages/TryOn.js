@@ -630,7 +630,7 @@ const TryOn = () => {
                 </div>
                 <div className="mt-4 text-center">
                   <Link to="/catalog" className="text-primary hover:underline">
-                    Browse all items â†’
+                    Browse all items →
                   </Link>
                 </div>
               </div>
@@ -681,19 +681,19 @@ const TryOn = () => {
             <h2 className="text-xl font-semibold mb-4">Tips for Best Results</h2>
             <ul className="space-y-2 text-sm text-gray-600">
               <li className="flex items-start gap-2">
-                <span>â€¢</span>
+                <span>•</span>
                 <span>Use a well-lit environment</span>
               </li>
               <li className="flex items-start gap-2">
-                <span>â€¢</span>
+                <span>•</span>
                 <span>Stand against a plain background if possible</span>
               </li>
               <li className="flex items-start gap-2">
-                <span>â€¢</span>
+                <span>•</span>
                 <span>Position your full body in the frame</span>
               </li>
               <li className="flex items-start gap-2">
-                <span>â€¢</span>
+                <span>•</span>
                 <span>Adjust the position and size of the clothing item for the best fit</span>
               </li>
             </ul>

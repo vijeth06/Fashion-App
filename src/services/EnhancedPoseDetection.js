@@ -92,7 +92,7 @@ export class EnhancedPoseDetection {
       };
       
     } catch (error) {
-      console.error('âŒ Pose detection failed:', error);
+      console.error('❌ Pose detection failed:', error);
       return {
         success: false,
         keypoints: [],

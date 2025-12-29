@@ -214,7 +214,7 @@ const PhotoUploadComponent = ({
             </p>
             {imageInfo && (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {imageInfo.name} â€¢ {imageInfo.width}Ã—{imageInfo.height} â€¢ {(imageInfo.size / 1024 / 1024).toFixed(2)}MB
+                {imageInfo.name} • {imageInfo.width}×{imageInfo.height} • {(imageInfo.size / 1024 / 1024).toFixed(2)}MB
               </p>
             )}
           </div>
@@ -225,7 +225,7 @@ const PhotoUploadComponent = ({
               Drop an image here or click to upload
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Supports: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} â€¢ 
+              Supports: {acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')} • 
               Max size: {(maxFileSize / 1024 / 1024).toFixed(0)}MB
             </p>
           </div>
@@ -291,10 +291,10 @@ const PhotoUploadComponent = ({
             {imageInfo && (
               <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-sm backdrop-blur-sm">
                 <div className="flex items-center gap-4">
-                  <span>{imageInfo.width}Ã—{imageInfo.height}</span>
-                  <span>â€¢</span>
+                  <span>{imageInfo.width}×{imageInfo.height}</span>
+                  <span>•</span>
                   <span>{(imageInfo.size / 1024 / 1024).toFixed(2)}MB</span>
-                  <span>â€¢</span>
+                  <span>•</span>
                   <span>Ratio: {imageInfo.aspectRatio.toFixed(2)}</span>
                 </div>
               </div>

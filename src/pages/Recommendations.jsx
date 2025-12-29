@@ -343,7 +343,7 @@ export default function Recommendations() {
                       
                       <div className="flex gap-4">
                         <button className="flex-1 bg-purple-100 text-purple-600 py-3 px-6 rounded-lg font-medium hover:bg-purple-200 transition-colors">
-                          âœ¨ Try Complete Outfit
+                          ✨ Try Complete Outfit
                         </button>
                         <button className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors">
                           Add All to Cart

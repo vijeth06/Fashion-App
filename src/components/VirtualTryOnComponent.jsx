@@ -458,7 +458,7 @@ const VirtualTryOnComponent = ({
                         onClick={() => setUploadedImage(null)}
                         className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                       >
-                        Ã—
+                        ×
                       </button>
                     </div>
                   )}
@@ -544,7 +544,7 @@ const VirtualTryOnComponent = ({
                         onClick={() => setError(null)}
                         className="text-white hover:text-gray-200"
                       >
-                        Ã—
+                        ×
                       </button>
                     </div>
                   </motion.div>
@@ -584,7 +584,7 @@ const VirtualTryOnComponent = ({
                       onClick={() => removeClothingItem(item.id)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
-                      Ã—
+                      ×
                     </button>
                   </div>
                 ))}

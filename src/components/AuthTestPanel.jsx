@@ -53,7 +53,7 @@ const AuthTestPanel = () => {
       
       {user ? (
         <div className="mb-3">
-          <p className="text-green-600">âœ… User: {user.email}</p>
+          <p className="text-green-600">✅ User: {user.email}</p>
           <button 
             onClick={signOut}
             className="mt-2 bg-red-500 text-white px-3 py-1 rounded text-sm"
@@ -63,7 +63,7 @@ const AuthTestPanel = () => {
         </div>
       ) : (
         <div className="mb-3">
-          <p className="text-red-600">âŒ No user signed in</p>
+          <p className="text-red-600">❌ No user signed in</p>
           <div className="space-y-2 mt-2">
             <input
               type="email"

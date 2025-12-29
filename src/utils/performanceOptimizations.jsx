@@ -66,7 +66,7 @@ export const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, onTryO
             onClick={handleAddToWishlist}
             className="btn btn-outline"
           >
-            â™¡
+            ♥
           </button>
         </div>
       </div>

@@ -330,11 +330,11 @@ const SizeRecommendation = ({
                     <div>
                       <h4 className="font-medium text-blue-900 mb-1">Measurement Tips</h4>
                       <ul className="text-sm text-blue-800 space-y-1">
-                        <li>â€¢ Measure over your regular undergarments</li>
-                        <li>â€¢ Keep the tape measure level and snug but not tight</li>
-                        <li>â€¢ For chest: measure around fullest part</li>
-                        <li>â€¢ For waist: measure at natural waistline</li>
-                        <li>â€¢ For hips: measure around fullest part</li>
+                        <li>• Measure over your regular undergarments</li>
+                        <li>• Keep the tape measure level and snug but not tight</li>
+                        <li>• For chest: measure around fullest part</li>
+                        <li>• For waist: measure at natural waistline</li>
+                        <li>• For hips: measure around fullest part</li>
                       </ul>
                     </div>
                   </div>

@@ -86,7 +86,7 @@ function SocialPost({ post, onLike, onComment, onShare }) {
               <h3 className="font-bold text-gray-900">{post.user.name}</h3>
               {post.user.verified && <FaCrown className="w-4 h-4 text-yellow-500" />}
             </div>
-            <p className="text-sm text-gray-600">{post.user.username} â€¢ {post.timestamp}</p>
+            <p className="text-sm text-gray-600">{post.user.username} • {post.timestamp}</p>
           </div>
         </div>
         <p className="mt-4 text-gray-900">{post.content}</p>
@@ -291,7 +291,7 @@ function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     {selectedItems.find(i => i.id === item.id) && (
                       <div className="absolute inset-0 bg-purple-600/20 flex items-center justify-center">
-                        <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs">âœ“</div>
+                        <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs">✓</div>
                       </div>
                     )}
                   </button>

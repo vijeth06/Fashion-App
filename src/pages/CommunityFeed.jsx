@@ -485,7 +485,7 @@ const CommunityFeed = () => {
                     onClick={() => setShowUserModal(false)}
                     className="text-gray-500 hover:text-gray-700 text-2xl"
                   >
-                    Ã—
+                    ×
                   </button>
                 </div>
 

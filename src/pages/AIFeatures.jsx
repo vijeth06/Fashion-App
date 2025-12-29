@@ -401,7 +401,7 @@ export const BodyAnalysisPage = () => {
             <p className="text-gray-600 text-sm">Get accurate size suggestions for every item</p>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-            <div className="text-4xl mb-4">âœ¨</div>
+            <div className="text-4xl mb-4">✨</div>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Style Advice</h3>
             <p className="text-gray-600 text-sm">Personalized fitting recommendations</p>
           </div>

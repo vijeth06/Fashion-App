@@ -32,7 +32,7 @@ export class Web3FashionEcosystem {
       this.setupEventListeners();
       
       this.isInitialized = true;
-      console.log('âœ… Web3 Fashion Ecosystem initialized successfully');
+      console.log('✅ Web3 Fashion Ecosystem initialized successfully');
       
       return {
         success: true,
@@ -41,7 +41,7 @@ export class Web3FashionEcosystem {
         balance: await this.getWalletBalance()
       };
     } catch (error) {
-      console.error('âŒ Web3 initialization failed:', error);
+      console.error('❌ Web3 initialization failed:', error);
       throw new Error('Web3 Fashion Ecosystem initialization failed');
     }
   }

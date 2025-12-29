@@ -594,7 +594,7 @@ const PerformanceMonitor = ({ metrics = { fps: 0, latency: 0 } }) => {
         
         <div className="pt-2 border-t border-gray-600">
           <p className="text-xs text-gray-400">
-            {fps > 30 ? 'âœ“ Excellent performance' : fps > 20 ? 'âš  Good performance' : 'âœ— Needs optimization'}
+            {fps > 30 ? '✓ Excellent performance' : fps > 20 ? 'âš  Good performance' : '✗ Needs optimization'}
           </p>
         </div>
       </div>
@@ -659,8 +659,8 @@ const EnhancedTryOnPage = () => {
             name: "Classic Cotton Kurta",
             brand: "Manyavar",
             category: "kurta",
-            price: "â‚¹1,899",
-            originalPrice: "â‚¹2,499",
+            price: "₹1,899",
+            originalPrice: "₹2,499",
             discount: 24,
             image: "/assets/tee_white.svg",
             colors: [{ name: 'White', hex: '#FFFFFF' }],
@@ -673,8 +673,8 @@ const EnhancedTryOnPage = () => {
             name: "Silk Saree with Blouse",
             brand: "Kanjivaram Silk",
             category: "saree",
-            price: "â‚¹9,999",
-            originalPrice: "â‚¹12,999",
+            price: "₹9,999",
+            originalPrice: "₹12,999",
             discount: 23,
             image: "/assets/dress_red.svg",
             colors: [{ name: 'Red', hex: '#FF0000' }],
@@ -687,8 +687,8 @@ const EnhancedTryOnPage = () => {
             name: "Designer Cotton Kurti",
             brand: "Biba",
             category: "kurta",
-            price: "â‚¹1,599",
-            originalPrice: "â‚¹2,199",
+            price: "₹1,599",
+            originalPrice: "₹2,199",
             discount: 27,
             image: "/assets/dress_red.svg",
             colors: [{ name: 'Pink', hex: '#FFC0CB' }],
@@ -713,7 +713,7 @@ const EnhancedTryOnPage = () => {
                 brand: product.brand,
                 category: product.type,
                 price: indianProductService.formatPrice(product.price),
-                originalPrice: `â‚¹${product.price.mrp.toLocaleString('en-IN')}`,
+                originalPrice: `₹${product.price.mrp.toLocaleString('en-IN')}`,
                 discount: indianProductService.getDiscountPercentage(product.price),
                 image: product.image,
                 colors: product.colors,
@@ -803,7 +803,7 @@ const EnhancedTryOnPage = () => {
               <div>
                 <p className="font-medium">ðŸš€ Enhanced Virtual Try-On Experience</p>
                 <p className="text-sm opacity-90">
-                  Real-time AR â€¢ AI pose detection â€¢ Advanced customization â€¢ Performance monitoring
+                  Real-time AR • AI pose detection • Advanced customization • Performance monitoring
                 </p>
               </div>
             </div>
@@ -811,7 +811,7 @@ const EnhancedTryOnPage = () => {
               onClick={() => setShowInfo(false)}
               className="text-white hover:text-gray-200 transition-colors text-2xl"
             >
-              Ã—
+              ×
             </button>
           </div>
         </motion.div>
@@ -831,7 +831,7 @@ const EnhancedTryOnPage = () => {
                   Virtual Try-On
                 </span>
               </h1>
-              <p className="text-gray-300">Real-time AR fashion experience with advanced technology â€¢</p>
+              <p className="text-gray-300">Real-time AR fashion experience with advanced technology •</p>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -1014,7 +1014,7 @@ const EnhancedTryOnPage = () => {
                 onClick={() => setCapturedImage(null)}
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                Ã—
+                ×
               </button>
             </div>
             <img
@@ -1112,34 +1112,34 @@ const EnhancedTryOnPage = () => {
             {}
             <div className="mt-12 bg-gradient-to-r from-blue-500/10 via-white/5 to-purple-500/10 rounded-2xl p-8 border border-blue-400/20">
               <h4 className="text-xl font-bold text-white mb-6 flex items-center justify-center">
-                âœ¨ <span className="ml-2">Fashion Features</span>
+                ✨ <span className="ml-2">Fashion Features</span>
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 <div>
                   <h5 className="font-semibold text-blue-400 mb-3">Fashion Categories</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>â€¢ Shirts & Tops</li>
-                    <li>â€¢ Dresses & Skirts</li>
-                    <li>â€¢ Jackets & Outerwear</li>
-                    <li>â€¢ Pants & Jeans</li>
+                    <li>• Shirts & Tops</li>
+                    <li>• Dresses & Skirts</li>
+                    <li>• Jackets & Outerwear</li>
+                    <li>• Pants & Jeans</li>
                   </ul>
                 </div>
                 <div>
                   <h5 className="font-semibold text-green-400 mb-3">Smart Features</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>â€¢ Occasion matching</li>
-                    <li>â€¢ Style preferences</li>
-                    <li>â€¢ Universal sizing</li>
-                    <li>â€¢ Material-specific try-on</li>
+                    <li>• Occasion matching</li>
+                    <li>• Style preferences</li>
+                    <li>• Universal sizing</li>
+                    <li>• Material-specific try-on</li>
                   </ul>
                 </div>
                 <div>
                   <h5 className="font-semibold text-purple-400 mb-3">Market Integration</h5>
                   <ul className="text-gray-300 text-sm space-y-1">
-                    <li>â€¢ Global pricing</li>
-                    <li>â€¢ Popular brands</li>
-                    <li>â€¢ Tax-inclusive pricing</li>
-                    <li>â€¢ Global availability</li>
+                    <li>• Global pricing</li>
+                    <li>• Popular brands</li>
+                    <li>• Tax-inclusive pricing</li>
+                    <li>• Global availability</li>
                   </ul>
                 </div>
               </div>

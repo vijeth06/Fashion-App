@@ -312,7 +312,7 @@ function TabContent({ activeTab, analysis }) {
               <h4 className="text-white font-bold mb-2 capitalize">{timeframe}</h4>
               <ul className="space-y-1">
                 {actions.map((action, i) => (
-                  <li key={i} className="text-gray-300 text-sm">â€¢ {action}</li>
+                  <li key={i} className="text-gray-300 text-sm">• {action}</li>
                 ))}
               </ul>
             </div>

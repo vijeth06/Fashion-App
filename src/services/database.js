@@ -14,7 +14,7 @@ class DatabaseService {
   async connect() {
     try {
       if (this.isConnected) {
-        console.log('âœ… Database already connected');
+        console.log('✅ Database already connected');
         return this.connection;
       }
 
@@ -28,13 +28,13 @@ class DatabaseService {
       });
 
       this.isConnected = true;
-      console.log('âœ… Successfully connected to MongoDB');
+      console.log('✅ Successfully connected to MongoDB');
 
       await this.initializeCollections();
       
       return this.connection;
     } catch (error) {
-      console.error('âŒ MongoDB connection failed:', error);
+      console.error('❌ MongoDB connection failed:', error);
       throw error;
     }
   }
@@ -50,9 +50,9 @@ class DatabaseService {
       await this.createSocialFeedSchema();
       await this.createNFTCollectionSchema();
       
-      console.log('âœ… All collections initialized successfully');
+      console.log('✅ All collections initialized successfully');
     } catch (error) {
-      console.error('âŒ Failed to initialize collections:', error);
+      console.error('❌ Failed to initialize collections:', error);
     }
   }
 

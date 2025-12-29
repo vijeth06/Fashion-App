@@ -164,7 +164,7 @@ export default function Cart() {
 
       setDiscount(data.coupon.discountAmount / subtotal);
       alert(
-        `Coupon applied! â‚¹${data.coupon.discountAmount} discount`
+        `Coupon applied! ₹${data.coupon.discountAmount} discount`
       );
       setShowPromoInput(false);
 
@@ -178,7 +178,7 @@ export default function Cart() {
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const discountAmount = subtotal * discount;
-  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above â‚¹2000
+  const shipping = subtotal > 2000 ? 0 : 99; // Free shipping above ₹2000
   const gst = (subtotal - discountAmount) * 0.18; // 18% GST
   const total = subtotal - discountAmount + shipping + gst;
 
@@ -249,7 +249,7 @@ export default function Cart() {
               </Link>
               <div className="text-center">
                 <Link to="/try-on" className="text-purple-600 hover:text-purple-700 font-medium">
-                  Or try our Virtual Try-On â†’
+                  Or try our Virtual Try-On →
                 </Link>
               </div>
             </div>
@@ -289,7 +289,7 @@ export default function Cart() {
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                          <p className="text-gray-600 capitalize text-sm">{item.category} â€¢ Size: {item.size}</p>
+                          <p className="text-gray-600 capitalize text-sm">{item.category} • Size: {item.size}</p>
                         </div>
                         <button 
                           onClick={() => removeItem(item.id)}
@@ -326,14 +326,14 @@ export default function Cart() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-semibold text-gray-900">
-                            â‚¹{(item.price * item.quantity).toLocaleString('en-IN')}
+                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                           </div>
                           <div className="text-sm text-gray-500">
-                            â‚¹{item.price.toLocaleString('en-IN')} each
+                            ₹{item.price.toLocaleString('en-IN')} each
                           </div>
                           {item.mrp && item.mrp > item.price && (
                             <div className="text-xs text-green-600">
-                              Save â‚¹{((item.mrp - item.price) * item.quantity).toLocaleString('en-IN')}
+                              Save ₹{((item.mrp - item.price) * item.quantity).toLocaleString('en-IN')}
                             </div>
                           )}
                         </div>
@@ -345,7 +345,7 @@ export default function Cart() {
                           to="/try-on"
                           className="text-purple-600 hover:text-purple-700 text-sm font-medium flex items-center gap-1"
                         >
-                          <span>âœ¨</span>
+                          <span>✨</span>
                           Try On Again
                         </Link>
                         <Link 
@@ -367,7 +367,7 @@ export default function Cart() {
                   to="/catalog"
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
-                  Continue Shopping â†’
+                  Continue Shopping →
                 </Link>
               </div>
             </div>
@@ -381,30 +381,30 @@ export default function Cart() {
                 <div className="space-y-4">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                    <span>â‚¹{subtotal.toLocaleString('en-IN')}</span>
+                    <span>₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Discount ({(discount * 100).toFixed(0)}%)</span>
-                      <span>-â‚¹{discountAmount.toLocaleString('en-IN')}</span>
+                      <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between text-gray-600">
                     <span>Shipping</span>
-                    <span>{shipping === 0 ? 'FREE' : `â‚¹${shipping.toLocaleString('en-IN')}`}</span>
+                    <span>{shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`}</span>
                   </div>
                   
                   <div className="flex justify-between text-gray-600">
                     <span>GST (18%)</span>
-                    <span>â‚¹{gst.toLocaleString('en-IN')}</span>
+                    <span>₹{gst.toLocaleString('en-IN')}</span>
                   </div>
                   
                   <div className="border-t pt-4">
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
                       <span>Total</span>
-                      <span>â‚¹{Math.round(total).toLocaleString('en-IN')}</span>
+                      <span>₹{Math.round(total).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
@@ -445,7 +445,7 @@ export default function Cart() {
                 {subtotal < 2000 && subtotal > 0 && (
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      ðŸ’¡ Add â‚¹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping!
+                      ðŸ’¡ Add ₹{(2000 - subtotal).toLocaleString('en-IN')} more for free shipping!
                     </p>
                   </div>
                 )}

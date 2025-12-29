@@ -59,10 +59,10 @@ export class TryOnEngine {
       
       
       this.isInitialized = true;
-      console.log('âœ… Virtual Try-On Engine initialized successfully');
+      console.log('✅ Virtual Try-On Engine initialized successfully');
       
     } catch (error) {
-      console.error('âŒ Failed to initialize Try-On Engine:', error);
+      console.error('❌ Failed to initialize Try-On Engine:', error);
       throw error;
     }
   }
@@ -80,7 +80,7 @@ export class TryOnEngine {
       config
     );
     
-    console.log('âœ… Pose estimation model loaded');
+    console.log('✅ Pose estimation model loaded');
   }
 
   
@@ -94,7 +94,7 @@ export class TryOnEngine {
       }
     );
     
-    console.log('âœ… Body segmentation model loaded');
+    console.log('✅ Body segmentation model loaded');
   }
 
   
@@ -104,7 +104,7 @@ export class TryOnEngine {
       warp: this.warpClothSimulated.bind(this)
     };
     
-    console.log('âœ… Cloth warping model loaded');
+    console.log('✅ Cloth warping model loaded');
   }
 
   
@@ -346,7 +346,7 @@ export class TryOnEngine {
     this.performanceMetrics.latency = frameTime;
 
     if (frameTime > this.config.maxLatency) {
-      console.warn(`âš ï¸ Performance warning: Frame time ${frameTime}ms exceeds target ${this.config.maxLatency}ms`);
+      console.warn(`⚠️ Performance warning: Frame time ${frameTime}ms exceeds target ${this.config.maxLatency}ms`);
     }
   }
 

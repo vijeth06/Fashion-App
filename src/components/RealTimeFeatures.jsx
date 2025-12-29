@@ -548,7 +548,7 @@ export default function RealTimeFeatures() {
                 <div className="flex justify-center gap-4 mb-6">
                   {[
                     { id: 'tryOn', name: 'Try-On Stream', icon: 'ðŸ‘—' },
-                    { id: 'styling', name: 'Styling Session', icon: 'âœ¨' },
+                    { id: 'styling', name: 'Styling Session', icon: '✨' },
                     { id: 'shopping', name: 'Shopping Together', icon: 'ðŸ›ï¸' }
                   ].map(mode => (
                     <button

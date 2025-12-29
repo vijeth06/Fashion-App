@@ -189,7 +189,7 @@ const Wishlist = () => {
     try {
       const shareData = {
         title: `Check out this amazing ${item.name}!`,
-        text: `I found this on Virtual Fashion: ${item.name} - â‚¹${item.price ? item.price.toLocaleString() : '0'}`,
+        text: `I found this on Virtual Fashion: ${item.name} - ₹${item.price ? item.price.toLocaleString() : '0'}`,
         url: `${window.location.origin}/product/${item.productId}`
       };
 
@@ -574,11 +574,11 @@ const Wishlist = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl font-bold text-purple-600">
-                          â‚¹{item.price ? item.price.toLocaleString() : '0'}
+                          ₹{item.price ? item.price.toLocaleString() : '0'}
                         </span>
                         {item.originalPrice && item.originalPrice > item.price && (
                           <span className="text-sm text-gray-500 line-through">
-                            â‚¹{item.originalPrice ? item.originalPrice.toLocaleString() : '0'}
+                            ₹{item.originalPrice ? item.originalPrice.toLocaleString() : '0'}
                           </span>
                         )}
                       </div>

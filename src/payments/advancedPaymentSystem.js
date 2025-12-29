@@ -35,7 +35,7 @@ export class AdvancedPaymentSystem {
       await this.walletIntegration.initialize(config.wallets);
       
       this.isInitialized = true;
-      console.log('âœ… Advanced Payment System initialized successfully');
+      console.log('✅ Advanced Payment System initialized successfully');
       
       return {
         success: true,
@@ -43,7 +43,7 @@ export class AdvancedPaymentSystem {
         supportedMethods: this.getSupportedPaymentMethods()
       };
     } catch (error) {
-      console.error('âŒ Payment System initialization failed:', error);
+      console.error('❌ Payment System initialization failed:', error);
       throw new Error('Advanced Payment System initialization failed');
     }
   }

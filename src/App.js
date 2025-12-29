@@ -179,7 +179,7 @@ const DatabaseTestPage = () => {
             <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-4xl mx-auto">
               {connectionStatus?.connected ? (
                 <div className="text-center">
-                  <div className="text-6xl mb-4">âœ…</div>
+                  <div className="text-6xl mb-4">✅</div>
                   <h2 className="text-2xl font-bold text-green-400 mb-4">Database Connected Successfully!</h2>
                   <p className="text-gray-300 mb-6">MongoDB connection established and collections initialized.</p>
                   
@@ -198,7 +198,7 @@ const DatabaseTestPage = () => {
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="text-6xl mb-4">âŒ</div>
+                  <div className="text-6xl mb-4">❌</div>
                   <h2 className="text-2xl font-bold text-red-400 mb-4">Database Connection Failed</h2>
                   <p className="text-gray-300 mb-4">Unable to connect to MongoDB database.</p>
                   <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
@@ -236,7 +236,7 @@ class ErrorBoundary extends Component {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
           <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg text-center">
-            <div className="text-6xl mb-4">âš ï¸</div>
+            <div className="text-6xl mb-4">⚠️</div>
             <h1 className="text-2xl font-bold mb-2">Something went wrong</h1>
             <p className="text-gray-600 mb-6">
               We're sorry, but an unexpected error occurred. Please try again later.
@@ -382,7 +382,7 @@ const QuantumTryOnPageWrapper = () => {
                 </h4>
                 <p className="text-gray-400 text-xs truncate">{item.brand}</p>
                 <p className="text-orange-400 text-xs font-bold">
-                  â‚¹{item.price.selling.toLocaleString('en-IN')}
+                  ₹{item.price.selling.toLocaleString('en-IN')}
                 </p>
 
                 <div className="absolute top-2 right-2 flex flex-col space-y-1">
@@ -417,7 +417,7 @@ const QuantumTryOnPageWrapper = () => {
             ))}
           </div>
           <p className="text-gray-400 text-sm mt-4 text-center">
-            Select an item to experience quantum fabric simulation â€¢ à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤° à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾
+            Select an item to experience quantum fabric simulation • à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤° à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾
             à¤¸à¤¿à¤®à¥à¤²à¥‡à¤¶à¤¨ à¤•à¤¾ à¤…à¤¨à¥à¤­à¤µ à¤•à¤°à¥‡à¤‚
           </p>
         </div>

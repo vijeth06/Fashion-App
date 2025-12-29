@@ -99,7 +99,7 @@ const QuantumTryOnPage = () => {
                 </h4>
                 <p className="text-gray-400 text-xs truncate">{item.brand}</p>
                 <p className="text-orange-400 text-xs font-bold">
-                  â‚¹{item.price.selling.toLocaleString('en-IN')}
+                  ₹{item.price.selling.toLocaleString('en-IN')}
                 </p>
 
                 {}
@@ -136,7 +136,7 @@ const QuantumTryOnPage = () => {
             ))}
           </div>
           <p className="text-gray-400 text-sm mt-4 text-center">
-            Select an item to experience quantum fabric simulation â€¢ à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤°
+            Select an item to experience quantum fabric simulation • à¤†à¤‡à¤Ÿà¤® à¤šà¥à¤¨à¥‡à¤‚ à¤”à¤°
             à¤•à¥à¤µà¤¾à¤‚à¤Ÿà¤® à¤•à¤ªà¤¡à¤¼à¤¾ à¤¸à¤¿à¤®à¥à¤²à¥‡à¤¶à¤¨ à¤•à¤¾ à¤…à¤¨à¥à¤­à¤µ à¤•à¤°à¥‡à¤‚
           </p>
         </div>

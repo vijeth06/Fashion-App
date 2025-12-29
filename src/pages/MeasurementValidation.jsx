@@ -160,24 +160,24 @@ const MeasurementValidation = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-semibold text-red-400 mb-3">âŒ Previous Issues:</h3>
+              <h3 className="text-lg font-semibold text-red-400 mb-3">❌ Previous Issues:</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>â€¢ Chest: 104,497 cm (over 1 kilometer!)</li>
-                <li>â€¢ Waist: 55,489 cm (555 meters)</li>
-                <li>â€¢ Hips: 63,416 cm (634 meters)</li>
-                <li>â€¢ No validation or range checking</li>
-                <li>â€¢ Arbitrary pixel multipliers (Ã—100, Ã—150)</li>
+                <li>• Chest: 104,497 cm (over 1 kilometer!)</li>
+                <li>• Waist: 55,489 cm (555 meters)</li>
+                <li>• Hips: 63,416 cm (634 meters)</li>
+                <li>• No validation or range checking</li>
+                <li>• Arbitrary pixel multipliers (×100, ×150)</li>
               </ul>
             </div>
             
             <div>
-              <h3 className="text-lg font-semibold text-green-400 mb-3">âœ… Fixed Implementation:</h3>
+              <h3 className="text-lg font-semibold text-green-400 mb-3">✅ Fixed Implementation:</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>â€¢ Realistic measurement ranges (70-130 cm chest)</li>
-                <li>â€¢ Proper validation and error detection</li>
-                <li>â€¢ Scaled pixel calculations (Ã—0.4-0.8 factors)</li>
-                <li>â€¢ Confidence scoring based on realistic ranges</li>
-                <li>â€¢ Protection against corrupted/incorrect data</li>
+                <li>• Realistic measurement ranges (70-130 cm chest)</li>
+                <li>• Proper validation and error detection</li>
+                <li>• Scaled pixel calculations (×0.4-0.8 factors)</li>
+                <li>• Confidence scoring based on realistic ranges</li>
+                <li>• Protection against corrupted/incorrect data</li>
               </ul>
             </div>
           </div>
