@@ -1,5 +1,5 @@
 ﻿
-
+import * as tf from '@tensorflow/tfjs';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
 export class EnhancedPoseDetection {
@@ -31,7 +31,9 @@ export class EnhancedPoseDetection {
     if (this.isInitialized) return;
 
     try {
-      console.log('ðŸ•º Initializing Enhanced Pose Detection...');
+      console.log('🕛 Initializing Enhanced Pose Detection...');
+
+      await this.initializeBackend();
       
       const detectorConfig = {
         modelType: poseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
@@ -45,12 +47,34 @@ export class EnhancedPoseDetection {
       );
       
       this.isInitialized = true;
-      console.log('âœ… Enhanced Pose Detection initialized');
+      console.log('✅ Enhanced Pose Detection initialized');
       
     } catch (error) {
-      console.error('âŒ Failed to initialize pose detection:', error);
+      console.error('❌ Failed to initialize pose detection:', error);
       throw error;
     }
+  }
+
+
+  async initializeBackend() {
+    await tf.ready();
+
+    const preferredBackends = ['webgpu', 'webgl', 'wasm', 'cpu'];
+
+    for (const backend of preferredBackends) {
+      try {
+        if (tf.getBackend() !== backend) {
+          await tf.setBackend(backend);
+        }
+        await tf.ready();
+        console.log(`TensorFlow.js backend set to: ${tf.getBackend()}`);
+        return tf.getBackend();
+      } catch (error) {
+        console.warn(`Backend ${backend} failed, trying next:`, error?.message || error);
+      }
+    }
+
+    throw new Error('No TensorFlow.js backend could be initialized');
   }
 
   

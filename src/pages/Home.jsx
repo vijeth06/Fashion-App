@@ -372,7 +372,7 @@ export default function Home() {
               {
                 title: "AI NEURAL SCAN",
                 description: "Quantum body mapping with molecular precision",
-                icon: "ðŸ§ ",
+                icon: "🧠",
                 gradient: "from-rose-400 to-orange-400",
                 borderColor: "border-rose-400/30",
                 step: "01"
@@ -380,7 +380,7 @@ export default function Home() {
               {
                 title: "HOLO PROJECTION",
                 description: "Real-time 4D clothing visualization",
-                icon: "ðŸ”®",
+                icon: "🔮",
                 gradient: "from-fuchsia-400 to-violet-500", 
                 borderColor: "border-fuchsia-400/30",
                 step: "02"
@@ -388,7 +388,7 @@ export default function Home() {
               {
                 title: "QUANTUM FITTING",
                 description: "Molecular fabric simulation technology",
-                icon: "âš¡",
+                icon: "⚡",
                 gradient: "from-sky-400 to-cyan-500",
                 borderColor: "border-sky-400/30",
                 step: "03"

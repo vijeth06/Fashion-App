@@ -172,7 +172,7 @@ export default function FeatureShowcase() {
             transition={{ duration: 10, repeat: Infinity }}
             className="inline-block px-8 py-3 text-white rounded-2xl font-bold text-lg shadow-lg"
           >
-            âœ¨ Experience Virtual Fashion Try-On
+            ✨ Experience Virtual Fashion Try-On
           </motion.div>
         </motion.div>
 

@@ -29,9 +29,13 @@ const ARTryOn = ({
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const rafIdRef = useRef(null);
+  const lastPoseTimeRef = useRef(0);
+  const isMountedRef = useRef(false);
   
   const [isRecording, setIsRecording] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [status, setStatus] = useState('idle');
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [currentGarment, setCurrentGarment] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -54,8 +58,16 @@ const ARTryOn = ({
     accessories: []
   });
 
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const initializeAR = async () => {
     try {
+      if (isCameraActive) return;
 
       if ('xr' in navigator) {
         const isSupported = await navigator.xr.isSessionSupported('immersive-ar');
@@ -65,6 +77,8 @@ const ARTryOn = ({
           console.log('WebXR AR not supported, falling back to camera');
         }
       }
+
+      setStatus('initializing');
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -83,44 +97,59 @@ const ARTryOn = ({
 
       await initializePoseDetection();
 
+      setStatus('tracking');
+
     } catch (error) {
       console.error('Error initializing AR:', error);
       alert('Camera access is required for AR try-on. Please allow camera permissions.');
+      setStatus('error');
     }
   };
 
   const initializePoseDetection = async () => {
     try {
       await enhancedPoseDetection.initialize();
-      console.log('âœ… Real pose detection initialized with TensorFlow.js');
+      console.log('✅ Real pose detection initialized with TensorFlow.js');
+      setStatus('pose-ready');
 
       startPoseDetectionLoop();
     } catch (error) {
       console.error('Failed to initialize pose detection:', error);
+      setStatus('pose-error');
     }
   };
 
   const startPoseDetectionLoop = () => {
-    const detectPose = async () => {
-      if (videoRef.current && videoRef.current.readyState === 4) {
-        try {
-          const poseData = await enhancedPoseDetection.detectPose(videoRef.current);
-          
-          if (poseData.success && canvasRef.current) {
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
 
-            drawPoseAndGarments(poseData);
+    const targetFrameMs = 1000 / 30;
+
+    const detectPose = async (timestamp) => {
+      if (!isMountedRef.current || !isCameraActive) return;
+
+      if (videoRef.current && videoRef.current.readyState >= 2) {
+        if (timestamp - lastPoseTimeRef.current >= targetFrameMs) {
+          lastPoseTimeRef.current = timestamp;
+
+          try {
+            const poseData = await enhancedPoseDetection.detectPose(videoRef.current);
+            
+            if (poseData.success && canvasRef.current) {
+              drawPoseAndGarments(poseData);
+            }
+          } catch (error) {
+            console.error('Pose detection error:', error);
           }
-        } catch (error) {
-          console.error('Pose detection error:', error);
         }
       }
 
-      if (isCameraActive) {
-        requestAnimationFrame(detectPose);
-      }
+      rafIdRef.current = requestAnimationFrame(detectPose);
     };
     
-    detectPose();
+    rafIdRef.current = requestAnimationFrame(detectPose);
   };
 
   const drawPoseAndGarments = (poseData) => {
@@ -420,11 +449,19 @@ const ARTryOn = ({
   };
 
   const cleanup = () => {
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+
+    enhancedPoseDetection.dispose?.();
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     setIsCameraActive(false);
+    setStatus('idle');
   };
 
   useEffect(() => {
