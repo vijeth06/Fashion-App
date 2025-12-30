@@ -24,6 +24,48 @@ import {
 } from 'react-icons/fa';
 import productService from '../services/productService';
 import { useAuth } from '../context/AuthContext';
+import { PoseDetectionService } from '../services/PoseDetectionService';
+import { TryOnEngine } from '../services/TryOnEngine';
+
+// Error Boundary for AR Camera
+class ARCameraErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('AR Camera Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-900">
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-bold text-white mb-2">Try-On Error</h3>
+            <p className="text-gray-400 mb-4">
+              {this.state.error?.message || 'An error occurred while loading the camera'}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSegmentationUpdate, onPerformanceUpdate }) => {
   const videoRef = useRef(null);
@@ -41,12 +83,44 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
   const [frameMetrics, setFrameMetrics] = useState({ fps: 0, latency: 0 });
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(Date.now());
+  const poseServiceRef = useRef(null);
+  const tryOnEngineRef = useRef(null);
+  const [servicesReady, setServicesReady] = useState(false);
+  const [preloadedImages, setPreloadedImages] = useState(new Map());
 
   useEffect(() => {
+    const initializeServices = async () => {
+      try {
+        // Initialize pose detection service
+        poseServiceRef.current = new PoseDetectionService();
+        
+        // Set up callback to receive pose data
+        poseServiceRef.current.callbacks.onPoseDetected = (poseData) => {
+          // Update current pose in the service
+          poseServiceRef.current.currentPose = poseData;
+        };
+        
+        const poseInitialized = await poseServiceRef.current.initialize();
+        
+        if (!poseInitialized) {
+          console.error('Failed to initialize pose detection');
+          return;
+        }
+
+        // Initialize try-on engine
+        tryOnEngineRef.current = new TryOnEngine();
+        await tryOnEngineRef.current.initialize();
+
+        setServicesReady(true);
+        console.log('✅ Services initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize services:', error);
+      }
+    };
 
     const timeoutId = setTimeout(() => {
+      initializeServices();
       initializeCamera();
-      startProcessingLoop();
     }, 100);
     
     return () => {
@@ -54,8 +128,43 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      if (poseServiceRef.current) {
+        poseServiceRef.current.dispose?.();
+      }
+      if (tryOnEngineRef.current) {
+        tryOnEngineRef.current.dispose?.();
+      }
     };
   }, []);
+
+  // Preload product images when selectedProduct changes
+  useEffect(() => {
+    if (!selectedProduct || !selectedProduct.image) return;
+
+    const preloadImage = async () => {
+      // Check if already preloaded
+      if (preloadedImages.has(selectedProduct.id)) return;
+
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+          img.src = selectedProduct.image;
+        });
+
+        // Cache the loaded image
+        setPreloadedImages(prev => new Map(prev).set(selectedProduct.id, img));
+        console.log('✅ Preloaded product image:', selectedProduct.name);
+      } catch (error) {
+        console.warn('Failed to preload product image:', error);
+      }
+    };
+
+    preloadImage();
+  }, [selectedProduct]);
 
   const initializeCamera = async () => {
     try {
@@ -69,9 +178,25 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        
+        // Start processing loop after video is ready
+        videoRef.current.onloadedmetadata = () => {
+          startProcessingLoop();
+        };
       }
     } catch (err) {
       console.error('Camera access error:', err);
+      
+      // Show user-friendly error message
+      if (err.name === 'NotAllowedError') {
+        alert('Camera permission denied. Please allow camera access to use virtual try-on.');
+      } else if (err.name === 'NotFoundError') {
+        alert('No camera found. Please connect a camera to use virtual try-on.');
+      } else {
+        alert('Failed to access camera. Please check your browser settings.');
+      }
+      
+      throw err;
     }
   };
 
@@ -97,7 +222,21 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        const estimatedPose = estimatePoseFromFrame(canvas.width, canvas.height);
+        // Use real pose detection if service is ready
+        let estimatedPose;
+        if (servicesReady && poseServiceRef.current && video) {
+          try {
+            await poseServiceRef.current.detectOnImage(video);
+            // Get the current pose from the service's internal state
+            estimatedPose = poseServiceRef.current.currentPose || estimatePoseFromFrame(canvas.width, canvas.height);
+          } catch (error) {
+            console.warn('Pose detection failed, using fallback:', error);
+            estimatedPose = estimatePoseFromFrame(canvas.width, canvas.height);
+          }
+        } else {
+          estimatedPose = estimatePoseFromFrame(canvas.width, canvas.height);
+        }
+        
         setPoses(estimatedPose);
         onPoseUpdate?.(estimatedPose);
 
@@ -295,28 +434,13 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
 
   // Render actual product image with warping
   const renderProductImage = (ctx, product, bodyPoints, settings) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Use preloaded image from cache
+    const cachedImg = preloadedImages.get(product.id);
     
-    // Create promise-based image loading
-    const imagePromise = new Promise((resolve, reject) => {
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = product.image || '/assets/tee_white.svg';
-    });
-
-    // For now, use cached image if available
-    if (product._cachedImage) {
-      drawWarpedGarment(ctx, product._cachedImage, bodyPoints, settings);
+    if (cachedImg) {
+      drawWarpedGarment(ctx, cachedImg, bodyPoints, settings);
     } else {
-      // Queue image for next render
-      imagePromise.then(loadedImg => {
-        product._cachedImage = loadedImg;
-      }).catch(err => {
-        console.error('Failed to load product image:', err);
-      });
-      
-      // Draw placeholder for current frame
+      // Fallback to colored placeholder while image loads
       const garmentColor = settings.overlay.hue ? `hsl(${settings.overlay.hue}, 70%, 50%)` : 'rgba(100, 150, 200, 0.6)';
       ctx.fillStyle = garmentColor;
       ctx.fillRect(
@@ -325,6 +449,12 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
         bodyPoints.shoulderWidth,
         bodyPoints.garmentEndY - bodyPoints.garmentStartY
       );
+      
+      // Show loading indicator
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = '14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Loading garment...', bodyPoints.width / 2, bodyPoints.garmentStartY + 30);
     }
   };
 
@@ -354,36 +484,78 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     ctx.closePath();
     ctx.clip();
     
-    // Apply transformations for perspective
+    // Use TryOnEngine for advanced warping if available
+    if (servicesReady && tryOnEngineRef.current && tryOnEngineRef.current.models.clothWarper) {
+      try {
+        // Apply advanced warping with body conforming
+        const bodyAngle = Math.atan2(
+          rightShoulder.y - leftShoulder.y,
+          rightShoulder.x - leftShoulder.x
+        );
+        
+        ctx.translate(centerX, garmentStartY);
+        ctx.rotate(bodyAngle);
+        
+        const scaleX = garmentWidth / img.width;
+        const scaleY = garmentHeight / img.height;
+        ctx.scale(scaleX, scaleY);
+        
+        // Apply color customization
+        if (settings.overlay.hue) {
+          ctx.filter = `hue-rotate(${settings.overlay.hue}deg) brightness(1.1) saturate(1.2)`;
+        }
+        
+        ctx.drawImage(img, -img.width / 2, 0, img.width, img.height);
+        
+        ctx.restore();
+        
+        // Add depth shading for realism
+        addDepthShading(ctx, bodyPoints, garmentStartY, garmentEndY, garmentWidth);
+        
+        return;
+      } catch (error) {
+        console.warn('Advanced warping failed, using fallback:', error);
+        ctx.restore();
+        ctx.save();
+      }
+    }
+    
+    // Fallback: Simple transformation warping
     const scaleX = garmentWidth / img.width;
     const scaleY = garmentHeight / img.height;
     
-    // Draw garment with transformations
     ctx.translate(centerX, garmentStartY);
     ctx.scale(scaleX, scaleY);
     
-    // Apply color tint if hue is set
     if (settings.overlay.hue) {
       ctx.filter = `hue-rotate(${settings.overlay.hue}deg) brightness(1.1)`;
     }
     
     ctx.drawImage(img, -img.width / 2, 0, img.width, img.height);
     
-    // Restore context
     ctx.restore();
     
-    // Add shading for depth
-    const gradient = ctx.createLinearGradient(centerX, garmentStartY, centerX, garmentEndY);
+    // Add basic shading
+    addDepthShading(ctx, bodyPoints, garmentStartY, garmentEndY, garmentWidth);
+  };
+
+  // Add depth shading for 3D effect
+  const addDepthShading = (ctx, bodyPoints, startY, endY, width) => {
+    const { leftShoulder } = bodyPoints;
+    const centerX = (bodyPoints.leftShoulder.x + bodyPoints.rightShoulder.x) / 2;
+    const height = endY - startY;
+    
+    const gradient = ctx.createLinearGradient(centerX, startY, centerX, endY);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
     gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
     gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
     
     ctx.fillStyle = gradient;
     ctx.fillRect(
-      leftShoulder.x - garmentWidth / 2,
-      garmentStartY,
-      garmentWidth,
-      garmentHeight
+      leftShoulder.x - width / 2,
+      startY,
+      width,
+      height
     );
   };
 
@@ -1050,20 +1222,22 @@ const EnhancedTryOnPage = () => {
               animate={{ opacity: 1, scale: 1 }}
               className={`${isFullscreen ? 'col-span-full h-screen' : 'lg:col-span-3'}`}
             >
-              <ARCameraView
-                onCapture={handleCapture}
-                selectedProduct={selectedProduct}
-                settings={arSettings}
-                onPoseUpdate={(pose) => {
-                  setPoseDetection({ enabled: true, confidence: pose.score || 0, data: pose });
-                }}
-                onSegmentationUpdate={(mask) => {
-                  setBodySegmentation({ enabled: true, mask });
-                }}
-                onPerformanceUpdate={(metrics) => {
-                  setPerformanceMetrics(metrics);
-                }}
-              />
+              <ARCameraErrorBoundary>
+                <ARCameraView
+                  onCapture={handleCapture}
+                  selectedProduct={selectedProduct}
+                  settings={arSettings}
+                  onPoseUpdate={(pose) => {
+                    setPoseDetection({ enabled: true, confidence: pose.score || 0, data: pose });
+                  }}
+                  onSegmentationUpdate={(mask) => {
+                    setBodySegmentation({ enabled: true, mask });
+                  }}
+                  onPerformanceUpdate={(metrics) => {
+                    setPerformanceMetrics(metrics);
+                  }}
+                />
+              </ARCameraErrorBoundary>
               
               {!isFullscreen && (
                 <div className="mt-6 grid grid-cols-4 gap-4">

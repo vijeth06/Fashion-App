@@ -1,5 +1,4 @@
-﻿
-const indianFashionProducts = [
+﻿const indianFashionProducts = [
 
   {
     productId: 'PROD-KUR-001',
