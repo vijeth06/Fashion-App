@@ -198,6 +198,8 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
 
     const leftShoulder = pose.keypoints.find(k => k.name === 'leftShoulder');
     const rightShoulder = pose.keypoints.find(k => k.name === 'rightShoulder');
+    const leftElbow = pose.keypoints.find(k => k.name === 'leftElbow');
+    const rightElbow = pose.keypoints.find(k => k.name === 'rightElbow');
     const leftHip = pose.keypoints.find(k => k.name === 'leftHip');
     const rightHip = pose.keypoints.find(k => k.name === 'rightHip');
 
@@ -206,66 +208,244 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
       return;
     }
 
+    // Calculate body measurements from pose
     const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
     const shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
     const hipWidth = leftHip && rightHip ? Math.abs(rightHip.x - leftHip.x) : shoulderWidth * 0.9;
+    
+    // Adjust garment size based on fit mode
+    const fitMode = settings.fitMode || 'regular';
+    const fitMultiplier = fitMode === 'loose' ? 1.2 : fitMode === 'tight' ? 0.9 : 1.0;
+    const adjustedShoulderWidth = shoulderWidth * fitMultiplier;
+    const adjustedHipWidth = hipWidth * fitMultiplier;
+    
     const garmentHeight = height * 0.45;
     const garmentStartY = shoulderY;
     const garmentEndY = garmentStartY + garmentHeight;
 
-    const fitMode = settings.fitMode || 'regular';
+    // Try to load and render actual product image if available
+    if (product && product.image) {
+      try {
+        renderProductImage(ctx, product, {
+          leftShoulder,
+          rightShoulder,
+          leftElbow,
+          rightElbow,
+          leftHip,
+          rightHip,
+          shoulderWidth: adjustedShoulderWidth,
+          hipWidth: adjustedHipWidth,
+          garmentStartY,
+          garmentEndY,
+          width,
+          height
+        }, settings);
+        ctx.globalAlpha = 1;
+        return;
+      } catch (error) {
+        console.warn('Failed to render product image, falling back to shape overlay:', error);
+      }
+    }
+
+    // Fallback: render colored shape overlay
     const garmentColor = settings.overlay.hue ? `hsl(${settings.overlay.hue}, 70%, 50%)` : 'rgba(100, 150, 200, 0.8)';
     
     ctx.fillStyle = garmentColor;
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.lineWidth = 2;
 
-    const leftSX = leftShoulder.x - shoulderWidth / 2;
-    const rightSX = rightShoulder.x + shoulderWidth / 2;
-    const leftHX = leftShoulder.x - hipWidth / 2;
-    const rightHX = rightShoulder.x + hipWidth / 2;
+    const leftSX = leftShoulder.x - adjustedShoulderWidth / 2;
+    const rightSX = rightShoulder.x + adjustedShoulderWidth / 2;
+    const leftHX = leftShoulder.x - adjustedHipWidth / 2;
+    const rightHX = rightShoulder.x + adjustedHipWidth / 2;
 
+    // Draw garment body with smooth curves
     ctx.beginPath();
     ctx.moveTo(leftSX, garmentStartY);
-    ctx.lineTo(rightSX, garmentStartY);
+    ctx.bezierCurveTo(
+      leftSX, garmentStartY - 10,
+      rightSX, garmentStartY - 10,
+      rightSX, garmentStartY
+    );
     ctx.lineTo(rightHX, garmentEndY);
-    ctx.lineTo(leftHX, garmentEndY);
+    ctx.bezierCurveTo(
+      rightHX, garmentEndY + 5,
+      leftHX, garmentEndY + 5,
+      leftHX, garmentEndY
+    );
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
-    drawSleeves(ctx, leftShoulder, rightShoulder, settings, width, height);
+    // Add texture pattern
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      const y = garmentStartY + (garmentHeight * i / 5);
+      ctx.beginPath();
+      ctx.moveTo(leftSX, y);
+      ctx.lineTo(rightHX, y);
+      ctx.stroke();
+    }
+
+    drawSleeves(ctx, leftShoulder, rightShoulder, leftElbow, rightElbow, settings, width, height);
 
     ctx.globalAlpha = 1;
   };
 
-  const drawSleeves = (ctx, leftShoulder, rightShoulder, settings, width, height) => {
+  // Render actual product image with warping
+  const renderProductImage = (ctx, product, bodyPoints, settings) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    // Create promise-based image loading
+    const imagePromise = new Promise((resolve, reject) => {
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = product.image || '/assets/tee_white.svg';
+    });
+
+    // For now, use cached image if available
+    if (product._cachedImage) {
+      drawWarpedGarment(ctx, product._cachedImage, bodyPoints, settings);
+    } else {
+      // Queue image for next render
+      imagePromise.then(loadedImg => {
+        product._cachedImage = loadedImg;
+      }).catch(err => {
+        console.error('Failed to load product image:', err);
+      });
+      
+      // Draw placeholder for current frame
+      const garmentColor = settings.overlay.hue ? `hsl(${settings.overlay.hue}, 70%, 50%)` : 'rgba(100, 150, 200, 0.6)';
+      ctx.fillStyle = garmentColor;
+      ctx.fillRect(
+        bodyPoints.leftShoulder.x - bodyPoints.shoulderWidth / 2,
+        bodyPoints.garmentStartY,
+        bodyPoints.shoulderWidth,
+        bodyPoints.garmentEndY - bodyPoints.garmentStartY
+      );
+    }
+  };
+
+  // Warp garment to fit body pose
+  const drawWarpedGarment = (ctx, img, bodyPoints, settings) => {
+    const { leftShoulder, rightShoulder, leftHip, rightHip, garmentStartY, garmentEndY } = bodyPoints;
+    
+    // Calculate garment dimensions
+    const garmentWidth = bodyPoints.shoulderWidth;
+    const garmentHeight = garmentEndY - garmentStartY;
+    const centerX = (leftShoulder.x + rightShoulder.x) / 2;
+    
+    // Save context state
+    ctx.save();
+    
+    // Create clipping region to prevent overflow
+    ctx.beginPath();
+    ctx.moveTo(leftShoulder.x - garmentWidth / 2, garmentStartY);
+    ctx.lineTo(rightShoulder.x + garmentWidth / 2, garmentStartY);
+    if (leftHip && rightHip) {
+      ctx.lineTo(rightHip.x + bodyPoints.hipWidth / 2, garmentEndY);
+      ctx.lineTo(leftHip.x - bodyPoints.hipWidth / 2, garmentEndY);
+    } else {
+      ctx.lineTo(rightShoulder.x + garmentWidth / 2, garmentEndY);
+      ctx.lineTo(leftShoulder.x - garmentWidth / 2, garmentEndY);
+    }
+    ctx.closePath();
+    ctx.clip();
+    
+    // Apply transformations for perspective
+    const scaleX = garmentWidth / img.width;
+    const scaleY = garmentHeight / img.height;
+    
+    // Draw garment with transformations
+    ctx.translate(centerX, garmentStartY);
+    ctx.scale(scaleX, scaleY);
+    
+    // Apply color tint if hue is set
+    if (settings.overlay.hue) {
+      ctx.filter = `hue-rotate(${settings.overlay.hue}deg) brightness(1.1)`;
+    }
+    
+    ctx.drawImage(img, -img.width / 2, 0, img.width, img.height);
+    
+    // Restore context
+    ctx.restore();
+    
+    // Add shading for depth
+    const gradient = ctx.createLinearGradient(centerX, garmentStartY, centerX, garmentEndY);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+    gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(
+      leftShoulder.x - garmentWidth / 2,
+      garmentStartY,
+      garmentWidth,
+      garmentHeight
+    );
+  };
+
+  const drawSleeves = (ctx, leftShoulder, rightShoulder, leftElbow, rightElbow, settings, width, height) => {
     const sleeveLength = height * 0.25;
     const sleeveWidth = width * 0.08;
     
+    // Use elbow position if available for more realistic sleeves
+    const leftSleeveEnd = leftElbow || { x: leftShoulder.x - sleeveWidth, y: leftShoulder.y + sleeveLength };
+    const rightSleeveEnd = rightElbow || { x: rightShoulder.x + sleeveWidth, y: rightShoulder.y + sleeveLength };
+    
     ctx.fillStyle = 'rgba(80, 120, 180, 0.7)';
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.lineWidth = 1;
 
+    // Left sleeve with curved path following arm
     ctx.beginPath();
-    ctx.arc(leftShoulder.x, leftShoulder.y, sleeveWidth, 0, Math.PI * 2);
+    ctx.arc(leftShoulder.x, leftShoulder.y, sleeveWidth / 2, 0, Math.PI * 2);
     ctx.fill();
     
-    ctx.fillRect(
-      leftShoulder.x - sleeveWidth / 2,
-      leftShoulder.y,
-      sleeveWidth,
-      sleeveLength
+    ctx.beginPath();
+    ctx.moveTo(leftShoulder.x - sleeveWidth / 2, leftShoulder.y);
+    ctx.quadraticCurveTo(
+      leftShoulder.x - sleeveWidth,
+      (leftShoulder.y + leftSleeveEnd.y) / 2,
+      leftSleeveEnd.x - sleeveWidth / 3,
+      leftSleeveEnd.y
     );
+    ctx.lineTo(leftSleeveEnd.x + sleeveWidth / 3, leftSleeveEnd.y);
+    ctx.quadraticCurveTo(
+      leftShoulder.x,
+      (leftShoulder.y + leftSleeveEnd.y) / 2,
+      leftShoulder.x + sleeveWidth / 2,
+      leftShoulder.y
+    );
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
 
+    // Right sleeve with curved path following arm
     ctx.beginPath();
-    ctx.arc(rightShoulder.x, rightShoulder.y, sleeveWidth, 0, Math.PI * 2);
+    ctx.arc(rightShoulder.x, rightShoulder.y, sleeveWidth / 2, 0, Math.PI * 2);
     ctx.fill();
     
-    ctx.fillRect(
+    ctx.beginPath();
+    ctx.moveTo(rightShoulder.x + sleeveWidth / 2, rightShoulder.y);
+    ctx.quadraticCurveTo(
+      rightShoulder.x + sleeveWidth,
+      (rightShoulder.y + rightSleeveEnd.y) / 2,
+      rightSleeveEnd.x + sleeveWidth / 3,
+      rightSleeveEnd.y
+    );
+    ctx.lineTo(rightSleeveEnd.x - sleeveWidth / 3, rightSleeveEnd.y);
+    ctx.quadraticCurveTo(
+      rightShoulder.x,
+      (rightShoulder.y + rightSleeveEnd.y) / 2,
       rightShoulder.x - sleeveWidth / 2,
-      rightShoulder.y,
-      sleeveWidth,
-      sleeveLength
+      rightShoulder.y
     );
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
   };
 
   const drawPoseLandmarks = (ctx, pose, width, height) => {

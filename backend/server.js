@@ -5,6 +5,23 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
+const admin = require('firebase-admin');
+
+// Initialize Firebase Admin SDK
+try {
+  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH || './firebase-service-account.json';
+  const serviceAccount = require(serviceAccountPath);
+  
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+  
+  console.log('✅ Firebase Admin SDK initialized successfully');
+} catch (error) {
+  console.error('❌ Firebase Admin SDK initialization failed:', error.message);
+  console.error('⚠️  Protected routes requiring authentication will not work');
+  console.error('💡 Make sure firebase-service-account.json exists in the backend folder');
+}
 
 // Import configuration and services
 const config = require('./config/database');

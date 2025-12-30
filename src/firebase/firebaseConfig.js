@@ -19,14 +19,21 @@ import {
 import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCxxARYzK6iHujKnh6aHhlGrvE4EYQPugM",
-  authDomain: "virtual-fashion-tryon.firebaseapp.com",
-  projectId: "virtual-fashion-tryon",
-  storageBucket: "virtual-fashion-tryon.appspot.com",  // Fixed storage bucket URL
-  messagingSenderId: "137777083432",
-  appId: "1:137777083432:web:f5f1dd51f3bbe859f2b11d"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
+
+// Validate Firebase configuration
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  console.error('❌ Firebase configuration is missing! Check your .env file.');
+  console.error('💡 Required variables: REACT_APP_FIREBASE_API_KEY, REACT_APP_FIREBASE_PROJECT_ID, etc.');
+}
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);

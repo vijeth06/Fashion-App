@@ -29,6 +29,7 @@ import NeuralInterface from './pages/NeuralInterface';
 import BiometricAnalysis from './pages/BiometricAnalysis';
 import VirtualTryOn from './pages/VirtualTryOn';
 import SmartVirtualTryOn from './pages/SmartVirtualTryOn';
+import QuantumTryOnPage from './pages/QuantumTryOnPage';
 
 import QuantumTryOn from './components/QuantumTryOn';
 import MetaverseIntegration from './components/MetaverseIntegration';

@@ -6,7 +6,7 @@ require('dotenv').config();
 const config = {
   // MongoDB Atlas Configuration
   mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb+srv://vijeth:2006@wtlab.9b3zqxr.mongodb.net/vf_tryon_db?retryWrites=true&w=majority',
+    uri: process.env.MONGODB_URI,
     options: {
       maxPoolSize: 10,
       minPoolSize: 2,
@@ -38,15 +38,23 @@ const config = {
 
   // File Upload Configuration
   upload: {
-    maxSize: 10 * 1024 * 1024, // 10MB
-    allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    maxSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024, // 10MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    directory: process.env.UPLOAD_DIR || './uploads'
   },
 
   // API Configuration
   api: {
-    version: 'v1',
-    prefix: '/api'
+    version: process.env.API_VERSION || 'v1',
+    prefix: process.env.API_PREFIX || '/api'
   }
 };
+
+// Validate critical configuration
+if (!config.mongodb.uri) {
+  console.error('❌ MONGODB_URI is not set in environment variables!');
+  console.error('💡 Please create a .env file in the backend folder with MONGODB_URI');
+  process.exit(1);
+}
 
 module.exports = config;
