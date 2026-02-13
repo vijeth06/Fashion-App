@@ -2,6 +2,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
 import userService from '../services/userService';
+import wishlistService from '../services/wishlistService';
 import { useAuth } from '../context/AuthContext';
 import { useOutfit } from '../context/OutfitContext';
 
@@ -31,8 +32,8 @@ export default function ProductDetails() {
           setProduct(data.product);
 
           if (user?.uid) {
-            const wishlist = await userService.getWishlist(user.uid);
-            const isInWishlist = wishlist.wishlist?.some(item => 
+            const wishlist = await wishlistService.getWishlist(user.uid);
+            const isInWishlist = wishlist.data?.items?.some(item => 
               item.productId === data.product.productId
             );
             setIsFavorite(isInWishlist);
@@ -92,10 +93,12 @@ export default function ProductDetails() {
     }
     try {
       const productId = product.productId || product._id;
+      const price = product.pricing?.selling || product.price?.selling || product.price || 0;
       await userService.addToCart(user.uid, {
         productId,
         quantity,
-        size: selectedSize
+        size: selectedSize,
+        price
       });
       alert(`Added ${quantity} x ${product.name?.en || product.name} (Size: ${selectedSize}) to cart!`);
     } catch (err) {
@@ -112,9 +115,13 @@ export default function ProductDetails() {
     try {
       const productId = product.productId || product._id;
       if (isFavorite) {
-        await userService.removeFromWishlist(user.uid, productId);
+        await wishlistService.removeFromWishlist(user.uid, productId);
       } else {
-        await userService.addToWishlist(user.uid, productId);
+        await wishlistService.addToWishlist(user.uid, productId, {
+          name: product.name?.en || product.name,
+          imageUrl: product.images?.main || product.images?.overlay || '',
+          price: product.pricing?.selling || product.price?.selling || product.price || 0
+        });
       }
       addFavorite(product);
       setIsFavorite(!isFavorite);

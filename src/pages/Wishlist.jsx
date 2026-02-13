@@ -14,8 +14,11 @@ import {
   FaSearch
 } from 'react-icons/fa';
 import wishlistService from '../services/wishlistService';
+import userService from '../services/userService';
+import { useAuth } from '../context/AuthContext';
 
 const Wishlist = () => {
+  const { user } = useAuth();
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
@@ -25,7 +28,7 @@ const Wishlist = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const currentUser = user || JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     loadWishlist();
@@ -79,24 +82,13 @@ const Wishlist = () => {
     try {
       if (currentUser && currentUser.uid) {
 
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/v1/users/${currentUser.uid}/cart`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              productId: item.productId,
-              quantity: 1,
-              size: item.selectedSize || 'M',
-              color: item.selectedColor || 'Default'
-            })
-          }
-        );
-
-        const data = await response.json();
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to add to cart');
-        }
+        await userService.addToCart(currentUser.uid, {
+          productId: item.productId,
+          quantity: 1,
+          size: item.selectedSize || 'M',
+          color: item.selectedColor || 'Default',
+          price: item.price || 0
+        });
 
         const cartItems = JSON.parse(localStorage.getItem(`cart_${currentUser.uid}`) || '[]');
         const existingItem = cartItems.find(

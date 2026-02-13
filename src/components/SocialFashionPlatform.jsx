@@ -12,58 +12,12 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import productService from '../services/productService';
-
-const mockInfluencers = [
-  {
-    id: 1,
-    name: 'Sophie Chen',
-    username: '@sophie_style',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b890?w=150',
-    followers: 125000,
-    verified: true,
-    specialty: 'Sustainable Fashion'
-  },
-  {
-    id: 2,
-    name: 'Marcus Rivera',
-    username: '@marcus_fashion',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    followers: 89000,
-    verified: true,
-    specialty: 'Street Style'
-  }
-];
-
-const mockPosts = [
-  {
-    id: 1,
-    user: mockInfluencers[0],
-    content: 'Loving this sustainable wool blend sweater! Perfect for fall weather ðŸ‚',
-    image: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400',
-    items: [], // Will be populated with real products
-    likes: 2843,
-    comments: 156,
-    shares: 89,
-    timestamp: '2 hours ago',
-    tags: ['sustainable', 'fall', 'cozy']
-  },
-  {
-    id: 2,
-    user: mockInfluencers[1],
-    content: 'Street style transformation using just 3 pieces! ðŸ”¥',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400',
-    items: [], // Will be populated with real products
-    likes: 5621,
-    comments: 298,
-    shares: 187,
-    timestamp: '5 hours ago',
-    tags: ['streetstyle', 'transformation']
-  }
-];
+import { getSocialHub } from '../services/SocialFashionHub';
 
 function SocialPost({ post, onLike, onComment, onShare }) {
   const [liked, setLiked] = useState(false);
   const [showShoppable, setShowShoppable] = useState(false);
+  const hasAvatar = Boolean(post.user.avatar);
 
   return (
     <motion.div
@@ -74,13 +28,19 @@ function SocialPost({ post, onLike, onComment, onShare }) {
       {}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3">
-            <img 
-            src={post.user.avatar} 
-            alt={post.user.name}
-              className="w-12 h-12 rounded-full object-cover"
-              loading="lazy"
-              decoding="async"
-          />
+            {hasAvatar ? (
+              <img 
+                src={post.user.avatar} 
+                alt={post.user.name}
+                className="w-12 h-12 rounded-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                <FaUser className="w-5 h-5 text-gray-500" />
+              </div>
+            )}
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-gray-900">{post.user.name}</h3>
@@ -321,11 +281,14 @@ function CreateLookModal({ isVisible, onClose, onCreateLook, clothingItems }) {
 export default function SocialFashionPlatform() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('feed');
-  const [posts, setPosts] = useState(mockPosts);
-  const [influencers, setInfluencers] = useState(mockInfluencers);
+  const [posts, setPosts] = useState([]);
+  const [influencers, setInfluencers] = useState([]);
   const [showCreateLook, setShowCreateLook] = useState(false);
   const [clothingItems, setClothingItems] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [feedLoading, setFeedLoading] = useState(true);
+  const [trendingLoading, setTrendingLoading] = useState(true);
+  const [socialHub] = useState(() => getSocialHub());
 
   useEffect(() => {
     async function fetchProducts() {
@@ -335,19 +298,11 @@ export default function SocialFashionPlatform() {
         const formattedProducts = (data.products || []).map(product => ({
           id: product.productId || product._id,
           name: product.name?.en || product.name,
-          price: product.pricing?.selling || product.price,
+          price: product.pricing?.selling || product.price?.selling || product.price || 0,
           imageUrl: product.images?.main || product.imageUrl,
           category: product.category
         }));
         setClothingItems(formattedProducts);
-
-        if (formattedProducts.length > 0) {
-          const updatedPosts = mockPosts.map((post, index) => ({
-            ...post,
-            items: formattedProducts.slice(index * 2, index * 2 + 2)
-          }));
-          setPosts(updatedPosts);
-        }
       } catch (err) {
         console.error('Error fetching products:', err);
         setClothingItems([]);
@@ -355,11 +310,101 @@ export default function SocialFashionPlatform() {
         setProductsLoading(false);
       }
     }
-    fetchProducts();
-  }, []);
 
-  const handleCreateLook = (lookData) => {
-    console.log('Create look:', lookData);
+    async function fetchFeed() {
+      try {
+        setFeedLoading(true);
+        if (user) {
+          socialHub.setUser(user);
+        }
+        const feed = await socialHub.getInspirationFeed({ page: 1 });
+        const formatted = feed.map(look => ({
+          id: look._id,
+          user: {
+            name: look.userName || 'Fashion Enthusiast',
+            username: `@${(look.userName || 'fashion').toLowerCase().replace(/\s+/g, '')}`,
+            avatar: look.userAvatar,
+            verified: false
+          },
+          content: look.caption || 'Shared a new look',
+          image: look.imageUrl,
+          items: look.items || look.outfit || [],
+          likes: look.likes || 0,
+          comments: look.comments?.length || 0,
+          shares: look.shares || 0,
+          timestamp: new Date(look.createdAt || Date.now()).toLocaleString(),
+          tags: look.tags || []
+        }));
+        setPosts(formatted);
+      } catch (error) {
+        console.error('Error fetching feed:', error);
+      } finally {
+        setFeedLoading(false);
+      }
+    }
+
+    async function fetchTrending() {
+      try {
+        setTrendingLoading(true);
+        const trending = await socialHub.getCommunityTrending();
+        const formatted = (trending.risingInfluencers || []).map((influencer, index) => ({
+          id: influencer._id || influencer.id || `influencer-${index}`,
+          name: influencer.name || influencer.userName || 'Fashion Creator',
+          username: influencer.username || influencer.handle || '@creator',
+          specialty: influencer.specialty || 'Style Curator',
+          followers: influencer.followers || influencer.followerCount || 0,
+          avatar: influencer.avatar || influencer.photoUrl,
+          verified: Boolean(influencer.verified)
+        }));
+        setInfluencers(formatted);
+      } catch (error) {
+        console.error('Error fetching influencers:', error);
+      } finally {
+        setTrendingLoading(false);
+      }
+    }
+
+    fetchProducts();
+    fetchFeed();
+    fetchTrending();
+  }, [user, socialHub]);
+
+  const handleCreateLook = async (lookData) => {
+    try {
+      if (user) {
+        socialHub.setUser(user);
+      }
+      await socialHub.shareOutfitLook(
+        { items: lookData.items || [] },
+        {
+          caption: lookData.description || lookData.title || '',
+          tags: lookData.tags || [],
+          isPublic: true
+        }
+      );
+
+      const feed = await socialHub.getInspirationFeed({ page: 1 });
+      const formatted = feed.map(look => ({
+        id: look._id,
+        user: {
+          name: look.userName || 'Fashion Enthusiast',
+          username: `@${(look.userName || 'fashion').toLowerCase().replace(/\s+/g, '')}`,
+          avatar: look.userAvatar,
+          verified: false
+        },
+        content: look.caption || 'Shared a new look',
+        image: look.imageUrl,
+        items: look.items || look.outfit || [],
+        likes: look.likes || 0,
+        comments: look.comments?.length || 0,
+        shares: look.shares || 0,
+        timestamp: new Date(look.createdAt || Date.now()).toLocaleString(),
+        tags: look.tags || []
+      }));
+      setPosts(formatted);
+    } catch (error) {
+      console.error('Create look failed:', error);
+    }
   };
 
   return (
@@ -403,17 +448,29 @@ export default function SocialFashionPlatform() {
         {}
         {activeTab === 'feed' && (
           <div className="max-w-2xl mx-auto">
-            {posts.map(post => (
-              <SocialPost key={post.id} post={post} />
-            ))}
+            {feedLoading ? (
+              <div className="text-center text-gray-600 py-12">Loading feed...</div>
+            ) : posts.length === 0 ? (
+              <div className="text-center text-gray-600 py-12">No looks yet. Be the first to share one.</div>
+            ) : (
+              posts.map(post => (
+                <SocialPost key={post.id} post={post} />
+              ))
+            )}
           </div>
         )}
 
         {activeTab === 'influencers' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {influencers.map(influencer => (
-              <InfluencerCard key={influencer.id} influencer={influencer} />
-            ))}
+            {trendingLoading ? (
+              <div className="col-span-full text-center text-gray-600 py-12">Loading influencers...</div>
+            ) : influencers.length === 0 ? (
+              <div className="col-span-full text-center text-gray-600 py-12">No influencers to show yet.</div>
+            ) : (
+              influencers.map(influencer => (
+                <InfluencerCard key={influencer.id} influencer={influencer} />
+              ))
+            )}
           </div>
         )}
 

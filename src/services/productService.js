@@ -2,6 +2,46 @@
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
+const normalizeProduct = (product) => {
+  if (!product) return product;
+
+  const pricing = product.pricing || {
+    selling: product.price?.selling ?? product.price ?? 0,
+    mrp: product.price?.mrp,
+    discount: product.price?.discount
+  };
+
+  return {
+    ...product,
+    pricing
+  };
+};
+
+const normalizeProductList = (payload) => {
+  const products = Array.isArray(payload?.data) ? payload.data : (payload?.products || []);
+  const pagination = payload?.pagination || payload?.pageInfo || null;
+
+  return {
+    success: payload?.success ?? true,
+    products: products.map(normalizeProduct),
+    pagination
+  };
+};
+
+const normalizeProductResponse = (payload) => {
+  if (payload?.product) {
+    return {
+      success: payload?.success ?? true,
+      product: normalizeProduct(payload.product)
+    };
+  }
+
+  return {
+    success: payload?.success ?? true,
+    product: normalizeProduct(payload?.data)
+  };
+};
+
 class ProductService {
   
   async getAllProducts(filters = {}) {
@@ -22,7 +62,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching products:', error);
       throw error;
@@ -39,7 +79,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching featured products:', error);
       throw error;
@@ -56,7 +96,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching bestsellers:', error);
       throw error;
@@ -73,7 +113,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching new arrivals:', error);
       throw error;
@@ -90,7 +130,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductResponse(data);
     } catch (error) {
       console.error('Error fetching product:', error);
       throw error;
@@ -107,7 +147,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error searching products:', error);
       throw error;
@@ -134,7 +174,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching products by category:', error);
       throw error;
@@ -151,7 +191,10 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return {
+        success: data?.success ?? true,
+        categories: data?.data || data?.categories || []
+      };
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
@@ -168,7 +211,7 @@ class ProductService {
       }
       
       const data = await response.json();
-      return data;
+      return normalizeProductList(data);
     } catch (error) {
       console.error('Error fetching similar products:', error);
       throw error;
@@ -208,7 +251,7 @@ class ProductService {
       imageUrl: product.images?.overlay || product.images?.main || '',
       overlayUrl: product.images?.overlay || product.images?.main || '',
       color: product.colors?.[0]?.hex || '#000000',
-      price: product.pricing?.selling || 0,
+      price: product.pricing?.selling || product.price?.selling || product.price || 0,
       description: product.description?.en || product.description || '',
       sizes: product.sizes?.map(s => s.size) || [],
       material: product.material || '',

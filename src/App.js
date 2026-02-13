@@ -30,6 +30,7 @@ import BiometricAnalysis from './pages/BiometricAnalysis';
 import VirtualTryOn from './pages/VirtualTryOn';
 import SmartVirtualTryOn from './pages/SmartVirtualTryOn';
 import QuantumTryOnPage from './pages/QuantumTryOnPage';
+import HighQualityTryOn from './pages/HighQualityTryOn';
 
 import QuantumTryOn from './components/QuantumTryOn';
 import MetaverseIntegration from './components/MetaverseIntegration';
@@ -45,21 +46,11 @@ import SegmentationUpload from './components/SegmentationUpload';
 
 import { BodyAnalysisPage, OutfitRecommendationsPage } from './pages/AIFeatures';
 import APIStatus from './pages/APIStatus';
+import apiService from './services/apiService';
 
-const apiService = {
+const apiServiceProxy = {
   testConnection: async () => {
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          connected: true,
-          collections: {
-            users: 142,
-            products: 89
-          }
-        });
-      }, 2000);
-    });
+    return apiService.testDatabase();
   }
 };
 
@@ -148,7 +139,7 @@ const DatabaseTestPage = () => {
   React.useEffect(() => {
     const testConnection = async () => {
       try {
-        const result = await apiService.testConnection();
+        const result = await apiServiceProxy.testConnection();
         setConnectionStatus(result);
       } catch (error) {
         setConnectionStatus({ connected: false, error: error.message });
@@ -310,6 +301,7 @@ function App() {
                   <Route path="/smart-tryon" element={<SmartVirtualTryOn />} />
                   <Route path="/try" element={<TryOnWithItem />} />
                   <Route path="/enhanced-tryon" element={<EnhancedTryOn />} />
+                  <Route path="/hq-tryon" element={<HighQualityTryOn />} />
                   <Route path="/recommendations" element={<Recommendations />} />
                   <Route path="/community" element={<CommunityFeed />} />
                   

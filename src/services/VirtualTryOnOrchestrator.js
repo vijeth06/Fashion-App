@@ -6,6 +6,7 @@ import enhancedPoseDetection from './EnhancedPoseDetection';
 import clothSegmentationService from './ClothSegmentationService';
 import { getAnalytics } from './AnalyticsService';
 import apiService from './apiService';
+import productService from './productService';
 export class VirtualTryOnOrchestrator {
   constructor() {
     this.tryOnEngine = new TryOnEngine();
@@ -229,7 +230,7 @@ export class VirtualTryOnOrchestrator {
         userId: this.state.currentUser?.uid
       };
       if (this.state.currentUser?.uid) {
-        await apiService.post('/api/looks/create', outfit);
+        await apiService.post('/looks/create', outfit);
       } else {
         const saved = JSON.parse(localStorage.getItem('vf_saved_outfits') || '[]');
         saved.push(outfit);
@@ -273,7 +274,7 @@ export class VirtualTryOnOrchestrator {
   }
   async fetchAvailableProducts() {
     try {
-      const response = await apiService.get('/api/products/indian-fashion');
+      const response = await productService.getAllProducts({ limit: 200 });
       return response.products || [];
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -282,11 +283,9 @@ export class VirtualTryOnOrchestrator {
   }
   async loadUserPreferences(userId) {
     try {
-      const response = await apiService.get(`/api/users/${userId}/preferences`);
-      if (response.success) {
-        if (this.state.currentUser) {
-          this.state.currentUser.preferences = response.preferences;
-        }
+      const response = await apiService.get(`/users/${userId}/preferences`);
+      if (response.success && this.state.currentUser) {
+        this.state.currentUser.preferences = response.preferences || {};
       }
     } catch (error) {
       console.error('Error loading user preferences:', error);
@@ -294,7 +293,7 @@ export class VirtualTryOnOrchestrator {
   }
   async updateUserBodyProfile(bodyAnalysis) {
     try {
-      await apiService.post(`/api/users/${this.state.currentUser.uid}/body-profile`, {
+      await apiService.put(`/users/${this.state.currentUser.uid}/body-profile`, {
         bodyType: bodyAnalysis.bodyType,
         measurements: bodyAnalysis.measurements,
         confidence: bodyAnalysis.confidence,

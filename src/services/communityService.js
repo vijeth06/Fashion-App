@@ -15,7 +15,7 @@ class CommunityService {
       const cached = this.getFromCache(cacheKey);
       if (cached) return cached;
 
-      const response = await apiService.get(`/api/users?page=${page}&limit=${limit}`);
+      const response = await apiService.get(`/api/v1/users?page=${page}&limit=${limit}`);
       
       if (response.success && response.users) {
         this.setCache(cacheKey, response.users);
@@ -41,7 +41,7 @@ class CommunityService {
         ...filters
       });
       
-      const response = await apiService.get(`/api/users/search?${params}`);
+      const response = await apiService.get(`/api/v1/users/search?${params}`);
       
       if (response.success && response.users) {
         return response.users;
@@ -61,11 +61,11 @@ class CommunityService {
       const cached = this.getFromCache(cacheKey);
       if (cached) return cached;
 
-      const response = await apiService.get(`/api/users/${userId}`);
+      const response = await apiService.get(`/api/v1/users/${userId}`);
       
-      if (response.success && response.user) {
-        this.setCache(cacheKey, response.user);
-        return response.user;
+      if (response.success && response.data) {
+        this.setCache(cacheKey, response.data);
+        return response.data;
       }
       
       return null;
@@ -78,7 +78,7 @@ class CommunityService {
   
   async followUser(userId, targetUserId) {
     try {
-      const response = await apiService.post('/api/users/follow', {
+      const response = await apiService.post('/api/v1/users/follow', {
         userId,
         targetUserId
       });
@@ -96,7 +96,7 @@ class CommunityService {
   
   async unfollowUser(userId, targetUserId) {
     try {
-      const response = await apiService.post('/api/users/unfollow', {
+      const response = await apiService.post('/api/v1/users/unfollow', {
         userId,
         targetUserId
       });
@@ -114,7 +114,7 @@ class CommunityService {
   
   async getUserFollowers(userId) {
     try {
-      const response = await apiService.get(`/api/users/${userId}/followers`);
+      const response = await apiService.get(`/api/v1/users/${userId}/followers`);
       
       if (response.success && response.followers) {
         return response.followers;
@@ -130,7 +130,7 @@ class CommunityService {
   
   async getUserFollowing(userId) {
     try {
-      const response = await apiService.get(`/api/users/${userId}/following`);
+      const response = await apiService.get(`/api/v1/users/${userId}/following`);
       
       if (response.success && response.following) {
         return response.following;
@@ -182,7 +182,7 @@ class CommunityService {
       const cached = this.getFromCache(cacheKey);
       if (cached) return cached;
 
-      const response = await apiService.get(`/api/users/trending?limit=${limit}`);
+      const response = await apiService.get(`/api/v1/users/trending?limit=${limit}`);
       
       if (response.success && response.users) {
         this.setCache(cacheKey, response.users);
@@ -199,7 +199,7 @@ class CommunityService {
   
   async updateUserProfile(userId, updates) {
     try {
-      const response = await apiService.put(`/api/users/${userId}`, updates);
+      const response = await apiService.put(`/api/v1/users/${userId}/profile`, updates);
 
       this.invalidateUserCache(userId);
       

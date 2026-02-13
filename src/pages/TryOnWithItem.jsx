@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -51,7 +51,7 @@ const TryOnWithItem = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const itemId = parseInt(urlParams.get('item'));
+    const itemId = urlParams.get('item');
     
     if (!itemId) {
       setError('No item specified. Please select an item to try on.');
@@ -71,7 +71,10 @@ const TryOnWithItem = () => {
       const allProductsList = productsResponse.products || [];
       setAllProducts(allProductsList);
 
-      let targetProduct = allProductsList.find(p => p.id === itemId || p._id === itemId);
+      const targetProduct = allProductsList.find(p => {
+        const candidateId = p.productId || p.id || p._id;
+        return String(candidateId) === String(itemId);
+      });
 
       if (!targetProduct) {
         setError(`Product with ID ${itemId} not found. Please select a valid product from the catalog.`);
@@ -80,17 +83,13 @@ const TryOnWithItem = () => {
       }
 
       setProduct(targetProduct);
-      setSelectedColor(targetProduct.colors?.[0] || '');
-      setSelectedSize(targetProduct.sizes?.[Math.floor(targetProduct.sizes.length / 2)] || '');
+      const firstColor = targetProduct.colors?.[0];
+      setSelectedColor(firstColor?.hex || firstColor?.name || firstColor || '');
+      const sizeList = targetProduct.sizes || [];
+      const preferredSize = sizeList[Math.floor(sizeList.length / 2)];
+      setSelectedSize(preferredSize?.size || preferredSize || '');
 
-      const formattedProducts = allProductsList.map(product => ({
-        id: product.id || product._id,
-        name: product.name?.en || product.name,
-        type: product.type || product.category,
-        imageUrl: product.images?.main || product.image || product.imageUrl || '/assets/tee_white.svg',
-        category: product.category || 'tops'
-      }));
-      
+      const formattedProducts = productService.formatManyForTryOn(allProductsList);
       setClothingItems(formattedProducts);
       setLoading(false);
 
@@ -245,10 +244,14 @@ const TryOnWithItem = () => {
                 <select 
                   className="bg-transparent text-white focus:outline-none"
                   onChange={(e) => navigateToProduct(e.target.value)}
-                  value={product?.id}
+                  value={product?.productId || product?.id || product?._id}
                 >
                   {allProducts.map(p => (
-                    <option key={p.id || p._id} value={p.id || p._id} className="bg-gray-800">
+                    <option
+                      key={p.productId || p.id || p._id}
+                      value={p.productId || p.id || p._id}
+                      className="bg-gray-800"
+                    >
                       {p.name?.en || p.name}
                     </option>
                   ))}

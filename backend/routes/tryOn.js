@@ -3,7 +3,16 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { verifyFirebaseToken: authenticateUser } = require('../middleware/auth');
+const fs = require('fs');
+const axios = require('axios');
+const FormData = require('form-data');
+const { verifyFirebaseToken: authenticateUser, requireOwnership } = require('../middleware/auth');
+const { v4: uuidv4 } = require('uuid');
+const TryOnSession = require('../models/TryOnSession');
+const TryOnResult = require('../models/TryOnResult');
+const tryOnQueueService = require('../services/TryOnQueueService');
+
+const TRYON_SERVICE_URL = process.env.TRYON_SERVICE_URL || 'http://localhost:5001';
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -37,23 +46,22 @@ const upload = multer({
  */
 router.post('/process', authenticateUser, async (req, res) => {
   try {
-    const { userId, garmentId, bodyAnalysis, timestamp } = req.body;
+    const { garmentId, bodyAnalysis, timestamp } = req.body;
+    const sessionId = `session-${uuidv4()}`;
 
     // Create try-on session record
-    const session = {
-      userId,
+    const session = await TryOnSession.create({
+      sessionId,
+      userId: req.user.uid,
       garmentId,
-      bodyAnalysis,
-      timestamp: timestamp || Date.now(),
-      status: 'processing'
-    };
-
-    // Store session in database
-    // await tryOnSessionModel.create(session);
+      bodyAnalysis: bodyAnalysis || {},
+      status: 'processing',
+      createdAt: timestamp ? new Date(timestamp) : new Date()
+    });
 
     res.json({
       success: true,
-      sessionId: `session-${Date.now()}`,
+      sessionId,
       message: 'Try-on session created',
       session
     });
@@ -81,15 +89,22 @@ router.post('/upload-body', authenticateUser, upload.single('bodyImage'), async 
     }
 
     const imageData = {
-      userId: req.body.userId,
+      userId: req.user.uid,
       filename: req.file.filename,
       path: req.file.path,
-      uploadedAt: Date.now(),
+      uploadedAt: new Date(),
       metadata: {
         size: req.file.size,
         mimetype: req.file.mimetype
       }
     };
+
+    if (req.body.sessionId) {
+      await TryOnSession.findOneAndUpdate(
+        { sessionId: req.body.sessionId, userId: req.user.uid },
+        { bodyImage: imageData, status: 'body-uploaded' }
+      );
+    }
 
     res.json({
       success: true,
@@ -109,28 +124,74 @@ router.post('/upload-body', authenticateUser, upload.single('bodyImage'), async 
 });
 
 /**
+ * 🧵 Run server-side try-on inference (proxy to Python service)
+ * POST /api/try-on/infer
+ */
+router.post('/infer', authenticateUser, upload.fields([
+  { name: 'bodyImage', maxCount: 1 },
+  { name: 'garmentImage', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const bodyImage = req.files?.bodyImage?.[0];
+
+    if (!bodyImage) {
+      return res.status(400).json({
+        success: false,
+        error: 'Body image is required'
+      });
+    }
+
+    const form = new FormData();
+    form.append('image', fs.createReadStream(bodyImage.path));
+
+    const garmentImage = req.files?.garmentImage?.[0];
+    if (garmentImage) {
+      form.append('garment', fs.createReadStream(garmentImage.path));
+    }
+
+    const response = await axios.post(`${TRYON_SERVICE_URL}/tryon`, form, {
+      headers: form.getHeaders(),
+      timeout: 60000
+    });
+
+    res.json({
+      success: true,
+      data: response.data
+    });
+  } catch (error) {
+    console.error('Try-on inference error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * 🎨 Save try-on result
  * POST /api/try-on/save-result
  */
 router.post('/save-result', authenticateUser, async (req, res) => {
   try {
-    const { userId, sessionId, outfit, score, screenshot } = req.body;
+    const { sessionId, outfit, score, screenshot, metadata } = req.body;
 
-    const result = {
-      userId,
+    const result = await TryOnResult.create({
+      userId: req.user.uid,
       sessionId,
       outfit,
       score,
       screenshot,
-      savedAt: Date.now()
-    };
+      metadata
+    });
 
-    // Save to database
-    // await tryOnResultModel.create(result);
+    await TryOnSession.findOneAndUpdate(
+      { sessionId, userId: req.user.uid },
+      { $set: { status: 'completed' }, $addToSet: { resultIds: result._id } }
+    );
 
     res.json({
       success: true,
-      resultId: `result-${Date.now()}`,
+      resultId: result._id,
       message: 'Try-on result saved successfully',
       result
     });
@@ -148,19 +209,15 @@ router.post('/save-result', authenticateUser, async (req, res) => {
  * 📊 Get user's try-on history
  * GET /api/try-on/history/:userId
  */
-router.get('/history/:userId', authenticateUser, async (req, res) => {
+router.get('/history/:userId', authenticateUser, requireOwnership('userId'), async (req, res) => {
   try {
     const { userId } = req.params;
     const { limit = 20, offset = 0 } = req.query;
 
-    // Fetch from database
-    // const history = await tryOnResultModel.find({ userId })
-    //   .sort({ savedAt: -1 })
-    //   .limit(parseInt(limit))
-    //   .skip(parseInt(offset));
-
-    // Mock data for now
-    const history = [];
+    const history = await TryOnResult.find({ userId })
+      .sort({ savedAt: -1 })
+      .limit(parseInt(limit, 10))
+      .skip(parseInt(offset, 10));
 
     res.json({
       success: true,
@@ -241,26 +298,90 @@ router.post('/score-outfit', async (req, res) => {
 });
 
 /**
+ * 📂 Save try-on session (API service compatibility)
+ * POST /api/try-on/sessions
+ */
+router.post('/sessions', authenticateUser, async (req, res) => {
+  try {
+    const { sessionId, garmentId, bodyAnalysis, status } = req.body;
+    const finalSessionId = sessionId || `session-${uuidv4()}`;
+
+    const session = await TryOnSession.findOneAndUpdate(
+      { sessionId: finalSessionId, userId: req.user.uid },
+      {
+        sessionId: finalSessionId,
+        userId: req.user.uid,
+        garmentId,
+        bodyAnalysis: bodyAnalysis || {},
+        status: status || 'processing'
+      },
+      { new: true, upsert: true }
+    );
+
+    res.json({
+      success: true,
+      session
+    });
+  } catch (error) {
+    console.error('Save session error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * 📂 Get try-on sessions for user
+ * GET /api/try-on/sessions
+ */
+router.get('/sessions', authenticateUser, async (req, res) => {
+  try {
+    const { limit = 20, offset = 0 } = req.query;
+    const sessions = await TryOnSession.find({ userId: req.user.uid })
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit, 10))
+      .skip(parseInt(offset, 10));
+
+    res.json({
+      success: true,
+      sessions
+    });
+  } catch (error) {
+    console.error('Fetch sessions error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * 🎭 Virtual pose detection data
  * POST /api/try-on/pose-data
  */
 router.post('/pose-data', authenticateUser, async (req, res) => {
   try {
-    const { userId, poseData, sessionId } = req.body;
+    const { poseData, sessionId } = req.body;
 
     // Store pose data for session
     const stored = {
-      userId,
-      sessionId,
-      keypoints: poseData.keypoints,
-      confidence: poseData.score,
-      timestamp: Date.now()
+      keypoints: poseData.keypoints || [],
+      confidence: poseData.score || 0,
+      timestamp: new Date()
     };
+
+    if (sessionId) {
+      await TryOnSession.findOneAndUpdate(
+        { sessionId, userId: req.user.uid },
+        { $push: { poseData: stored } }
+      );
+    }
 
     res.json({
       success: true,
       message: 'Pose data stored',
-      poseId: `pose-${Date.now()}`
+      poseId: `pose-${uuidv4()}`
     });
 
   } catch (error) {
@@ -359,6 +480,151 @@ function getMostCommon(array) {
   });
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
 }
+
+/**
+ * 🔍 Get session status (for polling)
+ * GET /api/try-on/session/:sessionId/status
+ */
+router.get('/session/:sessionId/status', authenticateUser, async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const session = await TryOnSession.findOne({ 
+      sessionId, 
+      userId: req.user.uid 
+    });
+
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Session not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      sessionId: session.sessionId,
+      status: session.status,
+      progress: session.metadata?.progress || 0,
+      error: session.errorMessage,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt
+    });
+
+  } catch (error) {
+    console.error('Get session status error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * 📊 Get session results
+ * GET /api/try-on/session/:sessionId/results
+ */
+router.get('/session/:sessionId/results', authenticateUser, async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const session = await TryOnSession.findOne({ 
+      sessionId, 
+      userId: req.user.uid 
+    }).populate('resultIds');
+
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Session not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      sessionId: session.sessionId,
+      status: session.status,
+      results: session.resultIds || []
+    });
+
+  } catch (error) {
+    console.error('Get session results error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * 🎬 Submit job to queue (high-quality processing)
+ * POST /api/try-on/submit-job
+ */
+router.post('/submit-job', authenticateUser, upload.fields([
+  { name: 'bodyImage', maxCount: 1 },
+  { name: 'garmentImage', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const { sessionId, garmentId } = req.body;
+    const bodyImage = req.files?.bodyImage?.[0];
+    const garmentImage = req.files?.garmentImage?.[0];
+
+    if (!bodyImage) {
+      return res.status(400).json({
+        success: false,
+        error: 'Body image is required'
+      });
+    }
+
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Session ID is required'
+      });
+    }
+
+    // Submit job to queue service
+    const result = await tryOnQueueService.submitJob(
+      sessionId,
+      bodyImage.path,
+      garmentImage?.path
+    );
+
+    res.json({
+      success: true,
+      jobId: result.jobId,
+      sessionId: result.sessionId,
+      message: 'Job submitted successfully'
+    });
+
+  } catch (error) {
+    console.error('Submit job error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * 📈 Get queue statistics
+ * GET /api/try-on/queue/stats
+ */
+router.get('/queue/stats', authenticateUser, async (req, res) => {
+  try {
+    const stats = tryOnQueueService.getQueueStats();
+    res.json({
+      success: true,
+      stats
+    });
+  } catch (error) {
+    console.error('Queue stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 router.get('/test', (req, res) => {
   res.json({ 

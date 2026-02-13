@@ -138,6 +138,46 @@ router.post('/ab-test/assign',
 );
 
 /**
+ * @route   POST /api/analytics/product
+ * @desc    Update product analytics metrics
+ * @access  Public
+ */
+router.post('/product',
+  analyticsLimiter,
+  async (req, res) => {
+    try {
+      const { productId, eventType, value = 1, userMetadata = {}, aiMetrics = {} } = req.body;
+
+      if (!productId || !eventType) {
+        return res.status(400).json({
+          success: false,
+          message: 'productId and eventType are required'
+        });
+      }
+
+      const result = await analyticsService.updateProductAnalytics(
+        productId,
+        eventType,
+        value,
+        userMetadata,
+        aiMetrics
+      );
+
+      res.status(200).json({
+        success: true,
+        analyticsId: result.analyticsId
+      });
+    } catch (error) {
+      console.error('Product analytics update error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update product analytics'
+      });
+    }
+  }
+);
+
+/**
  * @route   GET /api/analytics/dashboard
  * @desc    Get analytics dashboard data with real MongoDB queries
  * @access  Private (Admin only)

@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaCamera, FaVideo, FaDownload, FaShare, FaExpand, FaCompress,
@@ -12,6 +12,7 @@ import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as bodySegmentation from '@tensorflow-models/body-segmentation';
 
 import { getAnalytics } from '../services/AnalyticsService';
+import productService from '../services/productService';
 
 const analytics = getAnalytics();
 
@@ -368,7 +369,6 @@ class AdvancedPoseEngine {
   }
 
   calculatePoseStability(pose) {
-
     const avgConfidence = pose.keypoints.reduce((sum, kp) => sum + (kp.score || 0), 0) / pose.keypoints.length;
     return Math.min(1.0, avgConfidence * 1.2);
   }
@@ -727,6 +727,205 @@ class ClothWarpingEngine {
 
     return { x: 0, y: 0, velocity: 0 };
   }
+
+  // Render the warped mesh to an image
+  renderWarpedImage(mesh, config) {
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = config.image.width;
+    offCanvas.height = config.image.height;
+    const ctx = offCanvas.getContext('2d');
+    
+    // Draw the warped mesh using triangulation
+    for (let i = 0; i < mesh.length - 1; i++) {
+      for (let j = 0; j < mesh[i].length - 1; j++) {
+        const p1 = mesh[i][j];
+        const p2 = mesh[i + 1][j];
+        const p3 = mesh[i][j + 1];
+        const p4 = mesh[i + 1][j + 1];
+        
+        // Draw two triangles per mesh quad
+        this.drawTriangle(ctx, config.image, p1, p2, p3);
+        this.drawTriangle(ctx, config.image, p2, p4, p3);
+      }
+    }
+    
+    return offCanvas;
+  }
+
+  drawTriangle(ctx, image, p1, p2, p3) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(p3.x, p3.y);
+    ctx.closePath();
+    ctx.clip();
+    
+    const sx = Math.min(p1.originalX, p2.originalX, p3.originalX);
+    const sy = Math.min(p1.originalY, p2.originalY, p3.originalY);
+    const sw = Math.max(p1.originalX, p2.originalX, p3.originalX) - sx;
+    const sh = Math.max(p1.originalY, p2.originalY, p3.originalY) - sy;
+    
+    const dx = Math.min(p1.x, p2.x, p3.x);
+    const dy = Math.min(p1.y, p2.y, p3.y);
+    const dw = Math.max(p1.x, p2.x, p3.x) - dx;
+    const dh = Math.max(p1.y, p2.y, p3.y) - dy;
+    
+    try {
+      ctx.drawImage(image, sx, sy, sw || 1, sh || 1, dx, dy, dw || 1, dh || 1);
+    } catch (e) {
+      // Ignore
+    }
+    ctx.restore();
+  }
+
+  applyLightingEffects(mesh, config) {
+    const lighting = config.lightingConditions || this.detectLightingConditions();
+    
+    for (let i = 1; i < mesh.length - 1; i++) {
+      for (let j = 1; j < mesh[i].length - 1; j++) {
+        const point = mesh[i][j];
+        const normal = this.calculateNormal(mesh, i, j);
+        const lightIntensity = this.calculateLightIntensity(normal, lighting);
+        point.lightIntensity = lightIntensity;
+      }
+    }
+    return mesh;
+  }
+
+  calculateNormal(mesh, i, j) {
+    const center = mesh[i][j];
+    const right = mesh[i + 1] ? mesh[i + 1][j] : center;
+    const down = mesh[i][j + 1] || center;
+    
+    const nx = -(right.y - center.y + down.y - center.y) / 2;
+    const ny = (right.x - center.x + down.x - center.x) / 2;
+    const nz = 1;
+    
+    const length = Math.sqrt(nx * nx + ny * ny + nz * nz);
+    return { x: nx / length, y: ny / length, z: nz / length };
+  }
+
+  calculateLightIntensity(normal, lighting) {
+    const dotProduct = normal.x * lighting.direction.x + normal.y * lighting.direction.y + normal.z * lighting.direction.z;
+    const diffuse = Math.max(0, dotProduct) * lighting.intensity;
+    return Math.min(1, lighting.ambient + diffuse);
+  }
+
+  generateAdvancedShadows(config) {
+    const shadows = [];
+    const { anchorPoints } = config;
+    
+    if (!anchorPoints) return { selfShadows: [] };
+    
+    anchorPoints.forEach(point => {
+      if (point.score > 0.5) {
+        shadows.push({
+          x: point.x + 3,
+          y: point.y + 5,
+          opacity: 0.25 * point.score,
+          blur: 8 + (point.weight || 0.5) * 5,
+          size: 15 + (point.weight || 0.5) * 10
+        });
+      }
+    });
+    
+    return { selfShadows: shadows };
+  }
+
+  checkPointBodyCollision(point, bodyContour) {
+    if (!bodyContour || !bodyContour.points || bodyContour.points.length === 0) return null;
+    
+    const bounds = bodyContour.bounds;
+    if (point.x < bounds.minX || point.x > bounds.maxX || point.y < bounds.minY || point.y > bounds.maxY) {
+      return null;
+    }
+    return null;
+  }
+
+  findNearestMeshPoint(mesh, position) {
+    if (!position || !mesh.length) return null;
+    
+    let nearest = mesh[0][0];
+    let minDist = Infinity;
+    
+    for (let i = 0; i < mesh.length; i++) {
+      for (let j = 0; j < mesh[i].length; j++) {
+        const point = mesh[i][j];
+        const dx = point.x - position.x;
+        const dy = point.y - position.y;
+        const dist = dx * dx + dy * dy;
+        
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = point;
+        }
+      }
+    }
+    return nearest;
+  }
+
+  calculateDeformation(anchor, bodyMeasurements, fabricProperties) {
+    return {
+      x: (anchor.x - anchor.position.x) * fabricProperties.stretch,
+      y: (anchor.y - anchor.position.y) * fabricProperties.stretch
+    };
+  }
+
+  applySmoothDeformation(mesh, config) {
+    const iterations = 3;
+    
+    for (let iter = 0; iter < iterations; iter++) {
+      for (let i = 1; i < mesh.length - 1; i++) {
+        for (let j = 1; j < mesh[i].length - 1; j++) {
+          if (!mesh[i][j].pinned) {
+            const neighbors = [mesh[i - 1][j], mesh[i + 1][j], mesh[i][j - 1], mesh[i][j + 1]];
+            const avgX = neighbors.reduce((sum, n) => sum + n.x, 0) / neighbors.length;
+            const avgY = neighbors.reduce((sum, n) => sum + n.y, 0) / neighbors.length;
+            
+            mesh[i][j].x = mesh[i][j].x * 0.7 + avgX * 0.3;
+            mesh[i][j].y = mesh[i][j].y * 0.7 + avgY * 0.3;
+          }
+        }
+      }
+    }
+    return mesh;
+  }
+
+  updateMeshPositions(mesh) {
+    mesh.forEach(row => {
+      row.forEach(point => {
+        if (!point.pinned) {
+          point.x += point.velocity.x;
+          point.y += point.velocity.y;
+        }
+      });
+    });
+  }
+
+  calculateRealismScore(config) {
+    let score = 0.5;
+    if (config.anchorPoints && config.anchorPoints.length >= 6) score += 0.15;
+    if (config.bodyMeasurements && config.bodyMeasurements.confidence > 0.7) score += 0.2;
+    if (config.segmentation) score += 0.15;
+    return Math.min(1.0, score);
+  }
+
+  calculateSizeMatch(measurements) {
+    return measurements.confidence || 0.7;
+  }
+
+  calculateStretchFit(measurements, fabricProps) {
+    return fabricProps.stretch * 0.8 + 0.2;
+  }
+
+  calculateProportionalFit(measurements) {
+    return 0.85;
+  }
+
+  calculateComfortScore(measurements, fabricProps) {
+    return fabricProps.breathability * 0.6 + fabricProps.elasticity * 0.4;
+  }
 }
 
 const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurementUpdate }) => {
@@ -736,6 +935,12 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   const streamRef = useRef(null);
   const poseEngineRef = useRef(null);
   const clothWarpEngineRef = useRef(null);
+  
+  // Performance caching
+  const meshCacheRef = useRef(new Map());
+  const warpedImageCacheRef = useRef(new Map());
+  const segmentationCacheRef = useRef({ data: null, timestamp: 0 });
+  const productImageCacheRef = useRef(new Map());
   
   const [isActive, setIsActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -755,6 +960,21 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     opacity: 0.8
   });
   const [isRecording, setIsRecording] = useState(false);
+
+  useEffect(() => {
+    setVirtualClothing(null);
+    
+    // Clear caches when product changes to avoid memory leaks
+    meshCacheRef.current.clear();
+    warpedImageCacheRef.current.clear();
+    segmentationCacheRef.current = { data: null, timestamp: 0 };
+    
+    // Keep product image cache but limit size
+    if (productImageCacheRef.current.size > 20) {
+      const firstKey = productImageCacheRef.current.keys().next().value;
+      productImageCacheRef.current.delete(firstKey);
+    }
+  }, [selectedProduct]);
 
   const captureImage = useCallback(() => {
     if (canvasRef.current && videoRef.current) {
@@ -779,9 +999,9 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   useEffect(() => {
     initializeAI();
     return () => cleanup();
-  }, []);
+  }, [initializeAI, cleanup]);
 
-  const initializeAI = async () => {
+  const initializeAI = useCallback(async () => {
     setIsProcessing(true);
     try {
       poseEngineRef.current = new AdvancedPoseEngine();
@@ -796,9 +1016,9 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [startCamera]);
 
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -822,7 +1042,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       console.error('Camera access error:', error);
       setIsActive(false);
     }
-  };
+  }, [startAIProcessing]);
 
   const startAIProcessing = useCallback(() => {
     let frameCount = 0;
@@ -867,14 +1087,35 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
             onMeasurementUpdate(pose.bodyMeasurements);
           }
 
-          if (frameCount % 10 === 0) { // Run segmentation every 10 frames for performance
+          // Segmentation caching: run every 10 frames and cache results
+          if (frameCount % 10 === 0) {
             const segmentation = await poseEngineRef.current.segmentBody(videoRef.current);
             setBodySegmentation(segmentation);
+            segmentationCacheRef.current = {
+              data: segmentation,
+              timestamp: Date.now()
+            };
+          } else {
+            // Reuse cached segmentation for intermediate frames
+            const cachedAge = Date.now() - segmentationCacheRef.current.timestamp;
+            if (cachedAge < 500 && segmentationCacheRef.current.data) {
+              // Use cached segmentation if less than 500ms old
+              if (!bodySegmentation) {
+                setBodySegmentation(segmentationCacheRef.current.data);
+              }
+            }
           }
 
-          if (selectedProduct && clothWarpEngineRef.current) {
+          const garmentImage = selectedProduct?.image;
+          if (
+            selectedProduct &&
+            garmentImage &&
+            garmentImage.complete &&
+            garmentImage.naturalWidth > 0 &&
+            clothWarpEngineRef.current
+          ) {
             const warpedClothing = clothWarpEngineRef.current.warpClothingToBody(
-              selectedProduct.image,
+              garmentImage,
               pose,
               bodySegmentation,
               selectedProduct.fabric || 'cotton'
@@ -914,12 +1155,31 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
 
     drawBodyMeasurements(ctx, pose.bodyMeasurements);
 
+    ctx.save();
+    
+    // Draw shadows first (behind clothing)
+    if (clothing && clothing.shadowsAndHighlights) {
+      drawClothingShadows(ctx, clothing.shadowsAndHighlights, pose);
+    }
+    
+    ctx.globalAlpha = overlayStyle.opacity;
+    ctx.globalCompositeOperation = overlayStyle.blend;
+
     if (clothing && selectedProduct) {
       drawVirtualClothing(ctx, clothing, pose);
+    } else if (selectedProduct) {
+      applyVirtualClothing(ctx, overlayCanvas.width, overlayCanvas.height);
+    }
+
+    ctx.restore();
+    
+    // Apply depth occlusion using body segmentation
+    if (bodySegmentation) {
+      applyDepthOcclusion(ctx, overlayCanvas, bodySegmentation);
     }
 
     drawAIIndicators(ctx, pose);
-  }, [calibrationMode, selectedProduct]);
+  }, [calibrationMode, selectedProduct, overlayStyle.opacity, overlayStyle.blend, drawVirtualClothing, applyVirtualClothing, bodySegmentation]);
 
   const drawPoseSkeleton = (ctx, anchorPoints) => {
     ctx.strokeStyle = '#00ff41';
@@ -980,17 +1240,17 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     });
   };
 
-  const drawVirtualClothing = (ctx, clothing, pose) => {
-    if (!clothing || !clothing.warpedImage || !pose.clothingAnchorPoints) return;
+  const drawVirtualClothing = useCallback((ctx, clothing, pose) => {
+    if (!clothing || !pose.clothingAnchorPoints) return;
     
     try {
-
       ctx.globalCompositeOperation = 'source-over';
 
       if (clothing.shadowsAndHighlights) {
         drawClothingShadows(ctx, clothing.shadowsAndHighlights, pose);
       }
 
+      // Draw the actual warped clothing with garment image
       drawWarpedClothing(ctx, clothing, pose);
 
       if (clothing.fabricBehavior) {
@@ -1001,7 +1261,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     } catch (error) {
       console.error('Virtual clothing rendering error:', error);
     }
-  };
+  }, [selectedProduct, overlayStyle]);
 
   const drawClothingShadows = (ctx, shadows, pose) => {
     ctx.globalCompositeOperation = 'multiply';
@@ -1022,8 +1282,80 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       });
     }
   };
+  
+  const applyDepthOcclusion = (ctx, canvas, segmentation) => {
+    if (!segmentation || !segmentation.length) return;
+    
+    try {
+      // Get the segmentation mask
+      const mask = segmentation[0];
+      if (!mask || !mask.mask) return;
+      
+      const maskData = mask.mask;
+      const width = maskData.width || canvas.width;
+      const height = maskData.height || canvas.height;
+      
+      // Create an offscreen canvas for processing
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      // Get current canvas image
+      tempCtx.drawImage(canvas, 0, 0, width, height);
+      const imageData = tempCtx.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+      
+      // Apply occlusion based on mask
+      // Mask data typically has 0 for background, 1 for person
+      for (let i = 0; i < maskData.data.length; i++) {
+        const maskValue = maskData.data[i];
+        const pixelIndex = i * 4;
+        
+        // If this pixel is foreground (person), reduce garment visibility slightly
+        // to create depth effect
+        if (maskValue > 0.5) {
+          const occlusionFactor = 0.85; // Keep 85% visibility on body
+          pixels[pixelIndex + 3] *= occlusionFactor; // Reduce alpha
+        }
+      }
+      
+      tempCtx.putImageData(imageData, 0, 0);
+      
+      // Draw processed image back
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+      
+    } catch (error) {
+      console.error('Depth occlusion error:', error);
+    }
+  };
 
   const drawWarpedClothing = (ctx, clothing, pose) => {
+    // Check image cache first
+    const cacheKey = `${selectedProduct?.id}_${pose.id || Date.now()}`;
+    
+    // Priority 1: Use warped image from ClothWarpingEngine if available
+    let garmentImage = clothing?.warpedImage;
+    
+    // Priority 2: Check product image cache
+    if (!garmentImage || typeof garmentImage === 'string') {
+      if (productImageCacheRef.current.has(selectedProduct?.id)) {
+        garmentImage = productImageCacheRef.current.get(selectedProduct?.id);
+      } else if (selectedProduct?.image) {
+        garmentImage = selectedProduct.image;
+        // Cache the product image
+        if (garmentImage.complete && garmentImage.naturalWidth > 0) {
+          productImageCacheRef.current.set(selectedProduct.id, garmentImage);
+        }
+      }
+    }
+    
+    if (!garmentImage || !garmentImage.complete || garmentImage.naturalWidth === 0) {
+      // Fallback to colored shape if image not loaded
+      drawFallbackGarment(ctx, pose);
+      return;
+    }
 
     const anchorPoints = pose.clothingAnchorPoints;
     
@@ -1033,8 +1365,110 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       const leftHip = anchorPoints.find(p => p.type === 'hip_left');
       const rightHip = anchorPoints.find(p => p.type === 'hip_right');
       
+      if (leftShoulder && rightShoulder && leftHip && rightHip && 
+          leftShoulder.score > 0.5 && rightShoulder.score > 0.5) {
+        
+        // Calculate garment dimensions based on body measurements
+        const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
+        const shoulderCenter = {
+          x: (leftShoulder.x + rightShoulder.x) / 2,
+          y: (leftShoulder.y + rightShoulder.y) / 2
+        };
+        const hipCenter = {
+          x: (leftHip.x + rightHip.x) / 2,
+          y: (leftHip.y + rightHip.y) / 2
+        };
+        
+        // Calculate garment size with proper scaling
+        const garmentWidth = shoulderWidth * 1.2; // Slightly wider than shoulders
+        const torsoHeight = Math.abs(hipCenter.y - shoulderCenter.y);
+        const garmentHeight = torsoHeight * 1.3; // From shoulders to below hips
+        
+        // Position (centered on shoulders, extending down)
+        const drawX = shoulderCenter.x - garmentWidth / 2;
+        const drawY = shoulderCenter.y - garmentHeight * 0.15; // Slight offset for neckline
+        
+        ctx.save();
+        
+        // Apply transform for body angle (based on shoulder tilt)
+        const shoulderAngle = Math.atan2(
+          rightShoulder.y - leftShoulder.y,
+          rightShoulder.x - leftShoulder.x
+        );
+        
+        ctx.translate(shoulderCenter.x, shoulderCenter.y);
+        ctx.rotate(shoulderAngle);
+        ctx.translate(-shoulderCenter.x, -shoulderCenter.y);
+        
+        // Apply perspective scaling for depth (based on body size)
+        const depthScale = shoulderWidth / 200; // Normalize to average shoulder width
+        const scaleX = depthScale * 1.0;
+        const scaleY = depthScale * 1.0;
+        
+        ctx.translate(shoulderCenter.x, shoulderCenter.y);
+        ctx.scale(scaleX, scaleY);
+        ctx.translate(-shoulderCenter.x, -shoulderCenter.y);
+        
+        // Draw the actual garment image
+        ctx.globalAlpha = overlayStyle.opacity;
+        ctx.globalCompositeOperation = overlayStyle.blend;
+        
+        ctx.drawImage(
+          garmentImage,
+          drawX,
+          drawY,
+          garmentWidth,
+          garmentHeight
+        );
+        
+        // Add lighting and shadow effects for realism
+        applyGarmentLighting(ctx, drawX, drawY, garmentWidth, garmentHeight, shoulderCenter);
+        
+        ctx.restore();
+      }
+    }
+  };
+  
+  const applyGarmentLighting = (ctx, x, y, width, height, center) => {
+    // Add subtle lighting gradient for 3D effect
+    ctx.globalCompositeOperation = 'overlay';
+    
+    // Highlight from top-left (simulating natural light)
+    const highlightGradient = ctx.createLinearGradient(
+      x, y,
+      x + width, y + height
+    );
+    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+    highlightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+    highlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
+    
+    ctx.fillStyle = highlightGradient;
+    ctx.fillRect(x, y, width, height);
+    
+    // Add subtle shadow on lower edges
+    ctx.globalCompositeOperation = 'multiply';
+    const shadowGradient = ctx.createRadialGradient(
+      center.x, center.y + height * 0.3, height * 0.2,
+      center.x, center.y + height * 0.3, height * 0.8
+    );
+    shadowGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    shadowGradient.addColorStop(1, 'rgba(0, 0, 0, 0.15)');
+    
+    ctx.fillStyle = shadowGradient;
+    ctx.fillRect(x, y, width, height);
+    
+    ctx.globalCompositeOperation = 'source-over';
+  };
+  
+  const drawFallbackGarment = (ctx, pose) => {
+    const anchorPoints = pose.clothingAnchorPoints;
+    if (anchorPoints.length >= 4) {
+      const leftShoulder = anchorPoints.find(p => p.type === 'shoulder_left');
+      const rightShoulder = anchorPoints.find(p => p.type === 'shoulder_right');
+      const leftHip = anchorPoints.find(p => p.type === 'hip_left');
+      const rightHip = anchorPoints.find(p => p.type === 'hip_right');
+      
       if (leftShoulder && rightShoulder && leftHip && rightHip) {
-
         ctx.strokeStyle = selectedProduct?.color || '#4f46e5';
         ctx.fillStyle = `${selectedProduct?.color || '#4f46e5'}40`;
         ctx.lineWidth = 3;
@@ -1098,7 +1532,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
   };
 
   const drawFabricDetails = (ctx, fabricBehavior, pose) => {
-
+    // Draw dynamic wrinkles based on body movement
     if (fabricBehavior.wrinkles) {
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.lineWidth = 1;
@@ -1111,6 +1545,52 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
           ctx.stroke();
         }
       });
+    }
+    
+    // Add dynamic fabric folds at joints
+    const anchorPoints = pose.clothingAnchorPoints;
+    if (anchorPoints && anchorPoints.length >= 4) {
+      const leftElbow = anchorPoints.find(p => p.type === 'elbow_left');
+      const rightElbow = anchorPoints.find(p => p.type === 'elbow_right');
+      
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.lineWidth = 2;
+      
+      // Draw fold lines at elbow joints
+      [leftElbow, rightElbow].forEach(elbow => {
+        if (elbow && elbow.score > 0.5) {
+          ctx.beginPath();
+          ctx.arc(elbow.x, elbow.y, 15, 0, Math.PI);
+          ctx.stroke();
+        }
+      });
+    }
+    
+    // Add subtle fabric flow/draping effect
+    if (fabricBehavior.flow) {
+      ctx.globalAlpha = 0.1;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      
+      const flowLines = 5;
+      const shoulder = anchorPoints?.find(p => p.type === 'shoulder_left');
+      const hip = anchorPoints?.find(p => p.type === 'hip_left');
+      
+      if (shoulder && hip) {
+        for (let i = 0; i < flowLines; i++) {
+          const t = i / flowLines;
+          const x = shoulder.x + (hip.x - shoulder.x) * t;
+          const y = shoulder.y + (hip.y - shoulder.y) * t;
+          const wave = Math.sin(Date.now() / 500 + t * Math.PI * 2) * 3;
+          
+          ctx.beginPath();
+          ctx.moveTo(x + wave, y);
+          ctx.lineTo(x + wave + 10, y);
+          ctx.stroke();
+        }
+      }
+      
+      ctx.globalAlpha = 1.0;
     }
   };
 
@@ -1149,7 +1629,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     ctx.textAlign = 'left';
   };
 
-  const captureHighQualityImage = async () => {
+  const captureHighQualityImage = useCallback(async () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
     const overlayCanvas = overlayCanvasRef.current;
@@ -1179,7 +1659,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
       aiMetrics,
       timestamp: Date.now()
     });
-  };
+  }, [onCapture, currentPose, aiMetrics, filters]);
 
   const applyAdvancedFilters = (ctx, filters) => {
     if (filters.vintage) {
@@ -1200,16 +1680,43 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     ctx.filter = 'none';
   };
 
-  const cleanup = () => {
+  const cleanup = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
     }
     setIsActive(false);
-  };
+  }, []);
 
-  const applyVirtualClothing = (ctx, width, height) => {
+  const applyVirtualClothing = useCallback((ctx, width, height) => {
     if (!selectedProduct) return;
 
+    // Try to use the actual garment image
+    const garmentImage = selectedProduct?.image;
+    
+    if (garmentImage && garmentImage.complete && garmentImage.naturalWidth > 0) {
+      // Draw actual garment image in center when no pose detected
+      ctx.save();
+      ctx.globalCompositeOperation = overlayStyle.blend;
+      ctx.globalAlpha = overlayStyle.opacity;
+      
+      const centerX = width * 0.5;
+      const centerY = height * 0.4;
+      const clothWidth = width * 0.35;
+      const clothHeight = height * 0.45;
+      
+      ctx.drawImage(
+        garmentImage,
+        centerX - clothWidth/2,
+        centerY,
+        clothWidth,
+        clothHeight
+      );
+      
+      ctx.restore();
+      return;
+    }
+
+    // Fallback to gradient if image not available
     ctx.save();
 
     ctx.globalCompositeOperation = overlayStyle.blend;
@@ -1258,7 +1765,7 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
     }
 
     ctx.restore();
-  };
+  }, [selectedProduct, overlayStyle.blend, overlayStyle.opacity]);
 
   return (
     <div className="relative bg-black rounded-2xl overflow-hidden h-full">
@@ -1270,6 +1777,18 @@ const AdvancedCameraView = ({ selectedProduct, filters, onCapture, onMeasurement
         muted
         className="w-full h-full object-cover"
       />
+
+      <AnimatePresence mode="wait">
+        <motion.canvas
+          key={selectedProduct?.id || 'no-product'}
+          ref={overlayCanvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        />
+      </AnimatePresence>
       
       {}
       <canvas ref={canvasRef} className="hidden" />
@@ -1438,11 +1957,20 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
                 : 'bg-white/10 border border-white/20 hover:bg-white/20'
             }`}
           >
-            <div className="w-full h-20 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg mb-3 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">
-                {product.name.charAt(0)}
-              </span>
-            </div>
+            {product.imageUrl ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-20 object-cover rounded-lg mb-3"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-20 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg mb-3 flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">
+                  {product.name.charAt(0)}
+                </span>
+              </div>
+            )}
             
             <h4 className="text-white font-semibold text-sm mb-1">{product.name}</h4>
             <p className="text-gray-400 text-xs mb-2">{product.brand}</p>
@@ -1465,10 +1993,132 @@ const ProductGrid = ({ products, selectedProduct, onSelect }) => {
   );
 };
 
+const BodyMeasurementPanel = ({ measurements }) => {
+  if (!measurements || measurements.confidence < 0.3) {
+    return (
+      <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+          <FaRuler className="mr-2" /> Body Measurements
+        </h3>
+        <p className="text-gray-400 text-sm">Stand in frame for measurements...</p>
+      </div>
+    );
+  }
+
+  const measurementData = [
+    { label: 'Height', value: Math.round(measurements.height), unit: 'px', icon: '📏' },
+    { label: 'Shoulders', value: Math.round(measurements.shoulderWidth), unit: 'px', icon: '👔' },
+    { label: 'Chest', value: Math.round(measurements.chestWidth), unit: 'px', icon: '🎯' },
+    { label: 'Waist', value: Math.round(measurements.waistWidth), unit: 'px', icon: '⚡' },
+  ];
+
+  const confidenceColor = measurements.confidence > 0.7 ? 'text-green-400' : measurements.confidence > 0.5 ? 'text-yellow-400' : 'text-red-400';
+
+  return (
+    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-white flex items-center">
+          <FaRuler className="mr-2" /> Measurements
+        </h3>
+        <div className={`text-xs font-semibold ${confidenceColor}`}>
+          {Math.round(measurements.confidence * 100)}% Accurate
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        {measurementData.map((item, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="bg-black/30 rounded-lg p-3"
+          >
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300 text-sm flex items-center">
+                <span className="mr-2">{item.icon}</span>
+                {item.label}
+              </span>
+              <span className="text-white font-bold">
+                {item.value} {item.unit}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SizeRecommendationPanel = ({ measurements, selectedProduct }) => {
+  if (!measurements || !selectedProduct || measurements.confidence < 0.5) {
+    return null;
+  }
+
+  // Simple size recommendation algorithm
+  const calculateSize = () => {
+    const shoulderWidth = measurements.shoulderWidth;
+    const chestWidth = measurements.chestWidth;
+    
+    if (shoulderWidth < 120 && chestWidth < 100) return { size: 'XS', fit: 95, color: 'green' };
+    if (shoulderWidth < 140 && chestWidth < 120) return { size: 'S', fit: 92, color: 'green' };
+    if (shoulderWidth < 160 && chestWidth < 140) return { size: 'M', fit: 90, color: 'green' };
+    if (shoulderWidth < 180 && chestWidth < 160) return { size: 'L', fit: 88, color: 'yellow' };
+    if (shoulderWidth < 200 && chestWidth < 180) return { size: 'XL', fit: 85, color: 'yellow' };
+    return { size: 'XXL', fit: 82, color: 'orange' };
+  };
+
+  const recommendation = calculateSize();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-2xl p-6 border border-blue-400/30"
+    >
+      <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+        <FaRuler className="mr-2" /> Size Recommendation
+      </h3>
+      
+      <div className="text-center mb-4">
+        <div className="text-6xl font-black text-white mb-2">{recommendation.size}</div>
+        <p className="text-gray-300 text-sm">Recommended for you</p>
+      </div>
+
+      <div className="bg-black/30 rounded-lg p-4 mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-gray-300 text-sm">Fit Quality</span>
+          <span className={`text-${recommendation.color}-400 font-bold`}>{recommendation.fit}%</span>
+        </div>
+        <div className="w-full bg-gray-700 rounded-full h-2">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${recommendation.fit}%` }}
+            className={`bg-${recommendation.color}-500 h-2 rounded-full`}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="bg-black/30 rounded p-2">
+          <div className="text-gray-400">Comfort</div>
+          <div className="text-white font-bold">Excellent</div>
+        </div>
+        <div className="bg-black/30 rounded p-2">
+          <div className="text-gray-400">Style</div>
+          <div className="text-white font-bold">Perfect Fit</div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const SettingsPanel = ({ settings, onUpdate }) => {
   return (
     <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-      <h3 className="text-xl font-bold text-white mb-4">AR Settings</h3>
+      <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+        <FaCog className="mr-2" /> AR Settings
+      </h3>
       
       <div className="space-y-6">
         {}
@@ -1553,9 +2203,24 @@ const SettingsPanel = ({ settings, onUpdate }) => {
 };
 
 const VirtualTryOn = () => {
+  const fallbackProducts = useMemo(() => ([
+    { id: 1, name: 'Classic T-Shirt', category: 'tshirt', brand: 'StyleCo', price: '$29.99', imageUrl: '' },
+    { id: 2, name: 'Elegant Dress', category: 'dress', brand: 'Fashion Plus', price: '$79.99', imageUrl: '' },
+    { id: 3, name: 'Denim Jacket', category: 'jacket', brand: 'Urban Style', price: '$89.99', imageUrl: '' },
+    { id: 4, name: 'Casual Shirt', category: 'shirt', brand: 'ComfortWear', price: '$45.99', imageUrl: '' },
+    { id: 5, name: 'Slim Jeans', category: 'pants', brand: 'DeniMax', price: '$65.99', imageUrl: '' },
+    { id: 6, name: 'Summer Dress', category: 'dress', brand: 'Beach Vibes', price: '$55.99', imageUrl: '' }
+  ]), []);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [capturedImages, setCapturedImages] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentMeasurements, setCurrentMeasurements] = useState(null);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [products, setProducts] = useState(fallbackProducts);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(null);
+  const productImageCacheRef = useRef(new Map());
   const [bodyMeasurements, setBodyMeasurements] = useState({
     height: 0,
     shoulderWidth: 0,
@@ -1586,6 +2251,67 @@ const VirtualTryOn = () => {
   }, []);
 
   useEffect(() => {
+    let isActive = true;
+
+    const fetchProducts = async () => {
+      try {
+        setProductsLoading(true);
+        setProductsError(null);
+        const data = await productService.getAllProducts({ limit: 100 });
+        const formatted = productService.formatManyForTryOn(data.products || []);
+        if (!isActive) return;
+        setProducts(formatted.length ? formatted : fallbackProducts);
+      } catch (error) {
+        console.error('Failed to load try-on products:', error);
+        if (!isActive) return;
+        setProducts(fallbackProducts);
+        setProductsError('Unable to load products. Showing fallback list.');
+      } finally {
+        if (isActive) {
+          setProductsLoading(false);
+        }
+      }
+    };
+
+    fetchProducts();
+    return () => {
+      isActive = false;
+    };
+  }, [fallbackProducts]);
+
+  useEffect(() => {
+    let isActive = true;
+    const imageUrl = selectedProduct?.imageUrl || selectedProduct?.overlayUrl;
+
+    if (!imageUrl || !selectedProduct) {
+      return undefined;
+    }
+
+    const cached = productImageCacheRef.current.get(imageUrl);
+    if (cached) {
+      setSelectedProduct(prev => (prev && prev.id === selectedProduct.id ? { ...prev, image: cached } : prev));
+      return undefined;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      if (!isActive) return;
+      productImageCacheRef.current.set(imageUrl, img);
+      setSelectedProduct(prev => (prev && prev.id === selectedProduct.id ? { ...prev, image: img } : prev));
+    };
+    img.onerror = () => {
+      if (!isActive) return;
+      setProductsError('Unable to load garment image for try-on.');
+    };
+    img.src = imageUrl;
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedProduct]);
+
+  useEffect(() => {
     if (selectedProduct) {
       analytics.trackEvent('product_selected', {
         productId: selectedProduct.id,
@@ -1601,15 +2327,6 @@ const VirtualTryOn = () => {
       });
     }
   }, [selectedProduct]);
-
-  const products = [
-    { id: 1, name: 'Classic T-Shirt', category: 'tshirt', brand: 'StyleCo', price: '$29.99' },
-    { id: 2, name: 'Elegant Dress', category: 'dress', brand: 'Fashion Plus', price: '$79.99' },
-    { id: 3, name: 'Denim Jacket', category: 'jacket', brand: 'Urban Style', price: '$89.99' },
-    { id: 4, name: 'Casual Shirt', category: 'shirt', brand: 'ComfortWear', price: '$45.99' },
-    { id: 5, name: 'Slim Jeans', category: 'pants', brand: 'DeniMax', price: '$65.99' },
-    { id: 6, name: 'Summer Dress', category: 'dress', brand: 'Beach Vibes', price: '$55.99' },
-  ];
 
   const handleProductSelect = useCallback((product) => {
     setSelectedProduct(product);
@@ -1628,36 +2345,86 @@ const VirtualTryOn = () => {
   }, []);
 
   const handleCapture = (captureData) => {
-    const newCapture = {
-      id: Date.now(),
-      image: captureData.image || captureData, // Support both old and new format
-      product: selectedProduct,
-      timestamp: new Date().toISOString(),
-      settings: { ...settings },
-      measurements: captureData.measurements || null,
-      aiMetrics: captureData.aiMetrics || null,
-      pose: captureData.pose || null
+    // Add watermark to captured image
+    const canvas = document.createElement('canvas');
+    const img = new Image();
+    
+    const processImage = () => {
+      const imageDataUrl = captureData.image || captureData;
+      
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw original image
+        ctx.drawImage(img, 0, 0);
+        
+        // Add semi-transparent overlay for watermark area
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+        
+        // Add watermark text
+        ctx.font = 'bold 28px Arial';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.textAlign = 'right';
+        ctx.fillText('Virtual Try-On', canvas.width - 30, canvas.height - 45);
+        
+        // Add product info
+        if (selectedProduct) {
+          ctx.font = 'bold 18px Arial';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.textAlign = 'left';
+          ctx.fillText(selectedProduct.name, 30, canvas.height - 48);
+          
+          ctx.font = '14px Arial';
+          ctx.fillStyle = 'rgba(200, 200, 200, 0.9)';
+          ctx.fillText(`${selectedProduct.brand} • ${selectedProduct.price}`, 30, canvas.height - 28);
+        }
+        
+        // Add timestamp
+        ctx.font = '12px Arial';
+        ctx.fillStyle = 'rgba(150, 150, 150, 0.8)';
+        ctx.textAlign = 'right';
+        ctx.fillText(new Date().toLocaleDateString(), canvas.width - 30, canvas.height - 20);
+        
+        const watermarkedImage = canvas.toDataURL('image/png', 0.95);
+        
+        const newCapture = {
+          id: Date.now(),
+          image: watermarkedImage,
+          product: selectedProduct,
+          timestamp: new Date().toISOString(),
+          settings: { ...settings },
+          measurements: captureData.measurements || null,
+          aiMetrics: captureData.aiMetrics || null,
+          pose: captureData.pose || null
+        };
+        
+        setCapturedImages(prev => [newCapture, ...prev]);
+
+        analytics.trackEvent('virtual_tryon_capture', {
+          productId: selectedProduct?.id,
+          captureId: newCapture.id,
+          hasAiMetrics: !!captureData.aiMetrics,
+          hasPoseData: !!captureData.pose,
+          settings: settings
+        });
+
+        if (captureData.aiMetrics) {
+          analytics.trackEvent('ai_performance', {
+            fittingScore: captureData.aiMetrics.fittingScore,
+            poseStability: captureData.aiMetrics.poseStability,
+            processingTime: captureData.aiMetrics.processingTime,
+            confidence: captureData.aiMetrics.confidence || captureData.aiMetrics.fittingScore
+          });
+        }
+      };
+      
+      img.src = imageDataUrl;
     };
-    setCapturedImages(prev => [newCapture, ...prev]);
-
-    analytics.trackEvent('virtual_tryon_capture', {
-      productId: selectedProduct?.id,
-      captureId: newCapture.id,
-      hasAiMetrics: !!captureData.aiMetrics,
-      hasPoseData: !!captureData.pose,
-      settings: settings
-    });
-
-    if (captureData.aiMetrics) {
-      analytics.trackEvent('ai_performance', {
-        fittingScore: captureData.aiMetrics.fittingScore,
-        poseStability: captureData.aiMetrics.poseStability,
-        processingTime: captureData.aiMetrics.processingTime,
-        confidence: captureData.aiMetrics.confidence || captureData.aiMetrics.fittingScore
-      });
-
-      analytics.trackTryOn('success', selectedProduct?.id, captureData.aiMetrics);
-    }
+    
+    processImage();
   };
 
   const handleMeasurementUpdate = (measurements) => {
@@ -1759,6 +2526,22 @@ const VirtualTryOn = () => {
                 products={products}
                 selectedProduct={selectedProduct}
                 onSelect={handleProductSelect}
+              />
+
+              {productsLoading && (
+                <div className="text-sm text-gray-300">Loading products...</div>
+              )}
+              {productsError && (
+                <div className="text-sm text-yellow-300">{productsError}</div>
+              )}
+
+              {}
+              <BodyMeasurementPanel measurements={bodyMeasurements} />
+
+              {}
+              <SizeRecommendationPanel
+                measurements={bodyMeasurements}
+                selectedProduct={selectedProduct}
               />
 
               {}

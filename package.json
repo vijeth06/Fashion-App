@@ -58,7 +58,6 @@
     "moduleNameMapper": {
       "^canvas$": "<rootDir>/src/__mocks__/canvasMock.js"
     }
-  ,"setupFiles": ["<rootDir>/src/testSetup.js"]
   },
   "browserslist": {
     "production": [

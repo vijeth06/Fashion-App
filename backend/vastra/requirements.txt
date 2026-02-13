@@ -1,5 +1,8 @@
 flask
+flask-cors
 opencv-python
 torch
+torchvision
 numpy
+pillow
 # HR-VITON and other heavy deps should be installed in a dedicated environment

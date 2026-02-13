@@ -285,6 +285,47 @@ router.get('/:productId', async (req, res) => {
   }
 });
 
+// @route   GET /api/v1/products/:productId/inventory
+// @desc    Get inventory availability (by size if provided)
+// @access  Public
+router.get('/:productId/inventory', async (req, res) => {
+  try {
+    const { size } = req.query;
+    const product = await Product.findOne({ productId: req.params.productId }).lean();
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found'
+      });
+    }
+
+    if (size) {
+      const sizeEntry = product.sizes?.find(s => s.size === size);
+      const available = sizeEntry?.stock || 0;
+      return res.json({
+        success: true,
+        productId: product.productId,
+        size,
+        available
+      });
+    }
+
+    const totalAvailable = product.sizes?.reduce((sum, s) => sum + (s.stock || 0), 0) || 0;
+    res.json({
+      success: true,
+      productId: product.productId,
+      available: totalAvailable
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch inventory',
+      message: error.message
+    });
+  }
+});
+
 // @route   POST /api/v1/products/:productId/reviews
 // @desc    Add product review
 // @access  Private

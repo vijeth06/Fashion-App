@@ -1,6 +1,7 @@
 ﻿import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useAuth } from './AuthContext';
 import apiService from '../services/apiService';
+import wishlistService from '../services/wishlistService';
 
 const OutfitContext = createContext(null);
 
@@ -40,9 +41,9 @@ export function OutfitProvider({ children }) {
 
       try {
         setLoading(true);
-        const response = await apiService.get(`/api/wishlist/${user.uid}`);
-        if (response.success && response.wishlist) {
-          setFavorites(response.wishlist.items || []);
+        const response = await wishlistService.getWishlist(user.uid);
+        if (response.success) {
+          setFavorites(response.data?.items || []);
         }
       } catch (error) {
         console.error('Failed to fetch favorites:', error);
@@ -75,7 +76,7 @@ export function OutfitProvider({ children }) {
 
       try {
         setLoading(true);
-        const response = await apiService.get(`/api/looks/user/${user.uid}`);
+        const response = await apiService.get(`/looks/user/${user.uid}`);
         if (response.success && response.looks) {
           setLooks(response.looks);
           setSavedOutfits(response.looks); // Looks serve as saved outfits
@@ -120,14 +121,9 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      const response = await apiService.post('/api/wishlist/add', {
-        userId: user.uid,
-        productId: item.id,
-        product: item
-      });
-      
+      const response = await wishlistService.addToWishlist(user.uid, item.id, item);
       if (response.success) {
-        setFavorites((prev) => 
+        setFavorites((prev) =>
           prev.some((f) => f.id === item.id) ? prev : [...prev, item]
         );
       }
@@ -148,11 +144,7 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      await apiService.post('/api/wishlist/remove', {
-        userId: user.uid,
-        productId: id
-      });
-      
+      await wishlistService.removeFromWishlist(user.uid, id);
       setFavorites((prev) => prev.filter((f) => f.id !== id));
     } catch (error) {
       console.error('Failed to remove favorite:', error);
@@ -175,7 +167,7 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      const response = await apiService.post('/api/looks/create', {
+      const response = await apiService.post('/looks/create', {
         userId: user.uid,
         name: outfit.name,
         items: outfit.items || [],
@@ -205,7 +197,7 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      await apiService.delete(`/api/looks/${id}`);
+      await apiService.delete(`/looks/${id}`);
       setSavedOutfits(prev => prev.filter(outfit => outfit.id !== id));
       setLooks(prev => prev.filter(look => look.id !== id));
     } catch (error) {
@@ -229,7 +221,7 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      const response = await apiService.post('/api/looks/create', {
+      const response = await apiService.post('/looks/create', {
         userId: user.uid,
         imageUrl: dataUrl,
         name: `Look ${new Date().toLocaleDateString()}`,
@@ -256,7 +248,7 @@ export function OutfitProvider({ children }) {
     }
 
     try {
-      await apiService.delete(`/api/looks/${id}`);
+      await apiService.delete(`/looks/${id}`);
       setLooks((prev) => prev.filter((l) => l.id !== id));
     } catch (error) {
       console.error('Failed to remove look:', error);

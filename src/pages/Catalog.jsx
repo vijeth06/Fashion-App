@@ -1,7 +1,6 @@
 ﻿import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import productService from '../services/productService';
-import userService from '../services/userService';
 import { useOutfit } from '../context/OutfitContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -62,8 +61,8 @@ export default function Catalog() {
     async function fetchWishlist() {
       if (user?.uid) {
         try {
-          const wishlist = await userService.getWishlist(user.uid);
-          const wishlistIds = new Set(wishlist.wishlist?.map(item => item.productId) || []);
+          const wishlist = await wishlistService.getWishlist(user.uid);
+          const wishlistIds = new Set(wishlist.data?.items?.map(item => item.productId) || []);
           setFavorites(wishlistIds);
         } catch (err) {
           console.error('Error fetching wishlist:', err);
@@ -152,7 +151,7 @@ export default function Catalog() {
       newFavorites.delete(itemId);
       if (user?.uid) {
         try {
-          await userService.removeFromWishlist(user.uid, itemId);
+          await wishlistService.removeFromWishlist(user.uid, itemId);
         } catch (err) {
           console.error('Error removing from wishlist:', err);
         }
@@ -161,7 +160,11 @@ export default function Catalog() {
       newFavorites.add(itemId);
       if (user?.uid) {
         try {
-          await userService.addToWishlist(user.uid, itemId);
+          await wishlistService.addToWishlist(user.uid, itemId, {
+            name: item.name?.en || item.name,
+            imageUrl: item.images?.main || item.images?.overlay || '',
+            price: item.pricing?.selling || item.price?.selling || item.price || 0
+          });
         } catch (err) {
           console.error('Error adding to wishlist:', err);
         }

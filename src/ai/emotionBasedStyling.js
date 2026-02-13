@@ -202,37 +202,32 @@ export class FacialExpressionAnalyzer {
   }
 
   async detectFaces(imageData) {
-
     return {
-      detected: true,
-      confidence: 0.94,
-      boundingBox: { x: 100, y: 80, width: 200, height: 250 },
-      faceCount: 1,
-      quality: 'high'
+      detected: false,
+      confidence: 0,
+      boundingBox: null,
+      faceCount: 0,
+      quality: 'unknown'
     };
   }
 
   async analyzeExpressions(imageData) {
-
     const expressionScores = {
-      happiness: Math.random() * 0.4 + 0.3, // 0.3-0.7
-      sadness: Math.random() * 0.3,          // 0-0.3
-      anger: Math.random() * 0.2,            // 0-0.2
-      fear: Math.random() * 0.15,            // 0-0.15
-      surprise: Math.random() * 0.25,        // 0-0.25
-      disgust: Math.random() * 0.1,          // 0-0.1
-      neutral: Math.random() * 0.3 + 0.2     // 0.2-0.5
+      happiness: 0,
+      sadness: 0,
+      anger: 0,
+      fear: 0,
+      surprise: 0,
+      disgust: 0,
+      neutral: 0
     };
-
-    const primaryEmotion = Object.entries(expressionScores)
-      .reduce((a, b) => expressionScores[a[0]] > expressionScores[b[0]] ? a : b)[0];
 
     return {
       scores: expressionScores,
-      primary: primaryEmotion,
-      secondary: this.getSecondaryEmotions(expressionScores),
-      intensity: expressionScores[primaryEmotion],
-      authenticity: Math.random() * 0.3 + 0.7 // 0.7-1.0
+      primary: 'neutral',
+      secondary: [],
+      intensity: 0,
+      authenticity: 0
     };
   }
 
@@ -477,31 +472,28 @@ export class MoodToStyleMapper {
 
 export class BiometricMonitor {
   async extractBiometricData(imageData) {
-
     return {
-      stress: Math.random() * 0.4 + 0.1, // 0.1-0.5
-      energy: Math.random() * 0.6 + 0.3, // 0.3-0.9
+      stress: 0,
+      energy: 0,
       health: {
         skinTone: this.analyzeSkinTone(imageData),
-        hydration: Math.random() * 0.4 + 0.6, // 0.6-1.0
-        circulation: Math.random() * 0.3 + 0.7, // 0.7-1.0
-        restfulness: Math.random() * 0.5 + 0.4 // 0.4-0.9
+        hydration: 0,
+        circulation: 0,
+        restfulness: 0
       },
       comfort: {
         posture: this.analyzePosture(imageData),
-        facialTension: Math.random() * 0.3 + 0.1, // 0.1-0.4
-        eyeStrain: Math.random() * 0.25 + 0.05 // 0.05-0.3
+        facialTension: 0,
+        eyeStrain: 0
       }
     };
   }
 
   analyzeSkinTone(imageData) {
-
-    const tones = ['fair', 'light', 'medium', 'olive', 'tan', 'deep'];
     return {
-      primary: tones[Math.floor(Math.random() * tones.length)],
-      undertone: Math.random() > 0.5 ? 'warm' : 'cool',
-      confidence: 0.85
+      primary: 'unknown',
+      undertone: 'neutral',
+      confidence: 0
     };
   }
 }
@@ -546,11 +538,10 @@ export async function analyzeEmotionAndStyle(imageData, userProfile, options = {
 }
 
 export async function getMoodBasedOutfit(mood, userProfile) {
-  const mockImageData = null; // In real app, would use camera/uploaded image
   const contextualData = { mood };
   
   return await emotionBasedStylingAI.analyzeEmotionAndRecommendOutfit(
-    mockImageData,
+    null,
     userProfile,
     contextualData
   );

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaRocket, 
@@ -139,7 +139,8 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
 
   // Preload product images when selectedProduct changes
   useEffect(() => {
-    if (!selectedProduct || !selectedProduct.image) return;
+    const imageUrl = selectedProduct?.imageUrl || selectedProduct?.overlayUrl || selectedProduct?.image;
+    if (!selectedProduct || !imageUrl) return;
 
     const preloadImage = async () => {
       // Check if already preloaded
@@ -152,7 +153,7 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
         await new Promise((resolve, reject) => {
           img.onload = () => resolve();
           img.onerror = reject;
-          img.src = selectedProduct.image;
+          img.src = imageUrl;
         });
 
         // Cache the loaded image
@@ -363,7 +364,8 @@ const ARCameraView = ({ onCapture, selectedProduct, settings, onPoseUpdate, onSe
     const garmentEndY = garmentStartY + garmentHeight;
 
     // Try to load and render actual product image if available
-    if (product && product.image) {
+    const productImage = product?.imageUrl || product?.overlayUrl || product?.image;
+    if (product && productImage) {
       try {
         renderProductImage(ctx, product, {
           leftShoulder,
@@ -1004,7 +1006,6 @@ const EnhancedTryOnPage = () => {
   });
 
   useEffect(() => {
-
     const fallbackProducts = [
           {
             id: 'PROD-KUR-001',
@@ -1015,6 +1016,7 @@ const EnhancedTryOnPage = () => {
             originalPrice: "₹2,499",
             discount: 24,
             image: "/assets/tee_white.svg",
+            imageUrl: "/assets/tee_white.svg",
             colors: [{ name: 'White', hex: '#FFFFFF' }],
             material: 'Cotton',
             occasion: ['Festive', 'Traditional'],
@@ -1029,6 +1031,7 @@ const EnhancedTryOnPage = () => {
             originalPrice: "₹12,999",
             discount: 23,
             image: "/assets/dress_red.svg",
+            imageUrl: "/assets/dress_red.svg",
             colors: [{ name: 'Red', hex: '#FF0000' }],
             material: 'Silk',
             occasion: ['Wedding', 'Festive'],
@@ -1043,6 +1046,7 @@ const EnhancedTryOnPage = () => {
             originalPrice: "₹2,199",
             discount: 27,
             image: "/assets/dress_red.svg",
+            imageUrl: "/assets/dress_red.svg",
             colors: [{ name: 'Pink', hex: '#FFC0CB' }],
             material: 'Cotton',
             occasion: ['Casual', 'Office'],
@@ -1053,39 +1057,27 @@ const EnhancedTryOnPage = () => {
         setClothingItems(fallbackProducts);
         setLoading(false);
 
-        setTimeout(async () => {
+        const fetchProducts = async () => {
           try {
-            const { default: indianProductService } = await import('../services/indianProductService');
-            const result = await indianProductService.getAllProducts();
-            
-            if (result.success && result.products.length > 0) {
-              const transformedProducts = result.products.map(product => ({
-                id: product.productId,
-                name: product.name,
-                brand: product.brand,
-                category: product.type,
-                price: indianProductService.formatPrice(product.price),
-                originalPrice: `₹${product.price.mrp.toLocaleString('en-IN')}`,
-                discount: indianProductService.getDiscountPercentage(product.price),
-                image: product.image,
-                colors: product.colors,
-                sizes: product.sizes,
-                material: product.material,
-                occasion: product.occasion,
-                region: product.region,
-                tryOnData: product.tryOnData,
-                trending: product.trending,
-                featured: product.featured
-              }));
-
-              const mergedProducts = [...transformedProducts, ...fallbackProducts.filter(f => !transformedProducts.find(t => t.id === f.id))];
-              setClothingItems(mergedProducts);
-            }
+            const result = await productService.getAllProducts({ limit: 100 });
+            const formatted = productService.formatManyForTryOn(result.products || []);
+            const normalized = formatted.map(product => ({
+              ...product,
+              image: product.imageUrl || product.overlayUrl || product.image,
+              imageUrl: product.imageUrl || product.overlayUrl || product.image,
+              price: typeof product.price === 'number' ? `₹${product.price}` : product.price
+            }));
+            const mergedProducts = [
+              ...normalized,
+              ...fallbackProducts.filter(f => !normalized.find(t => t.id === f.id))
+            ];
+            setClothingItems(mergedProducts);
           } catch (error) {
             console.warn('Could not fetch additional products, using fallbacks:', error);
           }
-        }, 500); // Delay to avoid blocking initial render
-      
+        };
+
+        fetchProducts();
     }, []);
 
   const handleCapture = (imageData) => {

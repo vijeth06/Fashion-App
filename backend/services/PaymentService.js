@@ -6,14 +6,28 @@ const { User } = require('../models/User');
 
 class PaymentService {
   constructor() {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     // Initialize Razorpay (for Indian market)
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID || 'test_key_id';
+    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET || 'test_key_secret';
+
+    if (isProduction && (razorpayKeyId.startsWith('test') || razorpayKeySecret.startsWith('test'))) {
+      throw new Error('Razorpay keys are not configured for production');
+    }
+
     this.razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID || 'test_key_id',
-      key_secret: process.env.RAZORPAY_KEY_SECRET || 'test_key_secret',
+      key_id: razorpayKeyId,
+      key_secret: razorpayKeySecret,
     });
 
     // Initialize Stripe (for global market)
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_key', {
+    const stripeKey = process.env.STRIPE_SECRET_KEY || 'sk_test_key';
+    if (isProduction && stripeKey.startsWith('sk_test')) {
+      throw new Error('Stripe secret key is not configured for production');
+    }
+
+    this.stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     });
 

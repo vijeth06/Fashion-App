@@ -1,4 +1,6 @@
 ﻿
+import { auth } from '../firebase/firebaseConfig';
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
 class ApiService {
@@ -6,11 +8,25 @@ class ApiService {
     this.baseURL = API_BASE_URL;
   }
 
+  async getAuthToken() {
+    const user = auth?.currentUser;
+    if (!user) return null;
+
+    try {
+      return await user.getIdToken();
+    } catch (error) {
+      console.warn('Failed to fetch auth token:', error);
+      return null;
+    }
+  }
+
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
+    const token = await this.getAuthToken();
     const config = {
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
       ...options,
@@ -130,11 +146,11 @@ class ApiService {
   }
 
   async getCategories() {
-    return this.get('/products/meta/categories');
+    return this.get('/products/categories');
   }
 
   async searchProducts(query, limit = 10) {
-    return this.get(`/products/search/${encodeURIComponent(query)}`, { limit });
+    return this.get('/products/search', { q: query, limit });
   }
 
   async createProduct(productData) {
